@@ -298,22 +298,31 @@ ui <- fluidPage(
             onInitialize = I("function() { this.clear(true); }")
           )
         ),
-        tags$details(
-          tags$summary("Performance Index definition"),
+        tags$div(
+          class = "meta-note",
+          tags$strong("Performance Index definition"),
           tags$p(
-            "For each school-year, the app computes the Performance Index (0-100) as",
-            "the mean of Accreditation Combined Rate across English, Math, and Science",
+            "For each school-year, the app computes the Performance Index (0-100) as the",
+            "mean of Accreditation Combined Rate across English, Math, and Science",
             "for All Students."
           ),
           tags$p(
-            "Division values aggregate school-level values; totals-based methods are",
-            "used when numerator/denominator data are available."
+            "The Accreditation Combined Rate is reported by VDOE School Quality Profiles and",
+            "is intended to reflect both proficiency and growth/progress (see the VDOE glossary",
+            "for the related 'Combined Rate' definition)."
+          ),
+          tags$p(
+            "Division values aggregate school-level values using enrollment-weighted",
+            "methods when denominators are available."
           )
         ),
-        tags$details(
-          tags$summary("Sources"),
+        tags$div(
+          class = "meta-note",
+          tags$strong("Sources"),
           tags$ul(
             tags$li(tags$a("VDOE School Quality Profiles — Download Data", href = "https://schoolquality.virginia.gov/download-data", target = "_blank")),
+            tags$li(tags$a("VDOE School Accreditation (Standards of Accreditation)", href = "https://www.doe.virginia.gov/data-policy-funding/data-reports/statistics-reports/accreditation-federal-reports/soa-school-accreditation", target = "_blank")),
+            tags$li(tags$a("VDOE / School Quality Profiles glossary", href = "https://schoolquality.virginia.gov/glossary", target = "_blank")),
             tags$li(tags$a("NCES EDGE Public School/LEA Geocodes", href = "https://nces.ed.gov/programs/edge/", target = "_blank")),
             tags$li(tags$a("U.S. Census TIGER/Line School District Boundaries", href = "https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html", target = "_blank"))
           )
