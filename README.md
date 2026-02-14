@@ -70,10 +70,6 @@ For glossary definitions (including “Combined Rate”):
 2. Run locally:
    - `R -e "shiny::runApp('va_schools_dashboard/app', port = 3838, launch.browser = FALSE)"`
 
-## Deploy (shinyapps.io)
-Deploy from the repo root so `renv.lock` is included:
-- `R -e "rsconnect::deployApp(appDir = 'va_schools_dashboard', appPrimaryDoc = 'app/app.R')"`
-
 ## Data Sources
 - VDOE School Quality Profiles downloads: https://schoolquality.virginia.gov/download-data
 - VDOE Standards of Accreditation overview: https://www.doe.virginia.gov/data-policy-funding/data-reports/statistics-reports/accreditation-federal-reports/soa-school-accreditation
@@ -85,8 +81,3 @@ See `va_schools_dashboard/docs/DATA_SCHEMA.md`.
 
 ## Map Behavior
 See `va_schools_dashboard/docs/MAP_SPEC.md`.
-
-## Updating Data Later
-- Rebuild the frozen snapshot using scripts in `va_schools_dashboard/data-raw/` (this will download fresh source files and regenerate `app/data/*`).
-- Commit updated `app/data/*` and redeploy to shinyapps.io.
-- Redeploy to shinyapps.io.

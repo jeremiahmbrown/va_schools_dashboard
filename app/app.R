@@ -590,8 +590,12 @@ server <- function(input, output, session) {
 
       school_row <- schools %>% filter(school_id == !!school_id) %>% slice(1)
       if (nrow(school_row) == 1 && is.finite(school_row$lat[[1]]) && is.finite(school_row$lon[[1]])) {
+        # Clicking a school should not zoom *out* if the user is already zoomed in.
+        # (Leaflet provides input$map_zoom for the current zoom level.)
+        current_zoom <- suppressWarnings(as.numeric(input$map_zoom))
+        target_zoom <- if (is.finite(current_zoom)) max(12, current_zoom) else 12
         leafletProxy("map") %>%
-          flyTo(lng = school_row$lon[[1]], lat = school_row$lat[[1]], zoom = 12)
+          flyTo(lng = school_row$lon[[1]], lat = school_row$lat[[1]], zoom = target_zoom)
       }
       return()
     }
