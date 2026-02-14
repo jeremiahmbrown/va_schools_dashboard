@@ -308,8 +308,9 @@ ui <- fluidPage(
           ),
           tags$p(
             "The Accreditation Combined Rate is reported by VDOE School Quality Profiles and",
-            "is intended to reflect both proficiency and growth/progress (see the VDOE glossary",
-            "for the related 'Combined Rate' definition)."
+            "provides equal credit for students who passed SOL tests and for students who",
+            "didn't pass but met or exceeded growth/progress benchmarks (see the VDOE glossary",
+            "definition of 'Combined Rate')."
           ),
           tags$p(
             "Division values aggregate school-level values using enrollment-weighted",

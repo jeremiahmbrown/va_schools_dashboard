@@ -49,6 +49,16 @@ Demographics are race/ethnicity percentage estimates derived from VDOE subgroup 
 Accreditation-related fields (including Accreditation Combined Rate) are sourced from **VDOE School Quality Profiles** download exports:
 - https://schoolquality.virginia.gov/download-data
 
+### What Is “Accreditation Combined Rate”?
+VDOE’s School Quality Profiles exports include **Accreditation Combined Rate** values for core subjects. In general terms, the related **Combined Rate** is designed to give equal credit for:
+- Students who pass SOL tests, and
+- Students who do not pass but still demonstrate sufficient growth/progress.
+
+This dashboard uses those reported values (for the **All Students** subgroup) as the building block for the Performance Index.
+
+### How Virginia Accredits Schools (High-Level)
+Virginia’s accreditation system (Standards of Accreditation) evaluates multiple indicators and assigns levels (commonly described as Level One/Two/Three). Schools are typically reported as **Accredited** or **Accredited with Conditions** based on performance across those indicators. For official definitions and the current rules, refer to VDOE.
+
 For background on how Virginia accredits schools (Standards of Accreditation):
 - https://www.doe.virginia.gov/data-policy-funding/data-reports/statistics-reports/accreditation-federal-reports/soa-school-accreditation
 
