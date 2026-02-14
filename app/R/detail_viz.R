@@ -78,7 +78,6 @@ make_bar_gauge_plot <- function(value,
     geom_tile(height = 0.35) +
     scale_fill_gradientn(colours = ramp, limits = c(min_value, max_value), guide = "none") +
     annotate("rect", xmin = min_value, xmax = max_value, ymin = 0.825, ymax = 1.175, fill = NA, color = "#333333", linewidth = 0.4) +
-    geom_vline(xintercept = goal, linetype = "dashed", color = "#111111", linewidth = 0.6, alpha = 0.75) +
     geom_vline(xintercept = value, color = "#111111", linewidth = 1.2) +
     annotate(
       "text",
