@@ -12,6 +12,10 @@ This repo is set up for **shinyapps.io** deployment with a **frozen snapshot** d
 2. Run locally:
    - `R -e "shiny::runApp('va_schools_dashboard/app', port = 3838, launch.browser = FALSE)"`
 
+## Deploy (shinyapps.io)
+Deploy from the repo root so `renv.lock` is included:
+- `R -e "rsconnect::deployApp(appDir = 'va_schools_dashboard', appPrimaryDoc = 'app/app.R')"`
+
 ## Data Model
 See `va_schools_dashboard/docs/DATA_SCHEMA.md`.
 
@@ -21,4 +25,3 @@ See `va_schools_dashboard/docs/MAP_SPEC.md`.
 ## Updating Data Later
 - Replace the snapshot files in `va_schools_dashboard/app/data/` using repeatable scripts in `va_schools_dashboard/data-raw/`.
 - Redeploy to shinyapps.io.
-

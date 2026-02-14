@@ -30,12 +30,17 @@ if (has_leaflet) {
   suppressPackageStartupMessages(library(leaflet))
 }
 
-source(file.path("R", "snapshot.R"))
-source(file.path("R", "formatting.R"))
-source(file.path("R", "map_helpers.R"))
-source(file.path("R", "detail_viz.R"))
+# Support two execution modes:
+# - `shiny::runApp('.../va_schools_dashboard/app')` (working dir = app/)
+# - shinyapps.io deploy from repo root with `appPrimaryDoc = 'app/app.R'` (working dir = repo root)
+app_dir <- if (file.exists(file.path("app", "R", "snapshot.R"))) "app" else "."
 
-snapshot <- load_snapshot("data")
+source(file.path(app_dir, "R", "snapshot.R"))
+source(file.path(app_dir, "R", "formatting.R"))
+source(file.path(app_dir, "R", "map_helpers.R"))
+source(file.path(app_dir, "R", "detail_viz.R"))
+
+snapshot <- load_snapshot(file.path(app_dir, "data"))
 
 schools <- snapshot$schools
 metric_defs <- snapshot$metric_defs

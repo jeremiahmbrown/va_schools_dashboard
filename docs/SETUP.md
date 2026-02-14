@@ -38,5 +38,5 @@ R -e "shiny::runApp('va_schools_dashboard/app', port = 3838, launch.browser = FA
 ## Deploy (shinyapps.io)
 ```bash
 cd va_schools_dashboard
-R -e "rsconnect::deployApp('app')"
+R -e "rsconnect::deployApp(appDir = '.', appPrimaryDoc = 'app/app.R')"
 ```
