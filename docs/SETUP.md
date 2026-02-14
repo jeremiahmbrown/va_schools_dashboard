@@ -40,3 +40,7 @@ R -e "shiny::runApp('va_schools_dashboard/app', port = 3838, launch.browser = FA
 cd va_schools_dashboard
 R -e "rsconnect::deployApp(appDir = '.', appPrimaryDoc = 'app/app.R')"
 ```
+
+Note: `.rscignore` excludes `.Rprofile` and `renv/` from the deploy bundle. We keep
+`renv.lock` in the bundle so rsconnect can compute dependencies at deploy time,
+without trying to activate renv inside shinyapps.io at runtime.

@@ -1,4 +1,6 @@
 renv/library/
+renv/
+.Rprofile
 data-raw/
 docs/
 scripts/
