@@ -1,0 +1,5 @@
+renv/library/
+data-raw/
+docs/
+scripts/
+.git/

@@ -1,0 +1,25 @@
+{
+  "snapshot_date": "2026-02-14",
+  "year_min": 2022,
+  "year_max": 2024,
+  "transform_version": 3,
+  "notes": "Built from VDOE School Quality Profiles downloads + NCES EDGE geocodes + TIGER/Line boundaries.",
+  "sources": [
+    {
+      "id": "vdoe_schoolquality_download_data",
+      "url": "https://schoolquality.virginia.gov/download-data"
+    },
+    {
+      "id": "nces_edge_public_school_geocodes",
+      "url": "https://nces.ed.gov/programs/edge/data/EDGE_GEOCODE_PUBLICSCH_2425.zip"
+    },
+    {
+      "id": "nces_edge_public_lea_geocodes",
+      "url": "https://nces.ed.gov/programs/edge/data/EDGE_GEOCODE_PUBLICLEA_2425.zip"
+    },
+    {
+      "id": "census_tiger_unsd_va",
+      "url": "https://www2.census.gov/geo/tiger/TIGER2024/UNSD/tl_2024_51_unsd.zip"
+    }
+  ]
+}
