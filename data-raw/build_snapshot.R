@@ -784,19 +784,50 @@ division_metrics_base <- school_metrics_out %>%
   summarise(
     value = {
       # Prefer totals-based aggregation when numerator/denominator exist.
-      has_den <- any(is.finite(denominator)) && sum(denominator, na.rm = TRUE) > 0
-      if (has_den && dplyr::first(unit) %in% c("pct", "per_100")) {
-        100 * sum(numerator, na.rm = TRUE) / sum(denominator, na.rm = TRUE)
-      } else if (has_den) {
-        sum(numerator, na.rm = TRUE) / sum(denominator, na.rm = TRUE)
+      #
+      # IMPORTANT: Do not treat missing school-level rates as zeros. For example, Science ACR
+      # is blank in the VDOE export (all NA), and a naive sum(numerator, na.rm=TRUE) /
+      # sum(denominator, na.rm=TRUE) would yield 0, which would incorrectly drag down division
+      # means when we later average across subjects.
+      unit0 <- dplyr::first(unit)
+
+      if (unit0 %in% c("pct", "per_100")) {
+        ok <- is.finite(numerator) & is.finite(denominator) & denominator > 0
+        if (any(ok)) {
+          100 * sum(numerator[ok], na.rm = TRUE) / sum(denominator[ok], na.rm = TRUE)
+        } else if (any(is.finite(value))) {
+          mean(value, na.rm = TRUE)
+        } else {
+          NA_real_
+        }
+      } else if (unit0 == "index") {
+        ok <- is.finite(value) & is.finite(denominator) & denominator > 0
+        if (any(ok)) {
+          stats::weighted.mean(value[ok], w = denominator[ok], na.rm = TRUE)
+        } else if (any(is.finite(value))) {
+          mean(value, na.rm = TRUE)
+        } else {
+          NA_real_
+        }
       } else {
-        mean(value, na.rm = TRUE)
+        # Fallback: totals if available, otherwise mean of available values.
+        ok <- is.finite(numerator) & is.finite(denominator) & denominator > 0
+        if (any(ok)) {
+          sum(numerator[ok], na.rm = TRUE) / sum(denominator[ok], na.rm = TRUE)
+        } else if (any(is.finite(value))) {
+          mean(value, na.rm = TRUE)
+        } else {
+          NA_real_
+        }
       }
     },
     suppressed = all(isTRUE(suppressed) | is.na(value)),
     n_included = sum(is.finite(value)),
     n_suppressed = sum(isTRUE(suppressed) | is.na(value)),
-    agg_method = ifelse(any(is.finite(denominator)), "total_rate", "mean"),
+    agg_method = {
+      unit0 <- dplyr::first(unit)
+      if (unit0 %in% c("pct", "per_100")) "total_rate" else if (unit0 == "index") "weighted_mean" else "mean"
+    },
     .groups = "drop"
   )
 

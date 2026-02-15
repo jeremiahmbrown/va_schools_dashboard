@@ -46,6 +46,8 @@ schools <- snapshot$schools
 metric_defs <- snapshot$metric_defs
 school_metrics <- snapshot$school_metrics
 division_metrics <- snapshot$division_metrics
+school_subject_perf <- snapshot$school_subject_perf
+division_subject_perf <- snapshot$division_subject_perf
 divisions_sp <- snapshot$divisions_sp
 
 available_years <- sort(unique(school_metrics$year))
@@ -296,15 +298,14 @@ ui <- fluidPage(
       uiOutput("details_header"),
       fluidRow(
         column(
-          width = 4,
-          plotOutput("trend_plot", height = 165)
+          width = 5,
+          plotOutput("trend_plot", height = 180)
         ),
         column(
-          width = 8,
+          width = 7,
           fluidRow(
-            column(width = 3, plotOutput("perf_gauge", height = 130)),
             column(width = 3, plotOutput("susp_gauge", height = 130)),
-            column(width = 6, plotOutput("demo_plot", height = 200))
+            column(width = 9, plotOutput("demo_plot", height = 200))
           )
         )
       )
@@ -976,142 +977,140 @@ server <- function(input, output, session) {
 
   output$trend_plot <- renderPlot({
     req(input$year)
-    metric_id <- perf_metric_id()
-    metric_def_row <- metric_defs_by_id %>%
-      filter(metric_id == !!metric_id) %>%
-      slice(1)
-
     school_id <- selected_school_id()
     division_id <- selected_division_id()
 
-    if (!is.null(school_id)) {
-      df <- school_metrics %>%
-        filter(school_id == !!school_id, metric_id == !!metric_id) %>%
-        arrange(year)
-
-      if (all(is.na(df$value))) {
-        plot.new()
-        text(0.5, 0.5, "No time-series data available for this metric.", cex = 1.1)
-        return()
-      }
-
-      line_col <- "#111111"
-      fmt_compact <- function(value, fmt) {
-        if (!is.finite(value)) return(NA_character_)
-        switch(
-          fmt,
-          pct_1 = sprintf("%.1f%%", value),
-          pct_0 = sprintf("%.0f%%", value),
-          num_1 = sprintf("%.1f", value),
-          num_0 = sprintf("%.0f", value),
-          int = sprintf("%d", as.integer(round(value))),
-          sprintf("%.2f", value)
-        )
-      }
-      df <- df %>% mutate(label = vapply(value, fmt_compact, character(1), fmt = metric_def_row$format[[1]]))
-
-      ggplot(df, aes(x = year, y = value)) +
-        geom_line(color = line_col, linewidth = 1.0, na.rm = TRUE) +
-        geom_point(color = line_col, size = 2.4, na.rm = TRUE) +
-        geom_text(aes(label = label), vjust = -0.9, size = 3.2, color = line_col, na.rm = TRUE) +
-        scale_x_continuous(breaks = available_years) +
-        scale_y_continuous(limits = c(0, 100), expand = expansion(mult = c(0.05, 0.12)), breaks = c(0, 50, 100), labels = NULL) +
-        labs(
-          x = NULL,
-          y = NULL,
-          title = paste0(metric_def_row$label_short[[1]], " Trend")
-        ) +
-        theme_classic(base_size = 12) +
-        theme(
-          axis.text.y = element_blank(),
-          axis.ticks.y = element_blank(),
-          axis.line = element_line(color = "#333333", linewidth = 0.6),
-          axis.ticks.x = element_line(color = "#333333", linewidth = 0.6),
-          plot.margin = margin(t = 6, r = 8, b = 6, l = 6)
-        )
-    } else if (!is.null(division_id)) {
-      df <- division_metrics %>%
-        filter(division_id == !!division_id, metric_id == !!metric_id) %>%
-        arrange(year)
-
-      if (nrow(df) == 0 || all(is.na(df$value))) {
-        plot.new()
-        text(0.5, 0.5, "No time-series data available for this metric.", cex = 1.1)
-        return()
-      }
-
-      line_col <- "#111111"
-      fmt_compact <- function(value, fmt) {
-        if (!is.finite(value)) return(NA_character_)
-        switch(
-          fmt,
-          pct_1 = sprintf("%.1f%%", value),
-          pct_0 = sprintf("%.0f%%", value),
-          num_1 = sprintf("%.1f", value),
-          num_0 = sprintf("%.0f", value),
-          int = sprintf("%d", as.integer(round(value))),
-          sprintf("%.2f", value)
-        )
-      }
-      df <- df %>% mutate(label = vapply(value, fmt_compact, character(1), fmt = metric_def_row$format[[1]]))
-
-      ggplot(df, aes(x = year, y = value)) +
-        geom_line(color = line_col, linewidth = 1.0, na.rm = TRUE) +
-        geom_point(color = line_col, size = 2.4, na.rm = TRUE) +
-        geom_text(aes(label = label), vjust = -0.9, size = 3.2, color = line_col, na.rm = TRUE) +
-        scale_x_continuous(breaks = available_years) +
-        scale_y_continuous(limits = c(0, 100), expand = expansion(mult = c(0.05, 0.12)), breaks = c(0, 50, 100), labels = NULL) +
-        labs(
-          x = NULL,
-          y = NULL,
-          title = paste0(metric_def_row$label_short[[1]], " Trend")
-        ) +
-        theme_classic(base_size = 12) +
-        theme(
-          axis.text.y = element_blank(),
-          axis.ticks.y = element_blank(),
-          axis.line = element_line(color = "#333333", linewidth = 0.6),
-          axis.ticks.x = element_line(color = "#333333", linewidth = 0.6),
-          plot.margin = margin(t = 6, r = 8, b = 6, l = 6)
-        )
-    } else {
+    if (is.null(school_id) && is.null(division_id)) {
       plot.new()
       text(0.5, 0.5, "Select a school or division to see a trend.", cex = 1.1)
+      return()
     }
-  })
 
-  output$perf_gauge <- renderPlot({
-    req(input$year)
-    year <- as.integer(input$year)
+    metric_key <- if (!is.null(input$perf_metric) && input$perf_metric == "pass") "pass" else "acr"
+    metric_label <- if (metric_key == "pass") "SOL Pass Rate" else "Accreditation Combined Rate (ACR)"
 
-    metric_id <- perf_metric_id()
-    metric_def_row <- metric_defs_by_id %>% filter(metric_id == !!metric_id) %>% slice(1)
-
-    school_id <- selected_school_id()
-    division_id <- selected_division_id()
-
-    value <- NA_real_
-    if (!is.null(school_id)) {
-      value <- school_metrics %>%
-        filter(year == !!year, school_id == !!school_id, metric_id == !!metric_id) %>%
-        slice(1) %>%
-        pull(value)
-    } else if (!is.null(division_id)) {
-      value <- division_metrics %>%
-        filter(year == !!year, division_id == !!division_id, metric_id == !!metric_id) %>%
-        slice(1) %>%
-        pull(value)
-    }
-    if (length(value) != 1) value <- NA_real_
-
-    make_bar_gauge_plot(
-      value = value,
-      metric_def_row = metric_def_row,
-      goal = 100,
-      min_value = 0,
-      max_value = 100,
-      title = metric_def_row$label_short[[1]]
+    # Stable ordering (and legend order) across years.
+    series_levels <- c("English (ELA)", "Math", "Science", "Overall")
+    series_cols <- c(
+      "English (ELA)" = "#1F77B4",
+      "Math" = "#F58518",
+      "Science" = "#54A24B",
+      "Overall" = "#111111"
     )
+
+    if (!is.null(school_id)) {
+      if (is.null(school_subject_perf)) {
+        plot.new()
+        text(0.5, 0.5, "Subject-level performance data is not available.", cex = 1.1)
+        return()
+      }
+
+      df_subj <- school_subject_perf %>%
+        filter(school_id == !!school_id, subgroup == "All Students") %>%
+        select(year, subject, acr_rate, pass_rate)
+
+      school_row <- schools %>% filter(school_id == !!school_id) %>% slice(1)
+      obj_label <- paste0("School: ", school_row$school_name[[1]])
+    } else {
+      if (is.null(division_subject_perf)) {
+        plot.new()
+        text(0.5, 0.5, "Subject-level performance data is not available.", cex = 1.1)
+        return()
+      }
+
+      df_subj <- division_subject_perf %>%
+        filter(division_id == !!division_id, subgroup == "All Students") %>%
+        select(year, subject, acr_rate, pass_rate)
+
+      div_name <- division_name_lookup %>% filter(division_id == !!division_id) %>% slice(1) %>% pull(division_name)
+      if (length(div_name) == 0) {
+        div_name <- divisions_sp@data %>% filter(division_id == !!division_id) %>% slice(1) %>% pull(division_name)
+      }
+      if (length(div_name) == 0) div_name <- division_id
+      obj_label <- paste0("Division: ", div_name[[1]])
+    }
+
+    df_subj <- df_subj %>%
+      filter(subject %in% series_levels[series_levels != "Overall"]) %>%
+      mutate(value = if (metric_key == "pass") pass_rate else acr_rate) %>%
+      transmute(year = as.integer(year), series_name = subject, value = value)
+
+    overall <- df_subj %>%
+      group_by(year) %>%
+      summarise(
+        series_name = "Overall",
+        value = if (all(!is.finite(value))) NA_real_ else mean(value, na.rm = TRUE),
+        .groups = "drop"
+      )
+
+    df_long <- bind_rows(df_subj, overall) %>%
+      mutate(series_name = factor(series_name, levels = series_levels)) %>%
+      arrange(series_name, year)
+
+    if (nrow(df_long) == 0 || all(!is.finite(df_long$value))) {
+      plot.new()
+      text(0.5, 0.5, "No time-series data available for this metric.", cex = 1.1)
+      return()
+    }
+
+    ggplot() +
+      geom_line(
+        data = df_long %>% filter(series_name != "Overall"),
+        aes(x = year, y = value, color = series_name, group = series_name),
+        linewidth = 0.9,
+        alpha = 0.9,
+        na.rm = TRUE
+      ) +
+      geom_point(
+        data = df_long %>% filter(series_name != "Overall"),
+        aes(x = year, y = value, color = series_name),
+        size = 1.9,
+        alpha = 0.9,
+        na.rm = TRUE
+      ) +
+      geom_line(
+        data = df_long %>% filter(series_name == "Overall"),
+        aes(x = year, y = value, color = series_name, group = series_name),
+        linewidth = 1.7,
+        alpha = 1,
+        na.rm = TRUE
+      ) +
+      geom_point(
+        data = df_long %>% filter(series_name == "Overall"),
+        aes(x = year, y = value, color = series_name),
+        size = 2.3,
+        alpha = 1,
+        na.rm = TRUE
+      ) +
+      scale_color_manual(values = series_cols, drop = FALSE) +
+      scale_x_continuous(breaks = available_years) +
+      scale_y_continuous(
+        limits = c(0, 100),
+        expand = expansion(mult = c(0.05, 0.12)),
+        breaks = c(0, 50, 100),
+        labels = NULL
+      ) +
+      labs(
+        x = NULL,
+        y = NULL,
+        title = paste0(metric_label, " Trend"),
+        subtitle = obj_label,
+        color = NULL
+      ) +
+      theme_classic(base_size = 12) +
+      theme(
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        axis.line = element_line(color = "#333333", linewidth = 0.6),
+        axis.ticks.x = element_line(color = "#333333", linewidth = 0.6),
+        plot.title = element_text(face = "bold", size = 12),
+        plot.subtitle = element_text(size = 10, color = "#444444", margin = margin(b = 4)),
+        legend.position = "bottom",
+        legend.text = element_text(size = 9),
+        legend.key.width = grid::unit(1.3, "lines"),
+        plot.margin = margin(t = 6, r = 8, b = 6, l = 6)
+      ) +
+      guides(color = guide_legend(order = 1, nrow = 2, byrow = TRUE))
   })
 
   output$susp_gauge <- renderPlot({
