@@ -79,60 +79,6 @@ polygon_area_deg2 <- function(spdf) {
 
 division_polygon_draw_order <- order(polygon_area_deg2(divisions_sp), decreasing = TRUE)
 
-perf_metric_id <- "test_overall_perf_index"
-perf_metric_def <- metric_defs_by_id %>% filter(metric_id == !!perf_metric_id) %>% slice(1)
-perf_ramp <- make_ramp(perf_metric_def)
-
-school_perf_avgs <- school_metrics %>%
-  filter(metric_id == !!perf_metric_id) %>%
-  group_by(school_id) %>%
-  summarise(avg_perf = mean(value, na.rm = TRUE), .groups = "drop") %>%
-  filter(is.finite(avg_perf))
-division_perf_avgs <- division_metrics %>%
-  filter(metric_id == !!perf_metric_id) %>%
-  group_by(division_id) %>%
-  summarise(avg_perf = mean(value, na.rm = TRUE), .groups = "drop") %>%
-  filter(is.finite(avg_perf))
-
-school_perf_global_avg <- if (nrow(school_perf_avgs) > 0) mean(school_perf_avgs$avg_perf) else NA_real_
-division_perf_global_avg <- if (nrow(division_perf_avgs) > 0) mean(division_perf_avgs$avg_perf) else NA_real_
-
-school_perf_max_abs_diff <- if (nrow(school_perf_avgs) > 0 && is.finite(school_perf_global_avg)) {
-  max(abs(school_perf_avgs$avg_perf - school_perf_global_avg))
-} else {
-  NA_real_
-}
-division_perf_max_abs_diff <- if (nrow(division_perf_avgs) > 0 && is.finite(division_perf_global_avg)) {
-  max(abs(division_perf_avgs$avg_perf - division_perf_global_avg))
-} else {
-  NA_real_
-}
-
-perf_color_for_entity <- function(entity_type, entity_id) {
-  if (is.null(entity_id) || !nzchar(entity_id)) return("#444444")
-
-  if (entity_type == "school") {
-    avg_val <- school_perf_avgs %>% filter(school_id == !!entity_id) %>% slice(1) %>% pull(avg_perf)
-    if (length(avg_val) != 1 || !is.finite(avg_val) || !is.finite(school_perf_global_avg) || !is.finite(school_perf_max_abs_diff) || school_perf_max_abs_diff <= 0) {
-      return("#444444")
-    }
-    score <- 50 + 50 * (avg_val - school_perf_global_avg) / school_perf_max_abs_diff
-  } else if (entity_type == "division") {
-    avg_val <- division_perf_avgs %>% filter(division_id == !!entity_id) %>% slice(1) %>% pull(avg_perf)
-    if (length(avg_val) != 1 || !is.finite(avg_val) || !is.finite(division_perf_global_avg) || !is.finite(division_perf_max_abs_diff) || division_perf_max_abs_diff <= 0) {
-      return("#444444")
-    }
-    score <- 50 + 50 * (avg_val - division_perf_global_avg) / division_perf_max_abs_diff
-  } else {
-    return("#444444")
-  }
-
-  score <- max(0, min(100, score))
-  idx <- as.integer(round(score / 100 * 255)) + 1L
-  idx <- max(1L, min(256L, idx))
-  perf_ramp[[idx]]
-}
-
 build_polygon_division_map <- function(schools_df, divisions_spdf) {
   base <- divisions_spdf@data %>%
     transmute(
@@ -247,7 +193,7 @@ ui <- fluidPage(
           ),
           sliderInput(
             "min_perf_threshold",
-            "Minimum Performance Index",
+            "Minimum performance",
             min = 0,
             max = 100,
             value = 90,
@@ -265,7 +211,7 @@ ui <- fluidPage(
         selectInput(
           "category",
           "Metric category",
-          choices = c("Performance Index" = "test", "Behavior" = "behavior", "Demographics" = "demographics"),
+          choices = c("Performance" = "test", "Behavior" = "behavior", "Demographics" = "demographics"),
           selected = "test"
         ),
         uiOutput("metric_selector"),
@@ -300,21 +246,28 @@ ui <- fluidPage(
         ),
         tags$div(
           class = "meta-note",
-          tags$strong("Performance Index definition"),
+          tags$strong("Performance metrics"),
           tags$p(
-            "For each school-year, the app computes the Performance Index (0-100) as the",
-            "mean of Accreditation Combined Rate across English, Math, and Science",
-            "for All Students."
+            "This app supports two subject-level performance measures from VDOE School Quality Profiles:",
+            tags$br(),
+            tags$strong("Accreditation Combined Rate (ACR)"),
+            "and",
+            tags$strong("SOL Pass Rate (Percent Passing)"),
+            "for English (ELA), Math, and Science (All Students)."
           ),
           tags$p(
-            "The Accreditation Combined Rate is reported by VDOE School Quality Profiles and",
-            "provides equal credit for students who passed SOL tests and for students who",
-            "didn't pass but met or exceeded growth/progress benchmarks (see the VDOE glossary",
-            "definition of 'Combined Rate')."
+            tags$strong("Overall"),
+            "values shown in the app are app-defined composites computed as the mean across available subjects",
+            "for the selected metric (ACR or Pass Rate). They are provided for convenience and are not an",
+            "official VDOE accreditation label."
           ),
           tags$p(
-            "Division values aggregate school-level values using enrollment-weighted",
-            "methods when denominators are available."
+            "Division values for subjects are aggregated as enrollment-weighted averages across schools. Division",
+            "overall values are computed as the mean across the division's subject-level values."
+          ),
+          tags$p(
+            "ACR provides equal credit for students who passed SOL tests and students who did not pass but met",
+            "growth/progress benchmarks (see the VDOE glossary definition of 'Combined Rate')."
           )
         ),
         tags$div(
@@ -367,6 +320,32 @@ server <- function(input, output, session) {
   selected_division_id <- reactiveVal(NULL)
   search_ready <- reactiveVal(FALSE)
 
+  perf_metric_id <- reactive({
+    # Default to the legacy overall ACR composite.
+    metric <- if (is.null(input$perf_metric) || !nzchar(input$perf_metric)) "acr" else input$perf_metric
+    view <- if (is.null(input$perf_view) || !nzchar(input$perf_view)) "overall" else input$perf_view
+    subj <- if (is.null(input$perf_subject) || !nzchar(input$perf_subject)) "ela" else input$perf_subject
+
+    if (view == "overall") {
+      return(if (metric == "pass") "test_overall_pass_index" else "test_overall_perf_index")
+    }
+
+    suffix <- subj
+    if (metric == "pass") paste0("test_pass_", suffix) else paste0("test_acr_", suffix)
+  })
+
+  metric_id_selected <- reactive({
+    if (!is.null(input$category) && input$category == "test") {
+      perf_metric_id()
+    } else {
+      input$metric_id
+    }
+  })
+
+  perf_metric_ids <- metric_defs_by_id %>%
+    filter(category == "test") %>%
+    pull(metric_id)
+
   # Avoid reacting to selectize initialization/update churn on page load.
   session$onFlushed(function() {
     search_ready(TRUE)
@@ -387,12 +366,12 @@ server <- function(input, output, session) {
   }, once = TRUE)
 
   school_threshold_base <- school_metrics %>%
-    filter(metric_id %in% c("test_overall_perf_index", "behavior_susp_per_100")) %>%
+    filter(metric_id %in% c(perf_metric_ids, "behavior_susp_per_100")) %>%
     select(year, school_id, metric_id, value) %>%
     tidyr::pivot_wider(names_from = metric_id, values_from = value)
 
   division_threshold_base <- division_metrics %>%
-    filter(metric_id %in% c("test_overall_perf_index", "behavior_susp_per_100")) %>%
+    filter(metric_id %in% c(perf_metric_ids, "behavior_susp_per_100")) %>%
     select(year, division_id, metric_id, value) %>%
     tidyr::pivot_wider(names_from = metric_id, values_from = value)
 
@@ -407,21 +386,46 @@ server <- function(input, output, session) {
   }) %>% debounce(250)
 
   output$metric_selector <- renderUI({
+    if (input$category == "test") {
+      return(tagList(
+        radioButtons(
+          "perf_metric",
+          "Performance metric",
+          choices = c("Accreditation Combined Rate (ACR)" = "acr", "SOL Pass Rate" = "pass"),
+          selected = "acr"
+        ),
+        radioButtons(
+          "perf_view",
+          "View",
+          choices = c("Overall (mean across subjects)" = "overall", "By subject" = "subject"),
+          selected = "overall"
+        ),
+        conditionalPanel(
+          condition = "input.perf_view == 'subject'",
+          selectInput(
+            "perf_subject",
+            "Subject",
+            choices = c("English (ELA)" = "ela", "Math" = "math", "Science" = "science"),
+            selected = "ela"
+          )
+        )
+      ))
+    }
+
     defs <- metric_defs_by_id %>% filter(category == input$category)
     choices <- setNames(defs$metric_id, defs$label_short)
-    # Keep a stable default if it's in the category; otherwise pick the first.
     selected <- if (default_metric %in% defs$metric_id) default_metric else defs$metric_id[[1]]
     selectInput("metric_id", "Metric", choices = choices, selected = selected)
   })
 
   current_map_data <- reactive({
-    req(input$metric_id, input$year)
+    req(metric_id_selected(), input$year)
 
     year_selected <- as.integer(input$year)
     th <- threshold_inputs()
 
     metric_def_row <- metric_defs_by_id %>%
-      filter(metric_id == input$metric_id) %>%
+      filter(metric_id == metric_id_selected()) %>%
       slice(1)
 
     # Apply filters for the school layer.
@@ -434,7 +438,7 @@ server <- function(input, output, session) {
     }
 
     school_vals <- school_metrics %>%
-      filter(year == year_selected, metric_id == input$metric_id) %>%
+      filter(year == year_selected, metric_id == metric_id_selected()) %>%
       select(school_id, value, suppressed, unit)
 
     schools_joined <- schools_filtered %>%
@@ -443,12 +447,15 @@ server <- function(input, output, session) {
     threshold_school_ids <- schools$school_id
     threshold_division_ids <- divisions_sp@data$division_id
     if (isTRUE(th$enabled)) {
+      perf_col <- perf_metric_id()
+      if (!perf_col %in% names(school_threshold_base)) perf_col <- "test_overall_perf_index"
+
       threshold_school_ids <- school_threshold_base %>%
         filter(year == year_selected) %>%
         filter(
-          is.finite(test_overall_perf_index),
+          is.finite(.data[[perf_col]]),
           is.finite(behavior_susp_per_100),
-          test_overall_perf_index >= th$min_perf,
+          .data[[perf_col]] >= th$min_perf,
           behavior_susp_per_100 <= th$max_susp
         ) %>%
         pull(school_id)
@@ -456,9 +463,9 @@ server <- function(input, output, session) {
       threshold_division_ids <- division_threshold_base %>%
         filter(year == year_selected) %>%
         filter(
-          is.finite(test_overall_perf_index),
+          is.finite(.data[[perf_col]]),
           is.finite(behavior_susp_per_100),
-          test_overall_perf_index >= th$min_perf,
+          .data[[perf_col]] >= th$min_perf,
           behavior_susp_per_100 <= th$max_susp
         ) %>%
         pull(division_id)
@@ -469,7 +476,7 @@ server <- function(input, output, session) {
     }
 
     div_vals_primary <- division_metrics %>%
-      filter(year == year_selected, metric_id == input$metric_id) %>%
+      filter(year == year_selected, metric_id == metric_id_selected()) %>%
       select(division_id, value, suppressed, n_included, n_suppressed, agg_method)
 
     # Backfill division values for any polygon division not present in
@@ -969,8 +976,10 @@ server <- function(input, output, session) {
 
   output$trend_plot <- renderPlot({
     req(input$year)
-    metric_id <- perf_metric_id
-    metric_def_row <- perf_metric_def
+    metric_id <- perf_metric_id()
+    metric_def_row <- metric_defs_by_id %>%
+      filter(metric_id == !!metric_id) %>%
+      slice(1)
 
     school_id <- selected_school_id()
     division_id <- selected_division_id()
@@ -1010,7 +1019,7 @@ server <- function(input, output, session) {
         labs(
           x = NULL,
           y = NULL,
-          title = "Performance Index Trend"
+          title = paste0(metric_def_row$label_short[[1]], " Trend")
         ) +
         theme_classic(base_size = 12) +
         theme(
@@ -1055,7 +1064,7 @@ server <- function(input, output, session) {
         labs(
           x = NULL,
           y = NULL,
-          title = "Performance Index Trend"
+          title = paste0(metric_def_row$label_short[[1]], " Trend")
         ) +
         theme_classic(base_size = 12) +
         theme(
@@ -1075,7 +1084,7 @@ server <- function(input, output, session) {
     req(input$year)
     year <- as.integer(input$year)
 
-    metric_id <- "test_overall_perf_index"
+    metric_id <- perf_metric_id()
     metric_def_row <- metric_defs_by_id %>% filter(metric_id == !!metric_id) %>% slice(1)
 
     school_id <- selected_school_id()
@@ -1101,7 +1110,7 @@ server <- function(input, output, session) {
       goal = 100,
       min_value = 0,
       max_value = 100,
-      title = "Performance"
+      title = metric_def_row$label_short[[1]]
     )
   })
 
