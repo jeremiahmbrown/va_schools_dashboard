@@ -305,8 +305,14 @@ parse_num <- function(x) {
 }
 
 extract_acc_combined <- function(df, subject_id) {
-  p <- parse_num(df[["Accreditation Combined Rate"]])
-  out <- df %>%
+  stop("extract_acc_combined() is deprecated; use extract_subject_perf().")
+}
+
+extract_subject_perf <- function(df, subject) {
+  acr <- parse_num(df[["Accreditation Combined Rate"]])
+  pass <- parse_num(df[["Percent Passing"]])
+
+  df %>%
     transmute(
       year = vapply(Year, parse_end_year, integer(1)),
       division_name = Division,
@@ -314,36 +320,32 @@ extract_acc_combined <- function(df, subject_id) {
       indicator = Indicator,
       subgroup = Subgroup,
       level = `Level Code`,
-      acc_combined = p$value,
-      acc_suppressed = p$suppressed
+      subject = subject,
+      acr_rate = acr$value,
+      acr_suppressed = acr$suppressed,
+      pass_rate = pass$value,
+      pass_suppressed = pass$suppressed
     ) %>%
     filter(level == "SCH", subgroup == "All Students")
-  out$subject_id <- subject_id
-  out
 }
 
-acc_all <- bind_rows(
-  extract_acc_combined(acc_eng_df, "eng"),
-  extract_acc_combined(acc_math_df, "math"),
-  extract_acc_combined(acc_sci_df, "sci")
+stg_perf <- bind_rows(
+  extract_subject_perf(acc_eng_df, "English (ELA)"),
+  extract_subject_perf(acc_math_df, "Math"),
+  extract_subject_perf(acc_sci_df, "Science")
 )
 
-acc_wide <- acc_all %>%
-  select(year, division_name, school_name, subject_id, acc_combined, acc_suppressed) %>%
-  tidyr::pivot_wider(
-    names_from = subject_id,
-    values_from = c(acc_combined, acc_suppressed),
-    names_sep = "_"
+overall_perf <- stg_perf %>%
+  group_by(year, division_name, school_name) %>%
+  summarise(
+    test_overall_perf_index = mean(acr_rate, na.rm = TRUE),
+    test_overall_pass_index = mean(pass_rate, na.rm = TRUE),
+    n_subjects_acr_present = sum(is.finite(acr_rate)),
+    n_subjects_pass_present = sum(is.finite(pass_rate)),
+    test_overall_perf_suppressed = any(isTRUE(acr_suppressed)) | n_subjects_acr_present == 0,
+    test_overall_pass_suppressed = any(isTRUE(pass_suppressed)) | n_subjects_pass_present == 0,
+    .groups = "drop"
   )
-
-overall_perf <- acc_wide %>%
-  rowwise() %>%
-  mutate(
-    test_overall_perf_index = mean(c(acc_combined_eng, acc_combined_math, acc_combined_sci), na.rm = TRUE),
-    test_overall_perf_suppressed = isTRUE(acc_suppressed_eng) | isTRUE(acc_suppressed_math) | isTRUE(acc_suppressed_sci) |
-      (is.na(acc_combined_eng) & is.na(acc_combined_math) & is.na(acc_combined_sci))
-  ) %>%
-  ungroup()
 
 extract_susp_n <- function(df, n_col, metric_tag) {
   p <- parse_num(df[[n_col]])
@@ -438,12 +440,23 @@ years_keep <- tail(years_core, 5)
 message("Keeping years: ", paste(years_keep, collapse = ", "))
 
 overall_perf_keep <- overall_perf %>% filter(year %in% years_keep)
+stg_perf_keep <- stg_perf %>% filter(year %in% years_keep)
 susp_keep <- susp_totals %>% filter(year %in% years_keep)
 enroll_keep <- enroll_totals %>% filter(year %in% years_keep)
 race_keep <- race_df %>% filter(year %in% years_keep)
 
 core_join <- overall_perf_keep %>%
-  select(year, division_name, school_name, test_overall_perf_index, test_overall_perf_suppressed) %>%
+  select(
+    year,
+    division_name,
+    school_name,
+    test_overall_perf_index,
+    test_overall_pass_index,
+    test_overall_perf_suppressed,
+    test_overall_pass_suppressed,
+    n_subjects_acr_present,
+    n_subjects_pass_present
+  ) %>%
   left_join(susp_keep %>% select(year, division_name, school_name, susp_n, susp_suppressed), by = c("year", "division_name", "school_name")) %>%
   left_join(enroll_keep, by = c("year", "division_name", "school_name"))
 
@@ -635,6 +648,49 @@ schools_out <- matched %>%
   distinct(school_id, .keep_all = TRUE)
 
 # Build metrics table.
+subject_to_metric_suffix <- function(subject) {
+  dplyr::case_when(
+    subject == "English (ELA)" ~ "ela",
+    subject == "Math" ~ "math",
+    subject == "Science" ~ "science",
+    TRUE ~ NA_character_
+  )
+}
+
+perf_subject_metrics <- stg_perf_keep %>%
+  left_join(
+    core_join %>% select(year, division_name, school_name, enrollment),
+    by = c("year", "division_name", "school_name")
+  ) %>%
+  mutate(metric_suffix = subject_to_metric_suffix(subject)) %>%
+  filter(!is.na(metric_suffix)) %>%
+  left_join(matched %>% select(division_name, school_name, school_id, division_id), by = c("division_name", "school_name")) %>%
+  filter(!is.na(school_id)) %>%
+  transmute(
+    school_id = school_id,
+    year = year,
+    subject = subject,
+    acr_rate = pmin(acr_rate, 100),
+    acr_suppressed = isTRUE(acr_suppressed) | is.na(acr_rate),
+    pass_rate = pmin(pass_rate, 100),
+    pass_suppressed = isTRUE(pass_suppressed) | is.na(pass_rate),
+    denominator = as.numeric(enrollment)
+  )
+
+school_subject_perf_out <- perf_subject_metrics %>%
+  transmute(
+    school_id = school_id,
+    year = year,
+    subject = subject,
+    subgroup = "All Students",
+    acr_rate = acr_rate,
+    pass_rate = pass_rate,
+    acr_suppressed = acr_suppressed,
+    pass_suppressed = pass_suppressed,
+    denominator = denominator,
+    source = "vdoe_accreditation_rates"
+  )
+
 school_metrics_out <- bind_rows(
   core_join %>%
     left_join(matched %>% select(division_name, school_name, school_id, division_id), by = c("division_name", "school_name")) %>%
@@ -648,6 +704,46 @@ school_metrics_out <- bind_rows(
       suppressed = test_overall_perf_suppressed,
       numerator = ifelse(is.finite(enrollment) & enrollment > 0 & is.finite(test_overall_perf_index), test_overall_perf_index * enrollment, NA_real_),
       denominator = as.numeric(enrollment),
+      source = "vdoe_accreditation_rates"
+    ),
+  core_join %>%
+    left_join(matched %>% select(division_name, school_name, school_id, division_id), by = c("division_name", "school_name")) %>%
+    filter(!is.na(school_id)) %>%
+    transmute(
+      school_id = school_id,
+      year = year,
+      metric_id = "test_overall_pass_index",
+      value = pmin(test_overall_pass_index, 100),
+      unit = "index",
+      suppressed = test_overall_pass_suppressed,
+      numerator = ifelse(is.finite(enrollment) & enrollment > 0 & is.finite(test_overall_pass_index), test_overall_pass_index * enrollment, NA_real_),
+      denominator = as.numeric(enrollment),
+      source = "vdoe_accreditation_rates"
+    ),
+  perf_subject_metrics %>%
+    mutate(metric_suffix = subject_to_metric_suffix(subject)) %>%
+    transmute(
+      school_id = school_id,
+      year = year,
+      metric_id = paste0("test_acr_", metric_suffix),
+      value = acr_rate,
+      unit = "index",
+      suppressed = acr_suppressed,
+      numerator = ifelse(is.finite(denominator) & denominator > 0 & is.finite(acr_rate), acr_rate * denominator, NA_real_),
+      denominator = denominator,
+      source = "vdoe_accreditation_rates"
+    ),
+  perf_subject_metrics %>%
+    mutate(metric_suffix = subject_to_metric_suffix(subject)) %>%
+    transmute(
+      school_id = school_id,
+      year = year,
+      metric_id = paste0("test_pass_", metric_suffix),
+      value = pass_rate,
+      unit = "index",
+      suppressed = pass_suppressed,
+      numerator = ifelse(is.finite(denominator) & denominator > 0 & is.finite(pass_rate), pass_rate * denominator, NA_real_),
+      denominator = denominator,
       source = "vdoe_accreditation_rates"
     ),
   core_join %>%
@@ -681,7 +777,7 @@ school_metrics_out <- bind_rows(
 )
 
 # Division aggregation.
-division_metrics_out <- school_metrics_out %>%
+division_metrics_base <- school_metrics_out %>%
   left_join(matched %>% select(school_id, division_id), by = "school_id") %>%
   filter(!is.na(division_id)) %>%
   group_by(division_id, year, metric_id) %>%
@@ -703,6 +799,119 @@ division_metrics_out <- school_metrics_out %>%
     agg_method = ifelse(any(is.finite(denominator)), "total_rate", "mean"),
     .groups = "drop"
   )
+
+# For division-level "overall" performance, we intentionally compute the mean
+# across the *division subject-level* values (not a direct enrollment-weighted
+# average of school-level overall scores).
+division_perf_subject <- division_metrics_base %>%
+  filter(metric_id %in% c("test_acr_ela", "test_acr_math", "test_acr_science", "test_pass_ela", "test_pass_math", "test_pass_science")) %>%
+  mutate(
+    perf_metric = ifelse(grepl("^test_acr_", metric_id), "acr", "pass")
+  )
+
+division_perf_overall <- division_perf_subject %>%
+  group_by(division_id, year, perf_metric) %>%
+  summarise(
+    value = if (all(!is.finite(value))) NA_real_ else mean(value, na.rm = TRUE),
+    suppressed = all(!is.finite(value)) | all(isTRUE(suppressed)),
+    n_included = sum(is.finite(value)),
+    n_suppressed = sum(isTRUE(suppressed) | is.na(value)),
+    agg_method = "mean_subjects",
+    .groups = "drop"
+  ) %>%
+  mutate(
+    metric_id = ifelse(perf_metric == "acr", "test_overall_perf_index", "test_overall_pass_index")
+  ) %>%
+  select(-perf_metric)
+
+division_metrics_out <- division_metrics_base %>%
+  filter(!metric_id %in% c("test_overall_perf_index", "test_overall_pass_index")) %>%
+  bind_rows(division_perf_overall)
+
+division_subject_perf_out <- division_perf_subject %>%
+  mutate(
+    subject = dplyr::case_when(
+      grepl("_ela$", metric_id) ~ "English (ELA)",
+      grepl("_math$", metric_id) ~ "Math",
+      grepl("_science$", metric_id) ~ "Science",
+      TRUE ~ NA_character_
+    )
+  ) %>%
+  filter(!is.na(subject)) %>%
+  group_by(division_id, year, subject) %>%
+  summarise(
+    subgroup = "All Students",
+    acr_rate = {
+      x <- value[perf_metric == "acr"]
+      if (length(x) == 0 || all(!is.finite(x))) NA_real_ else x[which(is.finite(x))[1]]
+    },
+    pass_rate = {
+      x <- value[perf_metric == "pass"]
+      if (length(x) == 0 || all(!is.finite(x))) NA_real_ else x[which(is.finite(x))[1]]
+    },
+    acr_suppressed = {
+      x <- suppressed[perf_metric == "acr"]
+      if (length(x) == 0) TRUE else all(isTRUE(x))
+    },
+    pass_suppressed = {
+      x <- suppressed[perf_metric == "pass"]
+      if (length(x) == 0) TRUE else all(isTRUE(x))
+    },
+    weight_basis = "enrollment",
+    source = "vdoe_accreditation_rates",
+    .groups = "drop"
+  )
+
+# ------------------------------------------------------------------------------
+# QA checks for subject-level performance (ACR + Pass Rate)
+# ------------------------------------------------------------------------------
+expected_subjects <- c("English (ELA)", "Math", "Science")
+
+if (!all(school_subject_perf_out$subject %in% expected_subjects)) {
+  bad <- sort(unique(school_subject_perf_out$subject[!school_subject_perf_out$subject %in% expected_subjects]))
+  stop("Unexpected subject labels in school_subject_perf_out: ", paste(bad, collapse = ", "))
+}
+
+range_ok <- function(x) {
+  x <- x[is.finite(x)]
+  if (length(x) == 0) return(TRUE)
+  all(x >= 0 & x <= 100)
+}
+if (!range_ok(school_subject_perf_out$acr_rate) || !range_ok(school_subject_perf_out$pass_rate)) {
+  stop("Found out-of-range values in school_subject_perf_out (expected 0..100).")
+}
+
+dups <- school_subject_perf_out %>%
+  group_by(school_id, year, subject, subgroup) %>%
+  summarise(n = n(), .groups = "drop") %>%
+  filter(n > 1)
+if (nrow(dups) > 0) {
+  stop("Duplicate keys detected in school_subject_perf_out (school_id, year, subject, subgroup).")
+}
+
+miss_school <- school_subject_perf_out %>%
+  group_by(year, subject) %>%
+  summarise(
+    n_rows = n(),
+    pct_missing_acr = mean(!is.finite(acr_rate)),
+    pct_missing_pass = mean(!is.finite(pass_rate)),
+    .groups = "drop"
+  ) %>%
+  arrange(year, subject)
+message("School subject-level missingness (by year, subject):")
+print(miss_school)
+
+miss_div <- division_subject_perf_out %>%
+  group_by(year, subject) %>%
+  summarise(
+    n_rows = n(),
+    pct_missing_acr = mean(!is.finite(acr_rate)),
+    pct_missing_pass = mean(!is.finite(pass_rate)),
+    .groups = "drop"
+  ) %>%
+  arrange(year, subject)
+message("Division subject-level missingness (by year, subject):")
+print(miss_div)
 
 # Division polygons from TIGER/Line unified school districts (VA).
 tiger_zip_url <- "https://www2.census.gov/geo/tiger/TIGER2024/UNSD/tl_2024_51_unsd.zip"
@@ -772,6 +981,13 @@ division_polys_out <- Filter(Negate(is.null), division_polys_out)
 metric_defs_out <- data.frame(
   metric_id = c(
     "test_overall_perf_index",
+    "test_overall_pass_index",
+    "test_acr_ela",
+    "test_acr_math",
+    "test_acr_science",
+    "test_pass_ela",
+    "test_pass_math",
+    "test_pass_science",
     "behavior_susp_per_100",
     "demo_american_indian_pct",
     "demo_black_pct",
@@ -781,10 +997,34 @@ metric_defs_out <- data.frame(
     "demo_native_hawaiian_pct",
     "demo_two_plus_pct"
   ),
-  category = c("test", "behavior", rep("demographics", 7)),
-  label_short = c("Performance Index", "Suspensions per 100", "% Am. Indian", "% Black", "% Hispanic", "% White", "% Asian", "% Nat. Hawaiian", "% Two+"),
+  category = c(rep("test", 8), "behavior", rep("demographics", 7)),
+  label_short = c(
+    "ACR — Overall",
+    "SOL Pass Rate — Overall",
+    "ACR — English (ELA)",
+    "ACR — Math",
+    "ACR — Science",
+    "SOL Pass Rate — English (ELA)",
+    "SOL Pass Rate — Math",
+    "SOL Pass Rate — Science",
+    "Suspensions per 100",
+    "% Am. Indian",
+    "% Black",
+    "% Hispanic",
+    "% White",
+    "% Asian",
+    "% Nat. Hawaiian",
+    "% Two+"
+  ),
   label_long = c(
-    "Performance Index (0-100), computed as the mean of Accreditation Combined Rate across English, Math, and Science for All Students.",
+    "Overall Accreditation Combined Rate (ACR) (0-100), computed as the mean of subject-level ACR across English (ELA), Math, and Science for All Students. This is an app-defined composite for convenience.",
+    "Overall SOL Pass Rate (0-100), computed as the mean of subject-level Percent Passing across English (ELA), Math, and Science for All Students. This is an app-defined composite for convenience.",
+    "Accreditation Combined Rate (ACR) for English (ELA), All Students (VDOE School Quality Profiles download).",
+    "Accreditation Combined Rate (ACR) for Math, All Students (VDOE School Quality Profiles download).",
+    "Accreditation Combined Rate (ACR) for Science, All Students (VDOE School Quality Profiles download).",
+    "SOL Pass Rate (Percent Passing) for English (ELA), All Students (VDOE School Quality Profiles download).",
+    "SOL Pass Rate (Percent Passing) for Math, All Students (VDOE School Quality Profiles download).",
+    "SOL Pass Rate (Percent Passing) for Science, All Students (VDOE School Quality Profiles download).",
     "Suspensions per 100 students (short + long term; computed using VDOE counts and enrollment totals)",
     "% of enrolled students who are American Indian or Alaska Native (from VDOE subgroup %; normalized to sum to 100 across race categories)",
     "% of enrolled students who are Black or African American (from VDOE subgroup %)",
@@ -794,10 +1034,10 @@ metric_defs_out <- data.frame(
     "% of enrolled students who are Native Hawaiian or Other Pacific Islander (from VDOE subgroup %; normalized to sum to 100 across race categories)",
     "% of enrolled students who are Two or more races (from VDOE subgroup %; normalized to sum to 100 across race categories)"
   ),
-  unit = c("index", "per_100", rep("pct", 7)),
-  better_direction = c("higher_better", "lower_better", rep("neutral", 7)),
-  format = c("num_1", "num_1", rep("pct_1", 7)),
-  palette = c("viridis", "magma", rep("viridis", 7)),
+  unit = c(rep("index", 8), "per_100", rep("pct", 7)),
+  better_direction = c(rep("higher_better", 8), "lower_better", rep("neutral", 7)),
+  format = c(rep("num_1", 8), "num_1", rep("pct_1", 7)),
+  palette = c(rep("viridis", 8), "magma", rep("viridis", 7)),
   stringsAsFactors = FALSE
 )
 
@@ -812,8 +1052,8 @@ snapshot_meta <- list(
   snapshot_date = as.character(Sys.Date()),
   year_min = min(years_keep),
   year_max = max(years_keep),
-  transform_version = 3,
-  notes = "Built from VDOE School Quality Profiles downloads + NCES EDGE geocodes + TIGER/Line boundaries.",
+  transform_version = 4,
+  notes = "Built from VDOE School Quality Profiles downloads + NCES EDGE geocodes + TIGER/Line boundaries. Includes subject-level ACR and SOL pass rates.",
   sources = list(
     list(id = "vdoe_schoolquality_download_data", url = vdoe_url),
     list(id = "nces_edge_public_school_geocodes", url = nces_sch_zip_url),
@@ -827,6 +1067,8 @@ write_csv_atomic(metric_defs_out, file.path(snapshot_dir, "metric_defs.csv"))
 write_csv_atomic(schools_out, file.path(snapshot_dir, "schools.csv"))
 write_csv_atomic(school_metrics_out, file.path(snapshot_dir, "school_metrics.csv"))
 write_csv_atomic(division_metrics_out, file.path(snapshot_dir, "division_metrics.csv"))
+write_csv_atomic(school_subject_perf_out, file.path(snapshot_dir, "school_subject_perf.csv"))
+write_csv_atomic(division_subject_perf_out, file.path(snapshot_dir, "division_subject_perf.csv"))
 jsonlite::write_json(division_polys_out, file.path(snapshot_dir, "divisions_polygons.json"), pretty = FALSE, auto_unbox = TRUE)
 
 message("Snapshot written to: ", normalizePath(snapshot_dir))

@@ -1,15 +1,17 @@
 # Methodology Notes
 
-## Overall Performance Index
-The default “Overall Performance Index” shown in the dashboard is a **computed composite** built from VDOE School Quality Profiles accreditation exports.
+## Performance Metrics (ACR + SOL Pass Rate)
+The dashboard supports two **subject-level** performance measures from VDOE School Quality Profiles accreditation exports (All Students):
+- **Accreditation Combined Rate (ACR)** (credits both passing and growth/progress)
+- **SOL Pass Rate** (Percent Passing; proficiency-only)
 
 Key points:
-- The index is computed as the **mean** of `Accreditation Combined Rate` across:
-  - Academic Achievement - English
-  - Academic Achievement - Math
-  - Academic Achievement - Science
-  for **All Students**, at the **school level**, for each year.
-- If any of those subject components are suppressed/missing for a school-year, the index is treated as missing/suppressed.
+- Subject-level rows are kept at `school × year × subject × subgroup` for:
+  - English (ELA)
+  - Math
+  - Science
+- The “Overall” values shown in the app are **app-defined composites** computed as the **mean across subjects** for the selected metric (ACR or Pass Rate).
+- If subject components are suppressed/missing for a school-year, the overall value is computed over the available subjects, and the app tracks how many subjects were present.
 
 This is designed to be transparent and reproducible from public downloads, even if VDOE’s internal methodologies or labels change over time.
 
@@ -26,6 +28,10 @@ Division choropleth values are derived from school-level data using transparent 
   - Use an enrollment-weighted mean.
 
 The app should surface basic aggregation metadata in tooltips (`agg_method`, included vs suppressed counts).
+
+For performance specifically:
+- Division subject-level values are computed as **enrollment-weighted averages across schools**.
+- Division overall values are computed as the **mean across the division’s subject-level values** (not a direct aggregation of school-level overall scores).
 
 ## Suppression / Missingness
 Some metrics may be suppressed (“too small to report”) or missing for other reasons.

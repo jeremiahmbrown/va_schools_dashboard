@@ -11,6 +11,8 @@
 - `app/data/divisions_polygons.json` (division polygons as lon/lat rings; converted to `sp` at runtime)
 - `app/data/school_metrics.csv` (fact table, long)
 - `app/data/division_metrics.csv` (fact table, long; pre-aggregated)
+- `app/data/school_subject_perf.csv` (subject-level performance: ACR + SOL pass rate)
+- `app/data/division_subject_perf.csv` (subject-level performance rollups)
 - `app/data/metric_defs.csv` (metric catalog: labels, units, formatting)
 
 ## Tables (Recommended Columns)
@@ -64,3 +66,12 @@
   - `year_min`, `year_max`
   - `transform_version` (bump when schema changes)
   - `sources` (list of source identifiers + notes)
+
+## Performance Grain (Subject-Level)
+For performance, the pipeline also emits subject-level tables at the grain:
+- `school × school_year × subject × subgroup` in `school_subject_perf.csv`
+- `division × school_year × subject × subgroup` in `division_subject_perf.csv`
+
+These tables include:
+- `acr_rate` (Accreditation Combined Rate; 0–100)
+- `pass_rate` (SOL Pass Rate / Percent Passing; 0–100)

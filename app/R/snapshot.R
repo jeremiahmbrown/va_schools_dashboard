@@ -29,6 +29,8 @@ load_snapshot <- function(data_dir = "data") {
   metric_defs_path <- file.path(data_dir, "metric_defs.csv")
   school_metrics_path <- file.path(data_dir, "school_metrics.csv")
   division_metrics_path <- file.path(data_dir, "division_metrics.csv")
+  school_subject_perf_path <- file.path(data_dir, "school_subject_perf.csv")
+  division_subject_perf_path <- file.path(data_dir, "division_subject_perf.csv")
   divisions_polygons_path <- file.path(data_dir, "divisions_polygons.json")
 
   meta <- jsonlite::fromJSON(snapshot_meta_path)
@@ -98,12 +100,56 @@ load_snapshot <- function(data_dir = "data") {
 
   divisions_sp <- divisions_polygons_json_to_sp(divisions_polygons_path)
 
+  school_subject_perf <- NULL
+  if (file.exists(school_subject_perf_path)) {
+    school_subject_perf <- read.csv(
+      school_subject_perf_path,
+      stringsAsFactors = FALSE,
+      na.strings = c("", "NA"),
+      colClasses = c(
+        school_id = "character",
+        year = "integer",
+        subject = "character",
+        subgroup = "character",
+        acr_rate = "numeric",
+        pass_rate = "numeric",
+        acr_suppressed = "logical",
+        pass_suppressed = "logical",
+        denominator = "numeric",
+        source = "character"
+      )
+    )
+  }
+
+  division_subject_perf <- NULL
+  if (file.exists(division_subject_perf_path)) {
+    division_subject_perf <- read.csv(
+      division_subject_perf_path,
+      stringsAsFactors = FALSE,
+      na.strings = c("", "NA"),
+      colClasses = c(
+        division_id = "character",
+        year = "integer",
+        subject = "character",
+        subgroup = "character",
+        acr_rate = "numeric",
+        pass_rate = "numeric",
+        acr_suppressed = "logical",
+        pass_suppressed = "logical",
+        weight_basis = "character",
+        source = "character"
+      )
+    )
+  }
+
   list(
     meta = meta,
     schools = schools,
     metric_defs = metric_defs,
     school_metrics = school_metrics,
     division_metrics = division_metrics,
+    school_subject_perf = school_subject_perf,
+    division_subject_perf = division_subject_perf,
     divisions_sp = divisions_sp
   )
 }
