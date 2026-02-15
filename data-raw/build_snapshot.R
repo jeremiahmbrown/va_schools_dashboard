@@ -571,6 +571,16 @@ extract_shp_to_csv(
 nces_sch_va <- read.csv(sch_csv, stringsAsFactors = FALSE, check.names = FALSE)
 nces_lea_va <- read.csv(lea_csv, stringsAsFactors = FALSE, check.names = FALSE)
 
+# The NCES EDGE geocode files are national. Filter to Virginia early to avoid
+# name-collision mismatches (e.g., "Frederick County" exists in multiple states).
+#
+# Note: In this pipeline, `state_fips` is a string (e.g. "51"). EDGE uses STFIP.
+stfip_target <- suppressWarnings(as.integer(state_fips))
+if (is.finite(stfip_target)) {
+  nces_sch_va <- nces_sch_va %>% filter(as.integer(STFIP) == stfip_target)
+  nces_lea_va <- nces_lea_va %>% filter(as.integer(STFIP) == stfip_target)
+}
+
 names(nces_lea_va)[names(nces_lea_va) == "NAME"] <- "LEA_NAME"
 
 nces_va <- nces_sch_va %>%

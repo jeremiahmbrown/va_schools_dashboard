@@ -287,6 +287,14 @@ ui <- fluidPage(
           class = "meta-note",
           tags$strong("Snapshot date: "),
           if (!is.null(snapshot$meta$snapshot_date)) snapshot$meta$snapshot_date else "Unknown"
+        ),
+        tags$div(
+          class = "meta-note",
+          tags$a(
+            "GitHub repo",
+            href = "https://github.com/jeremiahmbrown/va_schools_dashboard",
+            target = "_blank"
+          )
         )
       ),
       width = 3
@@ -299,7 +307,7 @@ ui <- fluidPage(
       fluidRow(
         column(
           width = 5,
-          plotOutput("trend_plot", height = 180)
+          plotOutput("trend_plot", height = 225)
         ),
         column(
           width = 7,
@@ -1053,6 +1061,13 @@ server <- function(input, output, session) {
       return()
     }
 
+    df_overall <- df_long %>%
+      filter(series_name == "Overall", is.finite(value)) %>%
+      mutate(
+        label = sprintf("%.0f", value),
+        label_y = pmin(100, value + 3)
+      )
+
     ggplot() +
       geom_line(
         data = df_long %>% filter(series_name != "Overall"),
@@ -1071,8 +1086,9 @@ server <- function(input, output, session) {
       geom_line(
         data = df_long %>% filter(series_name == "Overall"),
         aes(x = year, y = value, color = series_name, group = series_name),
-        linewidth = 1.7,
+        linewidth = 0.9,
         alpha = 1,
+        linetype = "dashed",
         na.rm = TRUE
       ) +
       geom_point(
@@ -1080,6 +1096,17 @@ server <- function(input, output, session) {
         aes(x = year, y = value, color = series_name),
         size = 2.3,
         alpha = 1,
+        na.rm = TRUE
+      ) +
+      geom_label(
+        data = df_overall,
+        aes(x = year, y = label_y, label = label),
+        inherit.aes = FALSE,
+        color = "#111111",
+        fill = grDevices::adjustcolor("white", alpha.f = 0.75),
+        label.size = 0,
+        size = 3.1,
+        fontface = "bold",
         na.rm = TRUE
       ) +
       scale_color_manual(values = series_cols, drop = FALSE) +
@@ -1106,11 +1133,13 @@ server <- function(input, output, session) {
         plot.title = element_text(face = "bold", size = 12),
         plot.subtitle = element_text(size = 10, color = "#444444", margin = margin(b = 4)),
         legend.position = "bottom",
+        legend.box = "horizontal",
         legend.text = element_text(size = 9),
         legend.key.width = grid::unit(1.3, "lines"),
         plot.margin = margin(t = 6, r = 8, b = 6, l = 6)
       ) +
-      guides(color = guide_legend(order = 1, nrow = 2, byrow = TRUE))
+      guides(color = guide_legend(order = 1, nrow = 1, byrow = TRUE)) +
+      coord_cartesian(clip = "off")
   })
 
   output$susp_gauge <- renderPlot({
