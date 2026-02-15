@@ -97,7 +97,7 @@ make_bar_gauge_plot <- function(value,
     coord_cartesian(ylim = c(0.6, 1.45), clip = "off") +
     theme_void(base_size = 12) +
     theme(
-      plot.title = element_text(size = 12, face = "bold", margin = margin(b = 4)),
+      plot.title = element_text(size = 11, face = "bold", margin = margin(b = 4)),
       plot.margin = margin(t = 6, r = 18, b = 4, l = 18)
     ) +
     labs(title = if (is.null(title)) metric_label else title)

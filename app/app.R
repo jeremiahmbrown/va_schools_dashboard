@@ -312,8 +312,8 @@ ui <- fluidPage(
         column(
           width = 7,
           fluidRow(
-            column(width = 3, plotOutput("susp_gauge", height = 130)),
-            column(width = 9, plotOutput("demo_plot", height = 200))
+            column(width = 4, plotOutput("susp_gauge", height = 140)),
+            column(width = 8, plotOutput("demo_plot", height = 200))
           )
         )
       )

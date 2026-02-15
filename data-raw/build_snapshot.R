@@ -588,6 +588,7 @@ nces_va <- nces_sch_va %>%
   transmute(
     school_id = as.character(NCESSCH),
     nces_school_name = as.character(NAME),
+    stfip = as.character(STFIP),
     lat = as.numeric(LAT),
     lon = as.numeric(LON),
     division_id = as.character(LEAID),
@@ -598,12 +599,14 @@ nces_va <- nces_sch_va %>%
 vdoe_schools <- core_join %>%
   distinct(division_name, school_name) %>%
   mutate(
-    k = paste(norm_key(division_name), norm_key(school_name), sep = "::")
+    # Include state FIPS to avoid cross-state name collisions (e.g., "Frederick County"
+    # exists in multiple states).
+    k = paste(norm_key(division_name), norm_key(school_name), state_fips, sep = "::")
   )
 
 nces_keys <- nces_va %>%
   mutate(
-    k = paste(norm_key(nces_division_name), norm_key(nces_school_name), sep = "::")
+    k = paste(norm_key(nces_division_name), norm_key(nces_school_name), stfip, sep = "::")
   )
 
 matched <- vdoe_schools %>%
