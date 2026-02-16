@@ -895,73 +895,94 @@ server <- function(input, output, session) {
     }, ignoreInit = TRUE)
 
     # Optional attendance zone overlay (renders only when an entity is selected).
-    observe({
-      enabled <- isTRUE(input$zones_enabled)
-      division_id <- selected_division_id()
-      school_id <- selected_school_id()
-      proxy <- leafletProxy("map")
+    zones_zoom_debounced <- reactive(input$map_zoom) %>% debounce(250)
+    zones_render_key <- reactiveVal("off")
 
-      # Back-compat: older versions used the "shape" group; current uses GeoJSON.
-      proxy %>% clearGroup("zones") %>% removeGeoJSON("zones")
+    observeEvent(
+      list(input$zones_enabled, selected_division_id(), selected_school_id(), zones_zoom_debounced()),
+      {
+        enabled <- isTRUE(input$zones_enabled)
+        division_id <- selected_division_id()
+        school_id <- selected_school_id()
+        zoom <- suppressWarnings(as.numeric(zones_zoom_debounced()))
+        if (length(zoom) != 1 || !is.finite(zoom)) zoom <- NA_real_
 
-      if (!enabled) {
-        return()
-      }
+        proxy <- leafletProxy("map")
 
-      # Avoid rendering heavy zone polygons at statewide zoom levels.
-      zoom <- suppressWarnings(as.numeric(input$map_zoom))
-      if (length(zoom) != 1 || !is.finite(zoom)) zoom <- NA_real_
-
-      if ((is.null(division_id) || !nzchar(division_id)) && !is.null(school_id) && nzchar(school_id)) {
-        div_row <- schools %>% filter(school_id == !!school_id) %>% slice(1)
-        if (nrow(div_row) == 1) division_id <- div_row$division_id[[1]]
-      }
-
-      if (is.null(division_id) || !nzchar(division_id)) return()
-
-      if (is.finite(zoom) && zoom < 9) {
-        key <- paste0("zoneszoom::", division_id)
-        if (!identical(zones_warned_key(), key)) {
-          zones_warned_key(key)
-          showNotification("Zoom in further to display attendance zones.", type = "message", duration = 4)
+        # Resolve division_id from selected school if needed.
+        if ((is.null(division_id) || !nzchar(division_id)) && !is.null(school_id) && nzchar(school_id)) {
+          div_row <- schools %>% filter(school_id == !!school_id) %>% slice(1)
+          if (nrow(div_row) == 1) division_id <- div_row$division_id[[1]]
         }
-        return()
-      }
 
-      data_dir <- file.path(app_dir, "data")
-      # Prefer division sources when present; otherwise fall back to SABS if present.
-      zone_path <- pick_zone_file(data_dir, division_id, mode = "division")
-      if (is.null(zone_path) || !file.exists(zone_path)) {
-        key <- paste0("nozones::", division_id)
-        if (!identical(zones_warned_key(), key)) {
-          zones_warned_key(key)
-          showNotification(
-            paste0("No attendance zone boundaries found for this division (", division_id, ") in the current snapshot."),
-            type = "warning",
-            duration = 6
-          )
+        # Decide what should be shown. We deliberately do NOT re-add zones on every zoom
+        # tick/animation; only when state changes (enabled/disabled, division changes,
+        # or crossing the zoom threshold).
+        desired_key <- "off"
+        if (enabled) {
+          if (is.null(division_id) || !nzchar(division_id)) {
+            desired_key <- "enabled::noselection"
+          } else if (is.finite(zoom) && zoom < 9) {
+            desired_key <- paste0("enabled::zoomlow::", division_id)
+          } else {
+            data_dir <- file.path(app_dir, "data")
+            zone_path <- pick_zone_file(data_dir, division_id, mode = "division")
+            if (is.null(zone_path) || !file.exists(zone_path)) {
+              desired_key <- paste0("enabled::missing::", division_id)
+            } else {
+              desired_key <- paste0("enabled::show::", division_id)
+            }
+          }
         }
-        return()
-      }
 
-      zones_geojson <- read_zone_geojson(zone_path)
-      if (is.null(zones_geojson) || !nzchar(zones_geojson)) return()
+        if (identical(zones_render_key(), desired_key)) {
+          return()
+        }
+        zones_render_key(desired_key)
 
-      proxy %>%
-        addGeoJSON(
-          zones_geojson,
-          layerId = "zones",
-          group = "zones",
-          style = list(
-            pane = "zonePolygonPane",
-            weight = 1.0,
-            opacity = 0.9,
-            fillOpacity = 0.12,
-            color = "#1F77B4",
-            fillColor = "#1F77B4"
+        # Always clear when the state changes (avoids stacking layers).
+        proxy %>% clearGroup("zones") %>% removeGeoJSON("zones")
+
+        if (!enabled) return()
+        if (startsWith(desired_key, "enabled::noselection")) return()
+
+        if (startsWith(desired_key, "enabled::zoomlow::")) {
+          key <- paste0("zoneszoom::", division_id)
+          if (!identical(zones_warned_key(), key)) {
+            zones_warned_key(key)
+            showNotification("Zoom in further to display attendance zones.", type = "message", duration = 4)
+          }
+          return()
+        }
+
+        if (startsWith(desired_key, "enabled::missing::")) {
+          key <- paste0("nozones::", division_id)
+          if (!identical(zones_warned_key(), key)) {
+            zones_warned_key(key)
+            showNotification(
+              paste0("No attendance zone boundaries found for this division (", division_id, ") in the current snapshot."),
+              type = "warning",
+              duration = 6
+            )
+          }
+          return()
+        }
+
+        # enabled::show::<division_id>
+        zone_path <- pick_zone_file(file.path(app_dir, "data"), division_id, mode = "division")
+        zones_geojson <- read_zone_geojson(zone_path)
+        if (is.null(zones_geojson) || !nzchar(zones_geojson)) return()
+
+        proxy %>%
+          addGeoJSON(
+            zones_geojson,
+            layerId = "zones",
+            group = "zones",
+            style = list(pane = "zonePolygonPane")
           )
-        )
-    })
+      },
+      ignoreInit = TRUE
+    )
 
     observe({
       proxy <- leafletProxy("map")
