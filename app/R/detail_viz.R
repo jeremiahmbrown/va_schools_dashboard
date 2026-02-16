@@ -167,3 +167,86 @@ make_demographics_donut <- function(df, title = "Demographics") {
     labs(title = title)
 
 }
+
+make_race_stacked_bar <- function(df, title = "Student composition", top_n = 6) {
+  # Horizontal 100% stacked bar intended to handle tiny segments cleanly:
+  # - no in-bar labels
+  # - legend carries values ("White (62.6%)")
+  if (is.null(df) || nrow(df) == 0 || all(!is.finite(df$pct))) {
+    return(
+      ggplot() +
+        theme_void() +
+        annotate("text", x = 0, y = 0, label = "No demographics data", size = 4) +
+        labs(title = title)
+    )
+  }
+
+  d <- df %>%
+    transmute(label = as.character(label), pct = as.numeric(pct)) %>%
+    mutate(pct = ifelse(is.finite(pct), pct, 0)) %>%
+    mutate(pct = pmax(0, pct))
+
+  if (sum(d$pct) <= 0) {
+    return(
+      ggplot() +
+        theme_void() +
+        annotate("text", x = 0, y = 0, label = "No demographics data", size = 4) +
+        labs(title = title)
+    )
+  }
+
+  # Normalize to exactly 100 for display.
+  d <- d %>% mutate(pct = pct / sum(pct) * 100)
+
+  # Top N + Other for very small segments.
+  d <- d %>% arrange(desc(pct))
+  if (nrow(d) > top_n) {
+    other_pct <- sum(d$pct[(top_n + 1):nrow(d)])
+    d <- bind_rows(d[seq_len(top_n), ], data.frame(label = "Other", pct = other_pct, stringsAsFactors = FALSE))
+  }
+
+  order_labels <- c("% White", "% Black", "% Hispanic", "% Asian", "% Two+", "% Am. Indian", "% Nat. Hawaiian", "Other")
+  d$label <- factor(d$label, levels = order_labels)
+  d <- d %>% arrange(label)
+
+  label_clean <- function(x) sub("^%\\s*", "", as.character(x))
+  d <- d %>%
+    mutate(
+      legend_label = paste0(label_clean(label), " (", sprintf("%.1f%%", pct), ")"),
+      legend_label = factor(legend_label, levels = legend_label)
+    )
+
+  demo_cols <- c(
+    "% White" = "#4C78A8",
+    "% Black" = "#E45756",
+    "% Hispanic" = "#F58518",
+    "% Asian" = "#72B7B2",
+    "% Two+" = "#54A24B",
+    "% Am. Indian" = "#B279A2",
+    "% Nat. Hawaiian" = "#9D755D",
+    "Other" = "#9e9e9e"
+  )
+  fill_cols <- setNames(demo_cols[as.character(d$label)], as.character(d$legend_label))
+
+  ggplot(d, aes(x = "Race/ethnicity", y = pct, fill = legend_label)) +
+    geom_col(width = 0.55, color = "white", linewidth = 0.6) +
+    coord_flip() +
+    scale_fill_manual(values = fill_cols, drop = FALSE) +
+    scale_y_continuous(limits = c(0, 100), expand = c(0, 0)) +
+    theme_minimal(base_size = 12) +
+    theme(
+      panel.grid.major.y = element_blank(),
+      panel.grid.minor = element_blank(),
+      axis.title = element_blank(),
+      axis.text.y = element_blank(),
+      axis.text.x = element_blank(),
+      axis.ticks = element_blank(),
+      plot.title = element_text(size = 12, face = "bold", margin = margin(b = 4)),
+      plot.margin = margin(t = 6, r = 10, b = 6, l = 6),
+      legend.position = "bottom",
+      legend.title = element_blank(),
+      legend.text = element_text(size = 11),
+      legend.key.size = grid::unit(0.9, "lines")
+    ) +
+    labs(title = title)
+}

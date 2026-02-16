@@ -39,6 +39,8 @@ source(file.path(app_dir, "R", "snapshot.R"))
 source(file.path(app_dir, "R", "formatting.R"))
 source(file.path(app_dir, "R", "map_helpers.R"))
 source(file.path(app_dir, "R", "detail_viz.R"))
+source(file.path(app_dir, "R", "percentiles.R"))
+source(file.path(app_dir, "R", "zones.R"))
 
 snapshot <- load_snapshot(file.path(app_dir, "data"))
 
@@ -55,6 +57,10 @@ default_year <- max(available_years, na.rm = TRUE)
 default_metric <- "test_overall_perf_index"
 
 metric_defs_by_id <- metric_defs %>% distinct(metric_id, .keep_all = TRUE)
+
+# Precompute percentiles once so the UI can render quickly.
+school_percentiles <- compute_school_percentiles(school_metrics, schools, metric_defs_by_id)
+division_percentiles_state <- compute_division_percentiles(division_metrics, metric_defs_by_id)
 
 # Approximate polygon area in lon/lat degrees for draw-order control.
 # We draw larger divisions first so smaller city divisions sit on top.
@@ -170,7 +176,14 @@ ui <- fluidPage(
     tags$style(HTML(
       ".side-controls .form-group { margin-bottom: 10px; }
        .side-controls .control-label { margin-bottom: 3px; }
-       .meta-note { font-size: 12px; color: #444; margin-top: 10px; }"
+       .meta-note { font-size: 12px; color: #444; margin-top: 10px; }
+       .detail-panel { margin: 10px 0 14px 0; padding: 10px 12px; border: 1px solid #e3e3e3; border-radius: 6px; background: #fbfbfb; }
+       .detail-panel h4 { margin-top: 0; margin-bottom: 8px; font-size: 16px; }
+       .metric-table { width: 100%; font-size: 13px; }
+       .metric-table th { font-weight: 700; color: #333; padding: 6px 6px; border-bottom: 1px solid #ddd; }
+       .metric-table td { padding: 6px 6px; border-bottom: 1px solid #eee; vertical-align: top; }
+       .metric-table td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+       .metric-table td.muted { color: #666; }"
     ))
   ),
   titlePanel("Virginia Public Schools Dashboard"),
@@ -222,6 +235,16 @@ ui <- fluidPage(
           "Layers",
           choices = c("Schools (points)" = "schools", "Divisions (choropleth)" = "divisions"),
           selected = c("schools", "divisions")
+        ),
+        selectInput(
+          "zones_layer",
+          "Attendance zones",
+          choices = c(
+            "Off" = "off",
+            "Division sources (when available)" = "division",
+            "NCES SABS (fallback)" = "sabs"
+          ),
+          selected = "off"
         ),
         selectInput(
           "school_level",
@@ -295,6 +318,11 @@ ui <- fluidPage(
             href = "https://github.com/jeremiahmbrown/va_schools_dashboard",
             target = "_blank"
           )
+        ),
+        tags$div(
+          class = "meta-note",
+          tags$strong("Attendance zones: "),
+          "Boundaries may be incomplete or outdated; verify with the school division."
         )
       ),
       width = 3
@@ -304,19 +332,13 @@ ui <- fluidPage(
       map_widget,
       tags$hr(),
       uiOutput("details_header"),
+      uiOutput("behavior_attendance_panel"),
       fluidRow(
-        column(
-          width = 5,
-          plotOutput("trend_plot", height = 225)
-        ),
-        column(
-          width = 7,
-          fluidRow(
-            column(width = 4, plotOutput("susp_gauge", height = 140)),
-            column(width = 8, plotOutput("demo_plot", height = 200))
-          )
-        )
-      )
+        column(width = 6, plotOutput("demo_plot", height = 180)),
+        column(width = 6, uiOutput("needs_panel"))
+      ),
+      tags$hr(),
+      plotOutput("trend_plot", height = 240)
     )
   )
 )
@@ -589,6 +611,7 @@ server <- function(input, output, session) {
     output$map <- renderLeaflet({
       leaflet(options = leafletOptions(minZoom = 6)) %>%
         addMapPane(name = "divisionPolygonPane", zIndex = 380) %>%
+        addMapPane(name = "zonePolygonPane", zIndex = 410) %>%
         addMapPane(name = "schoolPointPane", zIndex = 440) %>%
         addProviderTiles(providers$CartoDB.Positron) %>%
         setView(lng = -78.7, lat = 37.5, zoom = 7)
@@ -875,6 +898,67 @@ server <- function(input, output, session) {
       }
     }, ignoreInit = TRUE)
 
+    # Optional attendance zone overlay (renders only when a division is selected).
+    observe({
+      mode <- input$zones_layer
+      division_id <- selected_division_id()
+      proxy <- leafletProxy("map")
+
+      proxy %>% clearGroup("zones")
+
+      if (is.null(mode) || mode == "off" || is.null(division_id) || !nzchar(division_id)) {
+        return()
+      }
+
+      data_dir <- file.path(app_dir, "data")
+      src_mode <- if (mode == "sabs") "sabs" else "division"
+      zone_path <- pick_zone_file(data_dir, division_id, mode = src_mode)
+      if (is.null(zone_path) || !file.exists(zone_path)) return()
+
+      zones_sp <- zones_json_to_sp(zone_path)
+      if (is.null(zones_sp) || length(zones_sp) == 0) return()
+
+      level_cols <- c(
+        ES = "#1F77B4",
+        MS = "#F58518",
+        HS = "#54A24B",
+        UNK = "#777777"
+      )
+      level_key <- function(x) {
+        x <- toupper(trimws(as.character(x)))
+        if (x %in% c("E", "ES", "ELEMENTARY")) return("ES")
+        if (x %in% c("M", "MS", "MIDDLE")) return("MS")
+        if (x %in% c("H", "HS", "HIGH")) return("HS")
+        "UNK"
+      }
+      zones_sp@data$level_key <- vapply(zones_sp@data$level, level_key, character(1))
+      zones_sp@data$stroke_col <- unname(level_cols[zones_sp@data$level_key])
+      zones_sp@data$fill_col <- zones_sp@data$stroke_col
+
+      zone_labels <- sprintf(
+        "<strong>%s</strong><br/>Level: %s<br/>Source: %s",
+        ifelse(is.na(zones_sp@data$school_name) | zones_sp@data$school_name == "", "Attendance zone", zones_sp@data$school_name),
+        zones_sp@data$level_key,
+        ifelse(is.na(zones_sp@data$source) | zones_sp@data$source == "", "unknown", zones_sp@data$source)
+      )
+
+      proxy %>%
+        addPolygons(
+          data = zones_sp,
+          group = "zones",
+          layerId = ~paste0("zone::", zone_id),
+          color = ~stroke_col,
+          weight = 1.0,
+          opacity = 0.9,
+          fillColor = ~fill_col,
+          fillOpacity = 0.12,
+          label = lapply(zone_labels, htmltools::HTML),
+          popup = zone_labels,
+          options = pathOptions(pane = "zonePolygonPane", bubblingMouseEvents = FALSE),
+          highlightOptions = highlightOptions(weight = 2.0, color = "#111111", fillOpacity = 0.18, bringToFront = FALSE)
+        )
+    })
+
     observe({
       proxy <- leafletProxy("map")
       zoom <- input$map_zoom
@@ -1142,37 +1226,98 @@ server <- function(input, output, session) {
       coord_cartesian(clip = "off")
   })
 
-  output$susp_gauge <- renderPlot({
+  output$behavior_attendance_panel <- renderUI({
     req(input$year)
     year <- as.integer(input$year)
-
-    metric_id <- "behavior_susp_per_100"
-    metric_def_row <- metric_defs_by_id %>% filter(metric_id == !!metric_id) %>% slice(1)
 
     school_id <- selected_school_id()
     division_id <- selected_division_id()
 
-    value <- NA_real_
-    if (!is.null(school_id)) {
-      value <- school_metrics %>%
-        filter(year == !!year, school_id == !!school_id, metric_id == !!metric_id) %>%
-        slice(1) %>%
-        pull(value)
-    } else if (!is.null(division_id)) {
-      value <- division_metrics %>%
-        filter(year == !!year, division_id == !!division_id, metric_id == !!metric_id) %>%
-        slice(1) %>%
-        pull(value)
+    if (is.null(school_id) && is.null(division_id)) {
+      return(tags$div(
+        class = "detail-panel",
+        tags$h4("Behavior & Attendance"),
+        tags$div(class = "muted", "Select a school or division to see behavior and attendance metrics.")
+      ))
     }
-    if (length(value) != 1) value <- NA_real_
 
-    make_bar_gauge_plot(
-      value = value,
-      metric_def_row = metric_def_row,
-      goal = 0,
-      min_value = 0,
-      max_value = 100,
-      title = "Suspensions per 100"
+    metric_order <- c(
+      "attendance_chronic_absent_pct",
+      "behavior_susp_per_100",
+      "behavior_susp_short_per_100",
+      "behavior_susp_long_per_100",
+      "behavior_susp_incidents_per_100",
+      "behavior_expulsions_per_100",
+      "behavior_expulsion_incidents_per_100"
+    )
+
+    metric_ids <- metric_defs_by_id %>%
+      filter(category %in% c("behavior", "attendance")) %>%
+      pull(metric_id)
+    metric_ids <- intersect(metric_order, metric_ids)
+    if (length(metric_ids) == 0) metric_ids <- metric_defs_by_id %>% filter(category %in% c("behavior", "attendance")) %>% pull(metric_id)
+
+    base_defs <- metric_defs_by_id %>%
+      filter(metric_id %in% metric_ids) %>%
+      select(metric_id, label_short, unit, format, better_direction)
+
+    if (!is.null(school_id)) {
+      vals <- school_metrics %>%
+        filter(year == !!year, school_id == !!school_id, metric_id %in% metric_ids) %>%
+        select(school_id, year, metric_id, value)
+
+      df <- base_defs %>%
+        left_join(vals, by = "metric_id") %>%
+        mutate(school_id = school_id, year = year) %>%
+        left_join(school_percentiles$state, by = c("school_id", "year", "metric_id")) %>%
+        left_join(school_percentiles$division, by = c("school_id", "year", "metric_id"))
+    } else {
+      vals <- division_metrics %>%
+        filter(year == !!year, division_id == !!division_id, metric_id %in% metric_ids) %>%
+        select(division_id, year, metric_id, value)
+
+      df <- base_defs %>%
+        left_join(vals, by = "metric_id") %>%
+        mutate(division_id = division_id, year = year) %>%
+        left_join(division_percentiles_state, by = c("division_id", "year", "metric_id")) %>%
+        mutate(pct_division = NA_real_)
+    }
+
+    df <- df %>%
+      mutate(metric_id = factor(metric_id, levels = metric_ids)) %>%
+      arrange(metric_id) %>%
+      mutate(
+        value_str = ifelse(is.finite(value), fmt_value(value, format = format, unit = unit), "\u2014"),
+        pct_state_str = ifelse(is.finite(pct_state), sprintf("%d", as.integer(round(pct_state))), "\u2014"),
+        pct_division_str = ifelse(is.finite(pct_division), sprintf("%d", as.integer(round(pct_division))), "\u2014")
+      )
+
+    tags$div(
+      class = "detail-panel",
+      tags$h4("Behavior & Attendance"),
+      tags$table(
+        class = "metric-table",
+        tags$thead(tags$tr(
+          tags$th("Metric"),
+          tags$th(class = "num", paste0("Value (", year, ")")),
+          tags$th(class = "num", "Division pctile"),
+          tags$th(class = "num", "State pctile")
+        )),
+        tags$tbody(
+          lapply(seq_len(nrow(df)), function(i) {
+            tags$tr(
+              tags$td(df$label_short[[i]]),
+              tags$td(class = "num", df$value_str[[i]]),
+              tags$td(class = "num", df$pct_division_str[[i]]),
+              tags$td(class = "num", df$pct_state_str[[i]])
+            )
+          })
+        )
+      ),
+      tags$div(
+        class = "meta-note",
+        "Percentiles are empirical ranks among peers for the same year. For metrics where lower values are better, percentiles are inverted so higher = better."
+      )
     )
   })
 
@@ -1202,7 +1347,98 @@ server <- function(input, output, session) {
       df <- data.frame(label = character(0), pct = numeric(0))
     }
 
-    make_demographics_donut(df, title = "Demographics")
+    make_race_stacked_bar(df, title = "Student composition", top_n = 6)
+  })
+
+  output$needs_panel <- renderUI({
+    req(input$year)
+    year <- as.integer(input$year)
+
+    needs_ids <- metric_defs_by_id %>%
+      filter(category == "needs") %>%
+      pull(metric_id)
+
+    if (length(needs_ids) == 0) {
+      return(tags$div(
+        class = "detail-panel",
+        tags$h4("Student needs & programs"),
+        tags$div(class = "muted", "No student needs/program metrics are included in the current snapshot.")
+      ))
+    }
+
+    school_id <- selected_school_id()
+    division_id <- selected_division_id()
+
+    if (is.null(school_id) && is.null(division_id)) {
+      return(tags$div(
+        class = "detail-panel",
+        tags$h4("Student needs & programs"),
+        tags$div(class = "muted", "Select a school or division to see student needs/program metrics.")
+      ))
+    }
+
+    if (!is.null(school_id)) {
+      base_defs <- metric_defs_by_id %>%
+        filter(metric_id %in% needs_ids) %>%
+        select(metric_id, label_short, unit, format, better_direction)
+
+      vals <- school_metrics %>%
+        filter(year == !!year, school_id == !!school_id, metric_id %in% needs_ids) %>%
+        select(school_id, year, metric_id, value)
+
+      df <- base_defs %>%
+        left_join(vals, by = "metric_id") %>%
+        mutate(school_id = school_id, year = year) %>%
+        left_join(school_percentiles$state, by = c("school_id", "year", "metric_id")) %>%
+        left_join(school_percentiles$division, by = c("school_id", "year", "metric_id"))
+    } else {
+      base_defs <- metric_defs_by_id %>%
+        filter(metric_id %in% needs_ids) %>%
+        select(metric_id, label_short, unit, format, better_direction)
+
+      vals <- division_metrics %>%
+        filter(year == !!year, division_id == !!division_id, metric_id %in% needs_ids) %>%
+        select(division_id, year, metric_id, value)
+
+      df <- base_defs %>%
+        left_join(vals, by = "metric_id") %>%
+        mutate(division_id = division_id, year = year) %>%
+        left_join(division_percentiles_state, by = c("division_id", "year", "metric_id")) %>%
+        mutate(pct_division = NA_real_)
+    }
+
+    df <- df %>%
+      mutate(metric_id = factor(metric_id, levels = needs_ids)) %>%
+      arrange(metric_id) %>%
+      mutate(
+        value_str = ifelse(is.finite(value), fmt_value(value, format = format, unit = unit), "\u2014"),
+        pct_state_str = ifelse(is.finite(pct_state), sprintf("%d", as.integer(round(pct_state))), "\u2014"),
+        pct_division_str = ifelse(is.finite(pct_division), sprintf("%d", as.integer(round(pct_division))), "\u2014")
+      )
+
+    tags$div(
+      class = "detail-panel",
+      tags$h4("Student needs & programs"),
+      tags$table(
+        class = "metric-table",
+        tags$thead(tags$tr(
+          tags$th("Metric"),
+          tags$th(class = "num", paste0("Value (", year, ")")),
+          tags$th(class = "num", "Division pctile"),
+          tags$th(class = "num", "State pctile")
+        )),
+        tags$tbody(
+          lapply(seq_len(nrow(df)), function(i) {
+            tags$tr(
+              tags$td(df$label_short[[i]]),
+              tags$td(class = "num", df$value_str[[i]]),
+              tags$td(class = "num", df$pct_division_str[[i]]),
+              tags$td(class = "num", df$pct_state_str[[i]])
+            )
+          })
+        )
+      )
+    )
   })
 }
 
