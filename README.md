@@ -3,7 +3,7 @@
 Interactive Shiny dashboard to explore Virginia public schools via a map + drill-down details:
 - Division boundaries (county + independent city school divisions) as polygons
 - Individual schools as points (shown when zoomed in)
-- A small set of key metrics (performance, suspensions, demographics)
+- A small set of key metrics (performance, behavior/attendance, demographics)
 
 This repo is set up for **shinyapps.io** deployment with a **frozen snapshot** dataset bundled under `app/data/`.
 
@@ -41,15 +41,45 @@ Important notes:
 - These “Overall” composites are **app-defined** for convenience and are **not** official VDOE accreditation labels.
 - The app does **not** create any derived indicator from `ACR − Pass`. Public data do not decompose ACR into separate “pass vs growth” counts at the same grain.
 
-### Suspensions per 100
-Suspensions are reported as **suspensions per 100 students**:
+### Behavior & Attendance
+The detail page includes a “Behavior & Attendance” panel. Metrics are displayed for the **selected year** and include division/state **percentiles**.
+
+#### Percentiles
+Percentiles are empirical ranks among peers for the same year:
+- **State percentile:** compared to all Virginia schools (or divisions) with reportable values.
+- **Division percentile:** compared to schools within the same division (only shown for schools).
+
+For metrics where **lower values are better** (e.g., suspensions), percentiles are **inverted** so:
+- Higher percentile = better (lower adverse outcome).
+
+#### Suspensions / Incidents / Expulsions (per 100)
+Discipline outcomes are reported as **per 100 students** using VDOE counts and school enrollment totals:
 
 `100 * (short-term suspensions + long-term suspensions) / enrollment`
 
-Counts come from VDOE School Quality Profiles “Learning Climate” exports, and enrollment comes from VDOE enrollment exports.
+When available, the app also shows:
+- Short-term vs long-term suspensions per 100
+- Suspendable incidents per 100 (short/long and total)
+- Expulsions per 100 and expellable incidents per 100
+
+Counts come from VDOE School Quality Profiles “School Environment / Learning Climate” exports, and enrollment comes from VDOE enrollment exports.
+
+#### Chronic absenteeism (%)
+Chronic absenteeism is shown as the **percent of students missing 10%+ of school days** (VDOE School Quality Profiles export).
 
 ### Demographics (Race/Ethnicity)
-Demographics are race/ethnicity percentage estimates derived from VDOE subgroup percentage exports and normalized to sum to 100 across the included categories.
+Race/ethnicity is displayed as a **horizontal 100% stacked bar**:
+- No in-bar labels (to keep tiny segments readable)
+- The legend lists each category with its percentage value
+- If the legend becomes long, the app can collapse to “Top N + Other” (implementation is designed to support this)
+
+Values are derived from VDOE subgroup percentages and normalized to sum to 100 across the included categories.
+
+### Student Needs & Programs
+The detail page includes a “Student needs & programs” panel (when metrics are available in the snapshot). Current snapshot metrics include:
+- Meal eligibility (%)
+- Breakfast participation among eligible students (%)
+- Lunch participation among eligible students (%)
 
 ## Computation & Aggregation
 ### Division Aggregation (Performance)
@@ -59,6 +89,14 @@ Demographics are race/ethnicity percentage estimates derived from VDOE subgroup 
 ### Limitations
 - Public exports may suppress values for small groups; suppressed/missing values appear as “No data”.
 - Public data do not provide a clean decomposition of ACR into separate “pass vs growth” counts at the same grain.
+- Program/needs percentages may be reported without denominators in public exports; aggregation may use enrollment-weighted fallbacks when necessary.
+
+## Attendance Zones (Optional)
+The map supports an optional “Attendance zones” overlay:
+- **Division sources (when available):** a curated registry is seeded for the top 15 divisions by enrollment under `app/data/zones/zone_sources.csv`.
+- **NCES SABS fallback:** can be generated from the NCES School Attendance Boundary Survey (SABS) dataset.
+
+Boundaries may be incomplete or outdated; verify with the school division.
 
 ## Where The Accreditation Data Comes From
 Accreditation-related fields (including **Accreditation Combined Rate** and **Percent Passing**) are sourced from **VDOE School Quality Profiles** download exports:
@@ -90,9 +128,11 @@ For glossary definitions (including “Combined Rate”):
 - VDOE Standards of Accreditation overview: https://www.doe.virginia.gov/data-policy-funding/data-reports/statistics-reports/accreditation-federal-reports/soa-school-accreditation
 - NCES EDGE geocodes (school + LEA points): https://nces.ed.gov/programs/edge/
 - U.S. Census TIGER/Line school district boundaries (used for division polygons): https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html
+- NCES School Attendance Boundary Survey (SABS): https://nces.ed.gov/surveys/sabs/
 
 ## Data Model
 See `va_schools_dashboard/docs/DATA_SCHEMA.md`.
+See `va_schools_dashboard/docs/DATA_INVENTORY.md` for an automatically generated inventory of what metrics exist in the current snapshot.
 
 ## Map Behavior
 See `va_schools_dashboard/docs/MAP_SPEC.md`.
