@@ -1020,7 +1020,7 @@ server <- function(input, output, session) {
             zones_geojson,
             layerId = "zones",
             group = "zones",
-            style = list(pane = "zonePolygonPane")
+            options = pathOptions(pane = "zonePolygonPane")
           )
       }, error = function(e) {
         if (zones_debug) message("zones observer: addGeoJSON error: ", conditionMessage(e))
