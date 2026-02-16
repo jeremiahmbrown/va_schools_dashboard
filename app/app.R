@@ -603,7 +603,7 @@ server <- function(input, output, session) {
   if (has_leaflet) {
     # Base map.
     output$map <- renderLeaflet({
-      leaflet(options = leafletOptions(minZoom = 6)) %>%
+      leaflet(options = leafletOptions(minZoom = 6, preferCanvas = TRUE)) %>%
         addMapPane(name = "divisionPolygonPane", zIndex = 380) %>%
         addMapPane(name = "zonePolygonPane", zIndex = 410) %>%
         addMapPane(name = "schoolPointPane", zIndex = 440) %>%
@@ -897,6 +897,8 @@ server <- function(input, output, session) {
     # Optional attendance zone overlay (renders only when an entity is selected).
     zones_zoom_debounced <- reactive(input$map_zoom) %>% debounce(250)
     zones_render_key <- reactiveVal("off")
+    zones_pending_token <- reactiveVal(0L)
+    zones_debug <- isTRUE(getOption("va_zones_debug")) || Sys.getenv("VA_ZONES_DEBUG") == "1"
 
     observeEvent(
       list(input$zones_enabled, selected_division_id(), selected_school_id(), zones_zoom_debounced()),
@@ -939,9 +941,10 @@ server <- function(input, output, session) {
           return()
         }
         zones_render_key(desired_key)
+        if (zones_debug) message("zones observer: desired_key=", desired_key, " zoom=", if (is.finite(zoom)) zoom else "NA")
 
         # Always clear when the state changes (avoids stacking layers).
-        proxy %>% clearGroup("zones") %>% removeGeoJSON("zones")
+        proxy %>% removeGeoJSON("zones")
 
         if (!enabled) return()
         if (startsWith(desired_key, "enabled::noselection")) return()
@@ -969,17 +972,40 @@ server <- function(input, output, session) {
         }
 
         # enabled::show::<division_id>
+        # Delay rendering slightly so we don't compete with fitBounds/flyTo zoom animations.
+        token <- zones_pending_token() + 1L
+        zones_pending_token(token)
         zone_path <- pick_zone_file(file.path(app_dir, "data"), division_id, mode = "division")
-        zones_geojson <- read_zone_geojson(zone_path)
-        if (is.null(zones_geojson) || !nzchar(zones_geojson)) return()
 
-        proxy %>%
-          addGeoJSON(
-            zones_geojson,
-            layerId = "zones",
-            group = "zones",
-            style = list(pane = "zonePolygonPane")
-          )
+        later::later(function() {
+          # If state changed while waiting, don't render.
+          if (!identical(zones_pending_token(), token)) return()
+          if (!identical(zones_render_key(), desired_key)) return()
+          if (!isTRUE(isolate(input$zones_enabled))) return()
+          if (is.null(zone_path) || !file.exists(zone_path)) return()
+
+          zones_geojson <- read_zone_geojson(zone_path)
+          if (is.null(zones_geojson) || !nzchar(zones_geojson)) return()
+
+          t0 <- proc.time()[[3]]
+          tryCatch({
+            leafletProxy("map") %>%
+              removeGeoJSON("zones") %>%
+              addGeoJSON(
+                zones_geojson,
+                layerId = "zones",
+                group = "zones",
+                style = list(pane = "zonePolygonPane")
+              )
+          }, error = function(e) {
+            if (zones_debug) message("zones observer: addGeoJSON error: ", conditionMessage(e))
+            NULL
+          })
+          if (zones_debug) {
+            dt <- proc.time()[[3]] - t0
+            message("zones observer: rendered zones for division ", division_id, " in ", sprintf("%.3fs", dt))
+          }
+        }, delay = 0.6)
       },
       ignoreInit = TRUE
     )

@@ -180,7 +180,9 @@ zones <- sf::st_make_valid(zones)
 
 # Simplify in a projected CRS (meters) for interactive display, then transform to WGS84.
 zones <- sf::st_transform(zones, 3857)
-zones <- sf::st_simplify(zones, dTolerance = 60, preserveTopology = TRUE)
+# Tolerance in meters. Higher values improve Leaflet performance at the cost of
+# boundary fidelity (acceptable for a parent-facing "approximate" overlay).
+zones <- sf::st_simplify(zones, dTolerance = 150, preserveTopology = TRUE)
 zones <- sf::st_make_valid(zones)
 zones <- sf::st_transform(zones, 4326)
 
