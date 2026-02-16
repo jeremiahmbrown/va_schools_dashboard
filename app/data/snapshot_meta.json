@@ -2,8 +2,8 @@
   "snapshot_date": "2026-02-15",
   "year_min": 2022,
   "year_max": 2024,
-  "transform_version": 4,
-  "notes": "Built from VDOE School Quality Profiles downloads + NCES EDGE geocodes + TIGER/Line boundaries. Includes subject-level ACR and SOL pass rates.",
+  "transform_version": 5,
+  "notes": "Built from VDOE School Quality Profiles downloads + NCES EDGE geocodes + TIGER/Line boundaries. Includes subject-level ACR and SOL pass rates, plus learning climate and school nutrition metrics where available.",
   "sources": [
     {
       "id": "vdoe_schoolquality_download_data",

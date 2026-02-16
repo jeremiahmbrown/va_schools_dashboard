@@ -203,6 +203,61 @@ vdoe_enroll_path <- download_cached("vdoe_enrollment.csv", function(dest) {
   ))
 }, validator = validate_not_html)
 
+vdoe_abs_path <- download_cached("vdoe_absenteeism.csv", function(dest) {
+  curl_post_download(dest, vdoe_url, list(
+    level = "schools",
+    "divisions[]" = "any",
+    "schools[]" = "any",
+    type = "learningClimate",
+    "indicators[]" = "absenteeism",
+    year = "all"
+  ))
+}, validator = validate_not_html)
+
+vdoe_expulsions_path <- download_cached("vdoe_expulsions.csv", function(dest) {
+  curl_post_download(dest, vdoe_url, list(
+    level = "schools",
+    "divisions[]" = "any",
+    "schools[]" = "any",
+    type = "learningClimate",
+    "indicators[]" = "expulsions",
+    year = "all"
+  ))
+}, validator = validate_not_html)
+
+vdoe_fr_elig_path <- download_cached("vdoe_fr_eligibility.csv", function(dest) {
+  curl_post_download(dest, vdoe_url, list(
+    level = "schools",
+    "divisions[]" = "any",
+    "schools[]" = "any",
+    type = "learningClimate",
+    "indicators[]" = "frEligibility",
+    year = "all"
+  ))
+}, validator = validate_not_html)
+
+vdoe_fr_breakfast_path <- download_cached("vdoe_fr_breakfast.csv", function(dest) {
+  curl_post_download(dest, vdoe_url, list(
+    level = "schools",
+    "divisions[]" = "any",
+    "schools[]" = "any",
+    type = "learningClimate",
+    "indicators[]" = "frBreakfast",
+    year = "all"
+  ))
+}, validator = validate_not_html)
+
+vdoe_fr_lunch_path <- download_cached("vdoe_fr_lunch.csv", function(dest) {
+  curl_post_download(dest, vdoe_url, list(
+    level = "schools",
+    "divisions[]" = "any",
+    "schools[]" = "any",
+    type = "learningClimate",
+    "indicators[]" = "frLunch",
+    year = "all"
+  ))
+}, validator = validate_not_html)
+
 vdoe_acc_eng_path <- download_cached("vdoe_accreditation_english.csv", function(dest) {
   curl_post_download(dest, vdoe_url, list(
     level = "schools",
@@ -239,6 +294,11 @@ vdoe_acc_sci_path <- download_cached("vdoe_accreditation_science.csv", function(
 short_df <- read_vdoe_csv(vdoe_short_path)
 long_df <- read_vdoe_csv(vdoe_long_path)
 enroll_df <- read_vdoe_csv(vdoe_enroll_path)
+abs_df <- read_vdoe_csv(vdoe_abs_path)
+expulsions_df <- read_vdoe_csv(vdoe_expulsions_path)
+fr_elig_df <- read_vdoe_csv(vdoe_fr_elig_path)
+fr_breakfast_df <- read_vdoe_csv(vdoe_fr_breakfast_path)
+fr_lunch_df <- read_vdoe_csv(vdoe_fr_lunch_path)
 acc_eng_df <- read_vdoe_csv(vdoe_acc_eng_path)
 acc_math_df <- read_vdoe_csv(vdoe_acc_math_path)
 acc_sci_df <- read_vdoe_csv(vdoe_acc_sci_path)
@@ -347,8 +407,67 @@ overall_perf <- stg_perf %>%
     .groups = "drop"
   )
 
-extract_susp_n <- function(df, n_col, metric_tag) {
-  p <- parse_num(df[[n_col]])
+extract_absenteeism <- function(df) {
+  # Chronic absenteeism: percent of students missing 10%+ of school days.
+  #
+  # VDOE export includes multiple subgroups; we keep "All Students" only.
+  #
+  # Columns observed (2026-02 snapshot):
+  # - Count Below 10, Count Above 10
+  # - Percent Below 10, Percent above 10
+  pct_above <- parse_num(df[["Percent above 10"]])
+  cnt_above <- parse_num(df[["Count Above 10"]])
+  cnt_below <- parse_num(df[["Count Below 10"]])
+
+  df %>%
+    transmute(
+      year = vapply(Year, parse_end_year, integer(1)),
+      division_name = Division,
+      school_name = School,
+      level = Level,
+      subgroup = Subgroup,
+      chronic_absent_pct = pct_above$value,
+      chronic_absent_suppressed = pct_above$suppressed | isTRUE(cnt_above$suppressed) | isTRUE(cnt_below$suppressed),
+      numerator = cnt_above$value,
+      denominator = cnt_above$value + cnt_below$value
+    ) %>%
+    filter(level == "SCH", subgroup == "All Students") %>%
+    mutate(
+      chronic_absent_pct = pmin(pmax(chronic_absent_pct, 0), 100),
+      chronic_absent_suppressed = isTRUE(chronic_absent_suppressed) | is.na(chronic_absent_pct)
+    )
+}
+
+extract_fr_percent <- function(df, metric_id) {
+  # School nutrition exports are school-level percent-only series (no subgroup).
+  p <- parse_num(df[["Percent"]])
+  df %>%
+    transmute(
+      year = vapply(Year, parse_end_year, integer(1)),
+      division_name = Division,
+      school_name = School,
+      level = Level,
+      metric_id = metric_id,
+      value = p$value,
+      suppressed = p$suppressed
+    ) %>%
+    filter(level == "SCH") %>%
+    mutate(
+      value = pmin(pmax(value, 0), 100),
+      suppressed = isTRUE(suppressed) | is.na(value)
+    )
+}
+
+abs_keep <- extract_absenteeism(abs_df)
+fr_keep <- bind_rows(
+  extract_fr_percent(fr_elig_df, "needs_meal_eligibility_pct"),
+  extract_fr_percent(fr_breakfast_df, "needs_breakfast_participation_pct"),
+  extract_fr_percent(fr_lunch_df, "needs_lunch_participation_pct")
+)
+
+extract_susp_counts <- function(df, n_students_col, n_incidents_col, metric_tag) {
+  n_students <- parse_num(df[[n_students_col]])
+  n_incidents <- parse_num(df[[n_incidents_col]])
   df %>%
     transmute(
       year = vapply(Year, parse_end_year, integer(1)),
@@ -357,15 +476,27 @@ extract_susp_n <- function(df, n_col, metric_tag) {
       school_name = Division,
       subgroup = Subgroup,
       level = Level,
-      numerator = p$value,
-      numerator_suppressed = p$suppressed
+      students_n = n_students$value,
+      students_suppressed = n_students$suppressed,
+      incidents_n = n_incidents$value,
+      incidents_suppressed = n_incidents$suppressed
     ) %>%
     filter(level == "SCH") %>%
     mutate(metric_tag = metric_tag)
 }
 
-short_n <- extract_susp_n(short_df, "Number Suspended Short Term", "short")
-long_n <- extract_susp_n(long_df, "Number Suspended Long Term", "long")
+short_counts <- extract_susp_counts(
+  short_df,
+  "Number Suspended Short Term",
+  "Number of Short Term Suspendable Incidents",
+  "short"
+)
+long_counts <- extract_susp_counts(
+  long_df,
+  "Number Suspended Long Term",
+  "Number of Long Term Suspendable Incidents",
+  "long"
+)
 
 race_susp_groups <- c(
   "American Indian",
@@ -377,20 +508,66 @@ race_susp_groups <- c(
   "White"
 )
 
-susp_totals <- bind_rows(short_n, long_n) %>%
+susp_totals <- bind_rows(short_counts, long_counts) %>%
   filter(subgroup %in% race_susp_groups) %>%
   group_by(year, division_name, school_name, metric_tag) %>%
   summarise(
-    numerator = if (any(is.finite(numerator))) sum(numerator, na.rm = TRUE) else NA_real_,
-    numerator_suppressed = !any(is.finite(numerator)) | any(isTRUE(numerator_suppressed)),
+    students_n = if (any(is.finite(students_n))) sum(students_n, na.rm = TRUE) else NA_real_,
+    students_suppressed = !any(is.finite(students_n)) | any(isTRUE(students_suppressed)),
+    incidents_n = if (any(is.finite(incidents_n))) sum(incidents_n, na.rm = TRUE) else NA_real_,
+    incidents_suppressed = !any(is.finite(incidents_n)) | any(isTRUE(incidents_suppressed)),
     .groups = "drop"
   ) %>%
-  tidyr::pivot_wider(names_from = metric_tag, values_from = c(numerator, numerator_suppressed), names_sep = "_") %>%
+  tidyr::pivot_wider(names_from = metric_tag, values_from = c(students_n, students_suppressed, incidents_n, incidents_suppressed), names_sep = "_") %>%
   mutate(
-    susp_n = coalesce(numerator_short, 0) + coalesce(numerator_long, 0),
-    susp_suppressed = isTRUE(numerator_suppressed_short) | isTRUE(numerator_suppressed_long) |
-      (is.na(numerator_short) & is.na(numerator_long))
+    susp_short_n = students_n_short,
+    susp_long_n = students_n_long,
+    susp_short_suppressed = isTRUE(students_suppressed_short) | is.na(susp_short_n),
+    susp_long_suppressed = isTRUE(students_suppressed_long) | is.na(susp_long_n),
+    susp_incidents_short_n = incidents_n_short,
+    susp_incidents_long_n = incidents_n_long,
+    susp_incidents_short_suppressed = isTRUE(incidents_suppressed_short) | is.na(susp_incidents_short_n),
+    susp_incidents_long_suppressed = isTRUE(incidents_suppressed_long) | is.na(susp_incidents_long_n),
+    susp_n = coalesce(susp_short_n, 0) + coalesce(susp_long_n, 0),
+    susp_suppressed = isTRUE(susp_short_suppressed) | isTRUE(susp_long_suppressed) |
+      (is.na(susp_short_n) & is.na(susp_long_n)),
+    susp_incidents_n = coalesce(susp_incidents_short_n, 0) + coalesce(susp_incidents_long_n, 0),
+    susp_incidents_suppressed = isTRUE(susp_incidents_short_suppressed) | isTRUE(susp_incidents_long_suppressed) |
+      (is.na(susp_incidents_short_n) & is.na(susp_incidents_long_n))
   )
+
+extract_expulsions_totals <- function(df) {
+  expelled <- parse_num(df[["Number Expelled"]])
+  incidents <- parse_num(df[["Number of Expellable Incidents"]])
+
+  df %>%
+    transmute(
+      year = vapply(Year, parse_end_year, integer(1)),
+      division_name = School,
+      school_name = Division,
+      subgroup = Subgroup,
+      level = Level,
+      expelled_n = expelled$value,
+      expelled_suppressed = expelled$suppressed,
+      expel_incidents_n = incidents$value,
+      expel_incidents_suppressed = incidents$suppressed
+    ) %>%
+    filter(level == "SCH", subgroup %in% race_susp_groups) %>%
+    group_by(year, division_name, school_name) %>%
+    summarise(
+      expelled_n = if (any(is.finite(expelled_n))) sum(expelled_n, na.rm = TRUE) else NA_real_,
+      expelled_suppressed = !any(is.finite(expelled_n)) | any(isTRUE(expelled_suppressed)),
+      expel_incidents_n = if (any(is.finite(expel_incidents_n))) sum(expel_incidents_n, na.rm = TRUE) else NA_real_,
+      expel_incidents_suppressed = !any(is.finite(expel_incidents_n)) | any(isTRUE(expel_incidents_suppressed)),
+      .groups = "drop"
+    ) %>%
+    mutate(
+      expelled_suppressed = isTRUE(expelled_suppressed) | is.na(expelled_n),
+      expel_incidents_suppressed = isTRUE(expel_incidents_suppressed) | is.na(expel_incidents_n)
+    )
+}
+
+expulsions_keep <- extract_expulsions_totals(expulsions_df)
 
 # Race/ethnicity %: use "Percent of the Student Population" from the suspensions export.
 race_map <- c(
@@ -442,8 +619,11 @@ message("Keeping years: ", paste(years_keep, collapse = ", "))
 overall_perf_keep <- overall_perf %>% filter(year %in% years_keep)
 stg_perf_keep <- stg_perf %>% filter(year %in% years_keep)
 susp_keep <- susp_totals %>% filter(year %in% years_keep)
+abs_keep <- abs_keep %>% filter(year %in% years_keep)
+expulsions_keep <- expulsions_keep %>% filter(year %in% years_keep)
 enroll_keep <- enroll_totals %>% filter(year %in% years_keep)
 race_keep <- race_df %>% filter(year %in% years_keep)
+fr_keep <- fr_keep %>% filter(year %in% years_keep)
 
 core_join <- overall_perf_keep %>%
   select(
@@ -457,13 +637,53 @@ core_join <- overall_perf_keep %>%
     n_subjects_acr_present,
     n_subjects_pass_present
   ) %>%
-  left_join(susp_keep %>% select(year, division_name, school_name, susp_n, susp_suppressed), by = c("year", "division_name", "school_name")) %>%
+  left_join(
+    susp_keep %>%
+      select(
+        year, division_name, school_name,
+        susp_short_n, susp_short_suppressed,
+        susp_long_n, susp_long_suppressed,
+        susp_n, susp_suppressed,
+        susp_incidents_short_n, susp_incidents_short_suppressed,
+        susp_incidents_long_n, susp_incidents_long_suppressed,
+        susp_incidents_n, susp_incidents_suppressed
+      ),
+    by = c("year", "division_name", "school_name")
+  ) %>%
+  left_join(
+    abs_keep %>% select(year, division_name, school_name, chronic_absent_pct, chronic_absent_suppressed, numerator, denominator),
+    by = c("year", "division_name", "school_name")
+  ) %>%
+  rename(
+    chronic_absent_n = numerator,
+    chronic_absent_den = denominator
+  ) %>%
+  left_join(
+    expulsions_keep %>% select(year, division_name, school_name, expelled_n, expelled_suppressed, expel_incidents_n, expel_incidents_suppressed),
+    by = c("year", "division_name", "school_name")
+  ) %>%
   left_join(enroll_keep, by = c("year", "division_name", "school_name"))
 
 core_join <- core_join %>%
   mutate(
     behavior_susp_per_100 = ifelse(is.finite(enrollment) & enrollment > 0, 100 * susp_n / enrollment, NA_real_),
-    behavior_susp_suppressed = isTRUE(susp_suppressed) | is.na(behavior_susp_per_100)
+    behavior_susp_suppressed = isTRUE(susp_suppressed) | is.na(behavior_susp_per_100),
+    behavior_susp_short_per_100 = ifelse(is.finite(enrollment) & enrollment > 0, 100 * susp_short_n / enrollment, NA_real_),
+    behavior_susp_short_suppressed = isTRUE(susp_short_suppressed) | is.na(behavior_susp_short_per_100),
+    behavior_susp_long_per_100 = ifelse(is.finite(enrollment) & enrollment > 0, 100 * susp_long_n / enrollment, NA_real_),
+    behavior_susp_long_suppressed = isTRUE(susp_long_suppressed) | is.na(behavior_susp_long_per_100),
+    behavior_susp_incidents_per_100 = ifelse(is.finite(enrollment) & enrollment > 0, 100 * susp_incidents_n / enrollment, NA_real_),
+    behavior_susp_incidents_suppressed = isTRUE(susp_incidents_suppressed) | is.na(behavior_susp_incidents_per_100),
+    behavior_susp_incidents_short_per_100 = ifelse(is.finite(enrollment) & enrollment > 0, 100 * susp_incidents_short_n / enrollment, NA_real_),
+    behavior_susp_incidents_short_suppressed = isTRUE(susp_incidents_short_suppressed) | is.na(behavior_susp_incidents_short_per_100),
+    behavior_susp_incidents_long_per_100 = ifelse(is.finite(enrollment) & enrollment > 0, 100 * susp_incidents_long_n / enrollment, NA_real_),
+    behavior_susp_incidents_long_suppressed = isTRUE(susp_incidents_long_suppressed) | is.na(behavior_susp_incidents_long_per_100),
+    behavior_expulsions_per_100 = ifelse(is.finite(enrollment) & enrollment > 0, 100 * expelled_n / enrollment, NA_real_),
+    behavior_expulsions_suppressed = isTRUE(expelled_suppressed) | is.na(behavior_expulsions_per_100),
+    behavior_expulsion_incidents_per_100 = ifelse(is.finite(enrollment) & enrollment > 0, 100 * expel_incidents_n / enrollment, NA_real_),
+    behavior_expulsion_incidents_suppressed = isTRUE(expel_incidents_suppressed) | is.na(behavior_expulsion_incidents_per_100),
+    attendance_chronic_absent_pct = chronic_absent_pct,
+    attendance_chronic_absent_suppressed = isTRUE(chronic_absent_suppressed) | is.na(attendance_chronic_absent_pct)
   )
 
 # Attach enrollment to race metrics so we can derive numerator/denominator
@@ -773,6 +993,135 @@ school_metrics_out <- bind_rows(
       denominator = as.numeric(enrollment),
       source = "vdoe_learning_climate_suspensions+vdoe_enrollment"
     ),
+  core_join %>%
+    left_join(matched %>% select(division_name, school_name, school_id, division_id), by = c("division_name", "school_name")) %>%
+    filter(!is.na(school_id)) %>%
+    transmute(
+      school_id = school_id,
+      year = year,
+      metric_id = "behavior_susp_short_per_100",
+      value = behavior_susp_short_per_100,
+      unit = "per_100",
+      suppressed = behavior_susp_short_suppressed,
+      numerator = as.numeric(susp_short_n),
+      denominator = as.numeric(enrollment),
+      source = "vdoe_learning_climate_suspensions+vdoe_enrollment"
+    ),
+  core_join %>%
+    left_join(matched %>% select(division_name, school_name, school_id, division_id), by = c("division_name", "school_name")) %>%
+    filter(!is.na(school_id)) %>%
+    transmute(
+      school_id = school_id,
+      year = year,
+      metric_id = "behavior_susp_long_per_100",
+      value = behavior_susp_long_per_100,
+      unit = "per_100",
+      suppressed = behavior_susp_long_suppressed,
+      numerator = as.numeric(susp_long_n),
+      denominator = as.numeric(enrollment),
+      source = "vdoe_learning_climate_suspensions+vdoe_enrollment"
+    ),
+  core_join %>%
+    left_join(matched %>% select(division_name, school_name, school_id, division_id), by = c("division_name", "school_name")) %>%
+    filter(!is.na(school_id)) %>%
+    transmute(
+      school_id = school_id,
+      year = year,
+      metric_id = "behavior_susp_incidents_per_100",
+      value = behavior_susp_incidents_per_100,
+      unit = "per_100",
+      suppressed = behavior_susp_incidents_suppressed,
+      numerator = as.numeric(susp_incidents_n),
+      denominator = as.numeric(enrollment),
+      source = "vdoe_learning_climate_suspensions+vdoe_enrollment"
+    ),
+  core_join %>%
+    left_join(matched %>% select(division_name, school_name, school_id, division_id), by = c("division_name", "school_name")) %>%
+    filter(!is.na(school_id)) %>%
+    transmute(
+      school_id = school_id,
+      year = year,
+      metric_id = "behavior_susp_incidents_short_per_100",
+      value = behavior_susp_incidents_short_per_100,
+      unit = "per_100",
+      suppressed = behavior_susp_incidents_short_suppressed,
+      numerator = as.numeric(susp_incidents_short_n),
+      denominator = as.numeric(enrollment),
+      source = "vdoe_learning_climate_suspensions+vdoe_enrollment"
+    ),
+  core_join %>%
+    left_join(matched %>% select(division_name, school_name, school_id, division_id), by = c("division_name", "school_name")) %>%
+    filter(!is.na(school_id)) %>%
+    transmute(
+      school_id = school_id,
+      year = year,
+      metric_id = "behavior_susp_incidents_long_per_100",
+      value = behavior_susp_incidents_long_per_100,
+      unit = "per_100",
+      suppressed = behavior_susp_incidents_long_suppressed,
+      numerator = as.numeric(susp_incidents_long_n),
+      denominator = as.numeric(enrollment),
+      source = "vdoe_learning_climate_suspensions+vdoe_enrollment"
+    ),
+  core_join %>%
+    left_join(matched %>% select(division_name, school_name, school_id, division_id), by = c("division_name", "school_name")) %>%
+    filter(!is.na(school_id)) %>%
+    transmute(
+      school_id = school_id,
+      year = year,
+      metric_id = "behavior_expulsions_per_100",
+      value = behavior_expulsions_per_100,
+      unit = "per_100",
+      suppressed = behavior_expulsions_suppressed,
+      numerator = as.numeric(expelled_n),
+      denominator = as.numeric(enrollment),
+      source = "vdoe_learning_climate_expulsions+vdoe_enrollment"
+    ),
+  core_join %>%
+    left_join(matched %>% select(division_name, school_name, school_id, division_id), by = c("division_name", "school_name")) %>%
+    filter(!is.na(school_id)) %>%
+    transmute(
+      school_id = school_id,
+      year = year,
+      metric_id = "behavior_expulsion_incidents_per_100",
+      value = behavior_expulsion_incidents_per_100,
+      unit = "per_100",
+      suppressed = behavior_expulsion_incidents_suppressed,
+      numerator = as.numeric(expel_incidents_n),
+      denominator = as.numeric(enrollment),
+      source = "vdoe_learning_climate_expulsions+vdoe_enrollment"
+    ),
+  core_join %>%
+    left_join(matched %>% select(division_name, school_name, school_id, division_id), by = c("division_name", "school_name")) %>%
+    filter(!is.na(school_id)) %>%
+    transmute(
+      school_id = school_id,
+      year = year,
+      metric_id = "attendance_chronic_absent_pct",
+      value = attendance_chronic_absent_pct,
+      unit = "pct",
+      suppressed = attendance_chronic_absent_suppressed,
+      numerator = ifelse(is.finite(chronic_absent_n) & is.finite(chronic_absent_den) & chronic_absent_den > 0, chronic_absent_n,
+        ifelse(is.finite(enrollment) & enrollment > 0 & is.finite(attendance_chronic_absent_pct), attendance_chronic_absent_pct * enrollment / 100, NA_real_)
+      ),
+      denominator = ifelse(is.finite(chronic_absent_den) & chronic_absent_den > 0, chronic_absent_den, as.numeric(enrollment)),
+      source = "vdoe_learning_climate_absenteeism"
+    ),
+  fr_keep %>%
+    left_join(enroll_keep, by = c("year", "division_name", "school_name")) %>%
+    left_join(matched %>% select(division_name, school_name, school_id, division_id), by = c("division_name", "school_name")) %>%
+    filter(!is.na(school_id)) %>%
+    transmute(
+      school_id = school_id,
+      year = year,
+      metric_id = metric_id,
+      value = value,
+      unit = "pct",
+      suppressed = suppressed,
+      numerator = ifelse(is.finite(enrollment) & enrollment > 0 & is.finite(value), enrollment * value / 100, NA_real_),
+      denominator = as.numeric(enrollment),
+      source = "vdoe_learning_climate_school_nutrition+vdoe_enrollment"
+    ),
   race_keep %>%
     left_join(matched %>% select(division_name, school_name, school_id, division_id), by = c("division_name", "school_name")) %>%
     filter(!is.na(school_id)) %>%
@@ -1033,6 +1382,17 @@ metric_defs_out <- data.frame(
     "test_pass_math",
     "test_pass_science",
     "behavior_susp_per_100",
+    "behavior_susp_short_per_100",
+    "behavior_susp_long_per_100",
+    "behavior_susp_incidents_per_100",
+    "behavior_susp_incidents_short_per_100",
+    "behavior_susp_incidents_long_per_100",
+    "behavior_expulsions_per_100",
+    "behavior_expulsion_incidents_per_100",
+    "attendance_chronic_absent_pct",
+    "needs_meal_eligibility_pct",
+    "needs_breakfast_participation_pct",
+    "needs_lunch_participation_pct",
     "demo_american_indian_pct",
     "demo_black_pct",
     "demo_hispanic_pct",
@@ -1041,7 +1401,13 @@ metric_defs_out <- data.frame(
     "demo_native_hawaiian_pct",
     "demo_two_plus_pct"
   ),
-  category = c(rep("test", 8), "behavior", rep("demographics", 7)),
+  category = c(
+    rep("test", 8),
+    rep("behavior", 8),
+    "attendance",
+    rep("needs", 3),
+    rep("demographics", 7)
+  ),
   label_short = c(
     "ACR — Overall",
     "SOL Pass Rate — Overall",
@@ -1052,6 +1418,17 @@ metric_defs_out <- data.frame(
     "SOL Pass Rate — Math",
     "SOL Pass Rate — Science",
     "Suspensions per 100",
+    "Short-term suspensions per 100",
+    "Long-term suspensions per 100",
+    "Suspendable incidents per 100",
+    "Short-term incidents per 100",
+    "Long-term incidents per 100",
+    "Expulsions per 100",
+    "Expellable incidents per 100",
+    "Chronic absenteeism",
+    "Meal eligibility",
+    "Breakfast participation",
+    "Lunch participation",
     "% Am. Indian",
     "% Black",
     "% Hispanic",
@@ -1070,6 +1447,17 @@ metric_defs_out <- data.frame(
     "SOL Pass Rate (Percent Passing) for Math, All Students (VDOE School Quality Profiles download).",
     "SOL Pass Rate (Percent Passing) for Science, All Students (VDOE School Quality Profiles download).",
     "Suspensions per 100 students (short + long term; computed using VDOE counts and enrollment totals)",
+    "Short-term suspensions per 100 students (computed using VDOE short-term suspension counts and enrollment totals).",
+    "Long-term suspensions per 100 students (computed using VDOE long-term suspension counts and enrollment totals).",
+    "Suspendable incidents per 100 students (short + long; computed using VDOE incident counts and enrollment totals).",
+    "Short-term suspendable incidents per 100 students (computed using VDOE short-term incident counts and enrollment totals).",
+    "Long-term suspendable incidents per 100 students (computed using VDOE long-term incident counts and enrollment totals).",
+    "Expulsions per 100 students (computed using VDOE expulsion counts and enrollment totals).",
+    "Expellable incidents per 100 students (computed using VDOE expellable incident counts and enrollment totals).",
+    "Chronic absenteeism rate (% of students missing 10%+ of school days), All Students (VDOE School Quality Profiles download).",
+    "School nutrition meal eligibility (%), All Students (VDOE School Quality Profiles download).",
+    "Breakfast participation among eligible students (%), All Students (VDOE School Quality Profiles download).",
+    "Lunch participation among eligible students (%), All Students (VDOE School Quality Profiles download).",
     "% of enrolled students who are American Indian or Alaska Native (from VDOE subgroup %; normalized to sum to 100 across race categories)",
     "% of enrolled students who are Black or African American (from VDOE subgroup %)",
     "% of enrolled students who are Hispanic/Latino (from VDOE subgroup %)",
@@ -1078,10 +1466,34 @@ metric_defs_out <- data.frame(
     "% of enrolled students who are Native Hawaiian or Other Pacific Islander (from VDOE subgroup %; normalized to sum to 100 across race categories)",
     "% of enrolled students who are Two or more races (from VDOE subgroup %; normalized to sum to 100 across race categories)"
   ),
-  unit = c(rep("index", 8), "per_100", rep("pct", 7)),
-  better_direction = c(rep("higher_better", 8), "lower_better", rep("neutral", 7)),
-  format = c(rep("num_1", 8), "num_1", rep("pct_1", 7)),
-  palette = c(rep("viridis", 8), "magma", rep("viridis", 7)),
+  unit = c(
+    rep("index", 8),
+    rep("per_100", 8),
+    "pct",
+    rep("pct", 3),
+    rep("pct", 7)
+  ),
+  better_direction = c(
+    rep("higher_better", 8),
+    rep("lower_better", 8),
+    "lower_better",
+    rep("neutral", 3),
+    rep("neutral", 7)
+  ),
+  format = c(
+    rep("num_1", 8),
+    rep("num_1", 8),
+    "pct_1",
+    rep("pct_1", 3),
+    rep("pct_1", 7)
+  ),
+  palette = c(
+    rep("viridis", 8),
+    rep("magma", 8),
+    "magma",
+    rep("viridis", 3),
+    rep("viridis", 7)
+  ),
   stringsAsFactors = FALSE
 )
 
@@ -1096,8 +1508,8 @@ snapshot_meta <- list(
   snapshot_date = as.character(Sys.Date()),
   year_min = min(years_keep),
   year_max = max(years_keep),
-  transform_version = 4,
-  notes = "Built from VDOE School Quality Profiles downloads + NCES EDGE geocodes + TIGER/Line boundaries. Includes subject-level ACR and SOL pass rates.",
+  transform_version = 5,
+  notes = "Built from VDOE School Quality Profiles downloads + NCES EDGE geocodes + TIGER/Line boundaries. Includes subject-level ACR and SOL pass rates, plus learning climate and school nutrition metrics where available.",
   sources = list(
     list(id = "vdoe_schoolquality_download_data", url = vdoe_url),
     list(id = "nces_edge_public_school_geocodes", url = nces_sch_zip_url),
