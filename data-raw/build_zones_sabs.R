@@ -132,12 +132,24 @@ if (is.null(leaid_col)) {
 
 school_name_col <- pick_col(c("school_name", "sch_name", "name", "school", "att_sch_nm"))
 level_col <- pick_col(c("level", "grade_lvl", "sch_level"))
+gslo_col <- pick_col(c("gslo", "grade_lo", "grade_low"))
+gshi_col <- pick_col(c("gshi", "grade_hi", "grade_high"))
+ncessch_col <- pick_col(c("ncessch", "nces_sch", "school_id", "ncesid"))
+
+# SABS 2015-16 uses `schnam` / `SrcName` for name; pick them if our generic
+# candidates missed.
+if (is.null(school_name_col)) {
+  school_name_col <- pick_col(c("schnam", "srcname", "SrcName"))
+}
 
 zones <- zones %>%
   mutate(
     division_id = as.character(.data[[leaid_col]]),
     school_name = if (!is.null(school_name_col)) as.character(.data[[school_name_col]]) else NA_character_,
-    level = if (!is.null(level_col)) as.character(.data[[level_col]]) else NA_character_
+    level = if (!is.null(level_col)) as.character(.data[[level_col]]) else NA_character_,
+    grades_lo = if (!is.null(gslo_col)) as.character(.data[[gslo_col]]) else NA_character_,
+    grades_hi = if (!is.null(gshi_col)) as.character(.data[[gshi_col]]) else NA_character_,
+    nces_school_id = if (!is.null(ncessch_col)) as.character(.data[[ncessch_col]]) else NA_character_
   ) %>%
   filter(!is.na(division_id) & division_id != "")
 
@@ -162,26 +174,37 @@ zones <- tryCatch(sf::st_make_valid(zones), error = function(e) {
   message("st_make_valid failed: ", conditionMessage(e), " ; attempting st_buffer(0) fallback")
   sf::st_buffer(zones, 0)
 })
+zones <- sf::st_make_valid(zones)
+
+# Simplify in a projected CRS (meters) for interactive display, then transform to WGS84.
+zones <- sf::st_transform(zones, 3857)
+zones <- sf::st_simplify(zones, dTolerance = 60, preserveTopology = TRUE)
+zones <- sf::st_make_valid(zones)
 zones <- sf::st_transform(zones, 4326)
 
-# Simplify for interactive display (tune as needed).
-zones <- sf::st_simplify(zones, dTolerance = 0.0007, preserveTopology = TRUE)
-zones <- tryCatch(sf::st_make_valid(zones), error = function(e) zones)
+close_ring <- function(mat) {
+  if (nrow(mat) < 3) return(mat)
+  if (mat[1, 1] != mat[nrow(mat), 1] || mat[1, 2] != mat[nrow(mat), 2]) {
+    mat <- rbind(mat, mat[1, , drop = FALSE])
+  }
+  mat
+}
 
-sf_to_rings <- function(geom) {
-  # Convert an sf POLYGON/MULTIPOLYGON into a list of outer rings.
-  g <- sf::st_geometry(geom)
+sf_geom_to_multipolygon_coords <- function(geom_row) {
+  g <- sf::st_geometry(geom_row)
+  if (length(g) == 0) return(list())
+  g <- sf::st_make_valid(g)
   g <- sf::st_cast(g, "MULTIPOLYGON", warn = FALSE)
-  coords <- sf::st_coordinates(g)
-  if (nrow(coords) == 0) return(list())
+  mp <- g[[1]]
+  if (is.null(mp) || length(mp) == 0) return(list())
 
-  # st_coordinates returns rows with L1/L2/L3 indices for MULTIPOLYGON/POLYGON/ring.
-  rings <- split(as.data.frame(coords), interaction(coords[, "L1"], coords[, "L2"], drop = TRUE))
-  out <- lapply(rings, function(r) {
-    pts <- as.matrix(r[, c("X", "Y"), drop = FALSE])
-    lapply(seq_len(nrow(pts)), function(i) list(pts[i, 1], pts[i, 2]))
+  # mp is list(poly -> list(ring -> matrix)).
+  lapply(mp, function(poly) {
+    lapply(poly, function(ring) {
+      ring <- close_ring(ring)
+      lapply(seq_len(nrow(ring)), function(i) list(ring[i, 1], ring[i, 2]))
+    })
   })
-  out
 }
 
 dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
@@ -198,8 +221,11 @@ for (div_id in div_ids) {
       zone_id = paste0(div_id, "_", i),
       school_name = sub$school_name[[i]],
       level = sub$level[[i]],
+      grades_lo = sub$grades_lo[[i]],
+      grades_hi = sub$grades_hi[[i]],
+      nces_school_id = sub$nces_school_id[[i]],
       source = "sabs",
-      rings = sf_to_rings(sub[i, ])
+      multipolygon = sf_geom_to_multipolygon_coords(sub[i, ])
     )
   }
 

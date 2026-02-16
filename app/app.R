@@ -899,7 +899,8 @@ server <- function(input, output, session) {
       school_id <- selected_school_id()
       proxy <- leafletProxy("map")
 
-      proxy %>% clearGroup("zones")
+      # Back-compat: older versions used the "shape" group; current uses GeoJSON.
+      proxy %>% clearGroup("zones") %>% removeGeoJSON("zones")
 
       if (!enabled) {
         return()
@@ -928,47 +929,22 @@ server <- function(input, output, session) {
         return()
       }
 
-      zones_sp <- zones_json_to_sp(zone_path)
-      if (is.null(zones_sp) || length(zones_sp) == 0) return()
-
-      level_cols <- c(
-        ES = "#1F77B4",
-        MS = "#F58518",
-        HS = "#54A24B",
-        UNK = "#777777"
-      )
-      level_key <- function(x) {
-        x <- toupper(trimws(as.character(x)))
-        if (x %in% c("E", "ES", "ELEMENTARY")) return("ES")
-        if (x %in% c("M", "MS", "MIDDLE")) return("MS")
-        if (x %in% c("H", "HS", "HIGH")) return("HS")
-        "UNK"
-      }
-      zones_sp@data$level_key <- vapply(zones_sp@data$level, level_key, character(1))
-      zones_sp@data$stroke_col <- unname(level_cols[zones_sp@data$level_key])
-      zones_sp@data$fill_col <- zones_sp@data$stroke_col
-
-      zone_labels <- sprintf(
-        "<strong>%s</strong><br/>Level: %s<br/>Source: %s",
-        ifelse(is.na(zones_sp@data$school_name) | zones_sp@data$school_name == "", "Attendance zone", zones_sp@data$school_name),
-        zones_sp@data$level_key,
-        ifelse(is.na(zones_sp@data$source) | zones_sp@data$source == "", "unknown", zones_sp@data$source)
-      )
+      zones_geojson <- zones_json_to_geojson(zone_path)
+      if (is.null(zones_geojson)) return()
 
       proxy %>%
-        addPolygons(
-          data = zones_sp,
+        addGeoJSON(
+          zones_geojson,
+          layerId = "zones",
           group = "zones",
-          layerId = ~paste0("zone::", zone_id),
-          color = ~stroke_col,
-          weight = 1.0,
-          opacity = 0.9,
-          fillColor = ~fill_col,
-          fillOpacity = 0.12,
-          label = lapply(zone_labels, htmltools::HTML),
-          popup = zone_labels,
-          options = pathOptions(pane = "zonePolygonPane", bubblingMouseEvents = FALSE),
-          highlightOptions = highlightOptions(weight = 2.0, color = "#111111", fillOpacity = 0.18, bringToFront = FALSE)
+          style = list(
+            pane = "zonePolygonPane",
+            weight = 1.0,
+            opacity = 0.9,
+            fillOpacity = 0.12,
+            color = "#1F77B4",
+            fillColor = "#1F77B4"
+          )
         )
     })
 
@@ -1340,7 +1316,7 @@ server <- function(input, output, session) {
       ),
       tags$div(
         class = "meta-note",
-        "Percentiles are empirical ranks among peers for the same year. For metrics where lower values are better, percentiles are inverted so higher = better."
+        "Percentiles are empirical ranks among peers for the same year (percent of peers with value \u2264 the selected school/division). Higher percentile means a higher observed value."
       )
     )
   })
