@@ -1212,7 +1212,7 @@ server <- function(input, output, session) {
         limits = c(0, 100),
         expand = expansion(mult = c(0.05, 0.12)),
         breaks = c(0, 50, 100),
-        labels = NULL
+        labels = c("0", "50", "100")
       ) +
       labs(
         x = NULL,
@@ -1235,7 +1235,6 @@ server <- function(input, output, session) {
         legend.key.width = grid::unit(1.3, "lines"),
         plot.margin = margin(t = 6, r = 8, b = 6, l = 6)
       ) +
-      scale_y_continuous(limits = c(0, 100), breaks = c(0, 50, 100), labels = c("0", "50", "100")) +
       guides(color = guide_legend(order = 1, nrow = 1, byrow = TRUE)) +
       coord_cartesian(clip = "off")
   })
