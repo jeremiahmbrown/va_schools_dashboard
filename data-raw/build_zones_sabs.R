@@ -31,6 +31,10 @@ suppressPackageStartupMessages({
   library(jsonlite)
 })
 
+# SABS geometries include some invalid self-intersections. sf's s2 backend can
+# throw hard errors when ingesting invalid loops; we prefer GEOS here.
+sf::sf_use_s2(FALSE)
+
 repo_root <- normalizePath(file.path(getwd(), "."), mustWork = TRUE)
 input_dir <- file.path(repo_root, "data-raw", "input", "sabs")
 out_dir <- file.path(repo_root, "app", "data", "zones", "sabs")
@@ -54,13 +58,53 @@ if (length(shps) == 0) {
   if (length(zips) > 0) {
     message("No shapefiles found; extracting zip(s) under: ", input_dir)
     for (z in zips) {
-      utils::unzip(z, exdir = input_dir)
+      utils::unzip(z, exdir = input_dir, overwrite = TRUE)
     }
     shps <- find_shapefiles(input_dir)
   }
 }
 if (length(shps) == 0) {
   stop("No .shp files found under ", input_dir, ".")
+}
+
+# Prefer a pre-filtered Virginia-only shapefile if present, or create one using GDAL
+# to avoid reading the full nationwide boundary file into R.
+pick_va_filtered <- function(paths) {
+  va <- paths[grepl("_VA\\.shp$|SABS_1516_VA\\.shp$", paths, ignore.case = TRUE)]
+  if (length(va) > 0) return(va[[1]])
+  NULL
+}
+
+va_shp <- pick_va_filtered(shps)
+if (is.null(va_shp)) {
+  full <- shps[grepl("SABS_1516\\.shp$", shps, ignore.case = TRUE)]
+  if (length(full) > 0) {
+    full <- full[[1]]
+    out_dir_ogr <- file.path(input_dir, "SABS_1516_VA")
+    out_shp <- file.path(out_dir_ogr, "SABS_1516_VA.shp")
+    if (!file.exists(out_shp)) {
+      dir.create(out_dir_ogr, recursive = TRUE, showWarnings = FALSE)
+      message("Creating VA-only subset via ogr2ogr (stAbbrev = 'VA')...")
+      # This is dramatically faster than reading the full national dataset into R.
+      cmd <- sprintf(
+        "ogr2ogr -overwrite -where %s %s %s",
+        shQuote("stAbbrev = 'VA'"),
+        shQuote(out_shp),
+        shQuote(full)
+      )
+      status <- suppressWarnings(system(cmd, ignore.stdout = TRUE, ignore.stderr = TRUE))
+      if (!file.exists(out_shp) || (!is.null(status) && is.numeric(status) && status != 0)) {
+        stop(
+          "ogr2ogr VA subset failed; expected output missing: ", out_shp, "\n",
+          "Try running manually:\n",
+          "  ogr2ogr -overwrite -where \"stAbbrev = 'VA'\" ", shQuote(out_shp), " ", shQuote(full)
+        )
+      }
+    }
+    shps <- c(out_shp)
+  }
+} else {
+  shps <- c(va_shp)
 }
 
 message("Reading SABS geometries (this can take a moment)...")
@@ -95,11 +139,32 @@ zones <- zones %>%
   ) %>%
   filter(!is.na(division_id) & division_id != "")
 
-zones <- sf::st_make_valid(zones)
+# Filter to Virginia divisions to keep runtime small and avoid unrelated
+# invalid geometries outside the app's scope.
+va_divisions <- tryCatch({
+  div_path <- file.path(repo_root, "app", "data", "division_metrics.csv")
+  if (file.exists(div_path)) {
+    read.csv(div_path, stringsAsFactors = FALSE) %>% distinct(division_id) %>% pull(division_id) %>% as.character()
+  } else {
+    NULL
+  }
+}, error = function(e) NULL)
+
+if (!is.null(va_divisions) && length(va_divisions) > 0) {
+  zones <- zones %>% filter(division_id %in% va_divisions)
+  message("Filtered to VA divisions: ", length(unique(zones$division_id)))
+}
+
+# Repair invalid loops defensively (GEOS path; s2 disabled above).
+zones <- tryCatch(sf::st_make_valid(zones), error = function(e) {
+  message("st_make_valid failed: ", conditionMessage(e), " ; attempting st_buffer(0) fallback")
+  sf::st_buffer(zones, 0)
+})
 zones <- sf::st_transform(zones, 4326)
 
 # Simplify for interactive display (tune as needed).
 zones <- sf::st_simplify(zones, dTolerance = 0.0007, preserveTopology = TRUE)
+zones <- tryCatch(sf::st_make_valid(zones), error = function(e) zones)
 
 sf_to_rings <- function(geom) {
   # Convert an sf POLYGON/MULTIPOLYGON into a list of outer rings.

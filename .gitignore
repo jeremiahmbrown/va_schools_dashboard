@@ -4,3 +4,7 @@ rsconnect/
 .Rhistory
 .RData
 .Ruserdata
+
+# Large upstream boundary files (NCES SABS) are manually downloaded and should
+# not be committed. The app uses the derived lightweight JSON under app/data/.
+data-raw/input/sabs/
