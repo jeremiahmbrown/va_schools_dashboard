@@ -898,6 +898,7 @@ server <- function(input, output, session) {
     zones_zoom_debounced <- reactive(input$map_zoom) %>% debounce(250)
     zones_render_key <- reactiveVal("off")
     zones_pending_token <- reactiveVal(0L)
+    zones_pending <- reactiveVal(NULL)
     zones_debug <- isTRUE(getOption("va_zones_debug")) || Sys.getenv("VA_ZONES_DEBUG") == "1"
 
     observeEvent(
@@ -924,7 +925,7 @@ server <- function(input, output, session) {
         if (enabled) {
           if (is.null(division_id) || !nzchar(division_id)) {
             desired_key <- "enabled::noselection"
-          } else if (is.finite(zoom) && zoom < 9) {
+          } else if (!is.finite(zoom) || zoom < 9) {
             desired_key <- paste0("enabled::zoomlow::", division_id)
           } else {
             data_dir <- file.path(app_dir, "data")
@@ -945,6 +946,7 @@ server <- function(input, output, session) {
 
         # Always clear when the state changes (avoids stacking layers).
         proxy %>% removeGeoJSON("zones")
+        zones_pending(NULL)
 
         if (!enabled) return()
         if (startsWith(desired_key, "enabled::noselection")) return()
@@ -972,43 +974,65 @@ server <- function(input, output, session) {
         }
 
         # enabled::show::<division_id>
-        # Delay rendering slightly so we don't compete with fitBounds/flyTo zoom animations.
         token <- zones_pending_token() + 1L
         zones_pending_token(token)
         zone_path <- pick_zone_file(file.path(app_dir, "data"), division_id, mode = "division")
 
-        later::later(function() {
-          # If state changed while waiting, don't render.
-          if (!identical(zones_pending_token(), token)) return()
-          if (!identical(zones_render_key(), desired_key)) return()
-          if (!isTRUE(isolate(input$zones_enabled))) return()
-          if (is.null(zone_path) || !file.exists(zone_path)) return()
-
-          zones_geojson <- read_zone_geojson(zone_path)
-          if (is.null(zones_geojson) || !nzchar(zones_geojson)) return()
-
-          t0 <- proc.time()[[3]]
-          tryCatch({
-            leafletProxy("map") %>%
-              removeGeoJSON("zones") %>%
-              addGeoJSON(
-                zones_geojson,
-                layerId = "zones",
-                group = "zones",
-                style = list(pane = "zonePolygonPane")
-              )
-          }, error = function(e) {
-            if (zones_debug) message("zones observer: addGeoJSON error: ", conditionMessage(e))
-            NULL
-          })
-          if (zones_debug) {
-            dt <- proc.time()[[3]] - t0
-            message("zones observer: rendered zones for division ", division_id, " in ", sprintf("%.3fs", dt))
-          }
-        }, delay = 0.6)
+        # Delay rendering slightly so we don't compete with fitBounds/flyTo zoom animations.
+        zones_pending(list(
+          token = token,
+          desired_key = desired_key,
+          division_id = division_id,
+          zone_path = zone_path,
+          scheduled_at = Sys.time()
+        ))
       },
       ignoreInit = TRUE
     )
+
+    observe({
+      pend <- zones_pending()
+      if (is.null(pend)) return()
+
+      shiny::invalidateLater(200, session)
+
+      if (is.null(pend$scheduled_at) || as.numeric(difftime(Sys.time(), pend$scheduled_at, units = "secs")) < 0.6) {
+        return()
+      }
+
+      # Confirm state didn't change while waiting.
+      if (!identical(zones_pending_token(), pend$token)) return()
+      if (!identical(zones_render_key(), pend$desired_key)) return()
+      if (!isTRUE(input$zones_enabled)) return()
+      if (is.null(pend$zone_path) || !file.exists(pend$zone_path)) return()
+
+      zones_geojson <- read_zone_geojson(pend$zone_path)
+      if (is.null(zones_geojson) || !nzchar(zones_geojson)) {
+        zones_pending(NULL)
+        return()
+      }
+
+      t0 <- proc.time()[[3]]
+      tryCatch({
+        leafletProxy("map") %>%
+          removeGeoJSON("zones") %>%
+          addGeoJSON(
+            zones_geojson,
+            layerId = "zones",
+            group = "zones",
+            style = list(pane = "zonePolygonPane")
+          )
+      }, error = function(e) {
+        if (zones_debug) message("zones observer: addGeoJSON error: ", conditionMessage(e))
+        NULL
+      })
+      if (zones_debug) {
+        dt <- proc.time()[[3]] - t0
+        message("zones observer: rendered zones for division ", pend$division_id, " in ", sprintf("%.3fs", dt))
+      }
+
+      zones_pending(NULL)
+    })
 
     observe({
       proxy <- leafletProxy("map")
