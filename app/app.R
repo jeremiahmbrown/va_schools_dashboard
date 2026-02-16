@@ -626,6 +626,7 @@ server <- function(input, output, session) {
         # Clicking a school should not zoom *out* if the user is already zoomed in.
         # (Leaflet provides input$map_zoom for the current zoom level.)
         current_zoom <- suppressWarnings(as.numeric(input$map_zoom))
+        if (length(current_zoom) != 1 || !is.finite(current_zoom)) current_zoom <- NA_real_
         target_zoom <- if (is.finite(current_zoom)) max(12, current_zoom) else 12
         leafletProxy("map") %>%
           flyTo(lng = school_row$lon[[1]], lat = school_row$lat[[1]], zoom = target_zoom)
@@ -654,6 +655,7 @@ server <- function(input, output, session) {
 
   observeEvent(input$map_shape_click, {
     polygon_id <- input$map_shape_click$id
+    if (is.null(polygon_id) || !nzchar(polygon_id)) return()
     mapped <- polygon_division_map %>%
       filter(polygon_division_id == polygon_id) %>%
       slice(1)
