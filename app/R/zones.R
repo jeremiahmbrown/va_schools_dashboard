@@ -114,14 +114,22 @@ zones_json_to_geojson <- function(json_path) {
 
     level_label <- to_level(f$level, lo = lo, hi = hi)
 
-    # Default style; can be refined later.
+    level_cols <- c(
+      Elementary = "#1F77B4",
+      Middle = "#F58518",
+      High = "#54A24B",
+      Other = "#777777",
+      Unknown = "#777777"
+    )
+    stroke <- level_cols[[if (!is.na(level_label) && nzchar(level_label)) level_label else "Unknown"]]
+
     style <- list(
       pane = "zonePolygonPane",
       weight = 1.0,
       opacity = 0.9,
       fillOpacity = 0.12,
-      color = "#1F77B4",
-      fillColor = "#1F77B4"
+      color = stroke,
+      fillColor = stroke
     )
 
     feats_out[[length(feats_out) + 1]] <- list(
