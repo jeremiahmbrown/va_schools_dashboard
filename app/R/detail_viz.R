@@ -228,7 +228,7 @@ make_race_stacked_bar <- function(df, title = "Student composition", top_n = 6) 
   )
   fill_cols <- setNames(demo_cols[as.character(d$label)], as.character(d$legend_label))
 
-  ggplot(d, aes(x = "Race/ethnicity", y = pct, fill = legend_label)) +
+  p <- ggplot(d, aes(x = "Race/ethnicity", y = pct, fill = legend_label)) +
     geom_col(width = 0.55, color = "white", linewidth = 0.6) +
     coord_flip() +
     scale_fill_manual(values = fill_cols, drop = FALSE) +
@@ -249,4 +249,20 @@ make_race_stacked_bar <- function(df, title = "Student composition", top_n = 6) 
       legend.key.size = grid::unit(0.9, "lines")
     ) +
     labs(title = title)
+
+  # Add in-bar % labels for larger segments only (keeps tiny segments uncluttered).
+  d_lab <- d %>% filter(is.finite(pct) & pct >= 5)
+  if (nrow(d_lab) > 0) {
+    p <- p + geom_text(
+      data = d_lab,
+      aes(label = sprintf("%.1f%%", pct)),
+      position = position_stack(vjust = 0.5),
+      color = "white",
+      fontface = "bold",
+      size = 3.4,
+      show.legend = FALSE
+    )
+  }
+
+  p
 }

@@ -236,16 +236,7 @@ ui <- fluidPage(
           choices = c("Schools (points)" = "schools", "Divisions (choropleth)" = "divisions"),
           selected = c("schools", "divisions")
         ),
-        selectInput(
-          "zones_layer",
-          "Attendance zones",
-          choices = c(
-            "Off" = "off",
-            "Division sources (when available)" = "division",
-            "NCES SABS (fallback)" = "sabs"
-          ),
-          selected = "off"
-        ),
+        checkboxInput("zones_enabled", "Show attendance zones (when available)", value = FALSE),
         selectInput(
           "school_level",
           "School level",
@@ -322,6 +313,8 @@ ui <- fluidPage(
         tags$div(
           class = "meta-note",
           tags$strong("Attendance zones: "),
+          "Turn on the zones layer, then select a school or division to load that division's zones.",
+          tags$br(),
           "Boundaries may be incomplete or outdated; verify with the school division."
         )
       ),
@@ -338,7 +331,7 @@ ui <- fluidPage(
         column(width = 6, uiOutput("needs_panel"))
       ),
       tags$hr(),
-      plotOutput("trend_plot", height = 240)
+      plotOutput("trend_plot", height = 300)
     )
   )
 )
@@ -350,6 +343,7 @@ server <- function(input, output, session) {
   selected_school_id <- reactiveVal(NULL)
   selected_division_id <- reactiveVal(NULL)
   search_ready <- reactiveVal(FALSE)
+  zones_warned_key <- reactiveVal(NULL)
 
   perf_metric_id <- reactive({
     # Default to the legacy overall ACR composite.
@@ -898,22 +892,41 @@ server <- function(input, output, session) {
       }
     }, ignoreInit = TRUE)
 
-    # Optional attendance zone overlay (renders only when a division is selected).
+    # Optional attendance zone overlay (renders only when an entity is selected).
     observe({
-      mode <- input$zones_layer
+      enabled <- isTRUE(input$zones_enabled)
       division_id <- selected_division_id()
+      school_id <- selected_school_id()
       proxy <- leafletProxy("map")
 
       proxy %>% clearGroup("zones")
 
-      if (is.null(mode) || mode == "off" || is.null(division_id) || !nzchar(division_id)) {
+      if (!enabled) {
         return()
       }
 
+      if ((is.null(division_id) || !nzchar(division_id)) && !is.null(school_id) && nzchar(school_id)) {
+        div_row <- schools %>% filter(school_id == !!school_id) %>% slice(1)
+        if (nrow(div_row) == 1) division_id <- div_row$division_id[[1]]
+      }
+
+      if (is.null(division_id) || !nzchar(division_id)) return()
+
       data_dir <- file.path(app_dir, "data")
-      src_mode <- if (mode == "sabs") "sabs" else "division"
-      zone_path <- pick_zone_file(data_dir, division_id, mode = src_mode)
-      if (is.null(zone_path) || !file.exists(zone_path)) return()
+      # Prefer division sources when present; otherwise fall back to SABS if present.
+      zone_path <- pick_zone_file(data_dir, division_id, mode = "division")
+      if (is.null(zone_path) || !file.exists(zone_path)) {
+        key <- paste0("nozones::", division_id)
+        if (!identical(zones_warned_key(), key)) {
+          zones_warned_key(key)
+          showNotification(
+            paste0("No attendance zone boundaries found for this division (", division_id, ") in the current snapshot."),
+            type = "warning",
+            duration = 6
+          )
+        }
+        return()
+      }
 
       zones_sp <- zones_json_to_sp(zone_path)
       if (is.null(zones_sp) || length(zones_sp) == 0) return()
@@ -1347,12 +1360,12 @@ server <- function(input, output, session) {
       df <- data.frame(label = character(0), pct = numeric(0))
     }
 
-    make_race_stacked_bar(df, title = "Student composition", top_n = 6)
+    make_race_stacked_bar(df, title = "Student composition", top_n = 7)
   })
 
   output$needs_panel <- renderUI({
     req(input$year)
-    year <- as.integer(input$year)
+    year_selected <- as.integer(input$year)
 
     needs_ids <- metric_defs_by_id %>%
       filter(category == "needs") %>%
@@ -1376,6 +1389,15 @@ server <- function(input, output, session) {
         tags$div(class = "muted", "Select a school or division to see student needs/program metrics.")
       ))
     }
+
+    # Needs/program metrics may not be available for all years. If the selected year has
+    # no reportable values, fall back to the latest year with data (and make it explicit).
+    avail_years <- sort(unique(school_metrics$year[school_metrics$metric_id %in% needs_ids]))
+    year <- year_selected
+    if (length(avail_years) > 0 && !(year_selected %in% avail_years)) {
+      year <- max(avail_years, na.rm = TRUE)
+    }
+    year_note <- if (year != year_selected) paste0(" (showing ", year, "; no needs/program data for ", year_selected, ")") else ""
 
     if (!is.null(school_id)) {
       base_defs <- metric_defs_by_id %>%
@@ -1418,7 +1440,7 @@ server <- function(input, output, session) {
 
     tags$div(
       class = "detail-panel",
-      tags$h4("Student needs & programs"),
+      tags$h4(paste0("Student needs & programs", year_note)),
       tags$table(
         class = "metric-table",
         tags$thead(tags$tr(
