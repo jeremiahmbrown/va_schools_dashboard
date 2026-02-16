@@ -5,8 +5,9 @@
 #   Boundary Survey (SABS) as a fallback layer when division-published boundaries
 #   are unavailable.
 #
-#   This script is designed to be re-runnable and to emit lightweight JSON
-#   polygon rings under `app/data/zones/sabs/` for fast Shiny runtime loading.
+#   This script is designed to be re-runnable and to emit lightweight GeoJSON
+#   FeatureCollections under `app/data/zones/sabs/` for fast Shiny runtime
+#   loading (no runtime re-serialization).
 #
 # Inputs:
 #   - Manual download of NCES SABS boundary data placed under:
@@ -17,7 +18,8 @@
 #       `Rscript --vanilla data-raw/build_zones_sabs.R`
 #
 # Outputs:
-#   - `app/data/zones/sabs/<division_id>.json` (one file per LEAID/division_id)
+#   - `app/data/zones/sabs/<division_id>.json` (GeoJSON FeatureCollection; one
+#     file per LEAID/division_id)
 #
 # Key Details / Debugging:
 #   - SABS schemas vary by release. This script is defensive:
@@ -211,25 +213,109 @@ dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
 
 message("Writing per-division JSON to: ", out_dir)
 div_ids <- sort(unique(zones$division_id))
+
+to_grade <- function(x) {
+  x <- toupper(trimws(as.character(x)))
+  if (!nzchar(x) || is.na(x)) return(NA_character_)
+  if (x %in% c("PK", "PREK")) return("Pre-K")
+  if (x %in% c("KG", "K")) return("K")
+  if (grepl("^[0-9]+$", x)) return(as.character(as.integer(x)))
+  x
+}
+
+to_level_label <- function(level_raw, lo, hi) {
+  x <- toupper(trimws(as.character(level_raw)))
+  if (nzchar(x)) {
+    if (x %in% c("PRIMARY", "ELEM", "ELEMENTARY")) return("Elementary")
+    if (x %in% c("MIDDLE", "MS")) return("Middle")
+    if (x %in% c("HIGH", "HS")) return("High")
+    if (x %in% c("OTHER")) return("Other")
+  }
+
+  lo <- to_grade(lo)
+  hi <- to_grade(hi)
+  if (!is.na(lo) && !is.na(hi)) {
+    if (lo %in% c("Pre-K", "K", "1", "2", "3", "4", "5") && hi %in% c("Pre-K", "K", "1", "2", "3", "4", "5")) return("Elementary")
+    if (lo %in% c("6", "7", "8") && hi %in% c("6", "7", "8")) return("Middle")
+    if (lo %in% c("9", "10", "11", "12") && hi %in% c("9", "10", "11", "12")) return("High")
+  }
+
+  "Unknown"
+}
+
+mk_grade_span <- function(lo, hi) {
+  lo <- to_grade(lo)
+  hi <- to_grade(hi)
+  if (is.na(lo) || is.na(hi)) return(NA_character_)
+  if (identical(lo, hi)) lo else paste0(lo, "\u2013", hi)
+}
+
+mk_popup <- function(school_name, level_label, grade_span) {
+  school_name <- as.character(school_name)
+  if (is.na(school_name)) school_name <- ""
+
+  bits <- c("<strong>Attendance zone (approximate)</strong>")
+  if (nzchar(school_name)) bits <- c(bits, paste0("School: ", school_name))
+  if (!is.na(level_label) && nzchar(level_label) && level_label != "Unknown") bits <- c(bits, paste0("School level: ", level_label))
+  if (!is.na(grade_span) && nzchar(grade_span)) bits <- c(bits, paste0("Grades served: ", grade_span))
+  bits <- c(bits, "Source: NCES SABS (2015\u201316)")
+  bits <- c(bits, "<span class='muted'>Confirm boundaries on the school division website.</span>")
+  paste(bits, collapse = "<br/>")
+}
+
+level_cols <- c(
+  Elementary = "#1F77B4",
+  Middle = "#F58518",
+  High = "#54A24B",
+  Other = "#777777",
+  Unknown = "#777777"
+)
+
 for (div_id in div_ids) {
   sub <- zones %>% filter(division_id == div_id)
   if (nrow(sub) == 0) next
 
   feats <- vector("list", nrow(sub))
   for (i in seq_len(nrow(sub))) {
+    zone_id <- paste0(div_id, "_", i)
+    grade_span <- mk_grade_span(sub$grades_lo[[i]], sub$grades_hi[[i]])
+    level_label <- to_level_label(sub$level[[i]], lo = sub$grades_lo[[i]], hi = sub$grades_hi[[i]])
+    stroke <- unname(level_cols[[level_label]])
+
     feats[[i]] <- list(
-      zone_id = paste0(div_id, "_", i),
-      school_name = sub$school_name[[i]],
-      level = sub$level[[i]],
-      grades_lo = sub$grades_lo[[i]],
-      grades_hi = sub$grades_hi[[i]],
-      nces_school_id = sub$nces_school_id[[i]],
-      source = "sabs",
-      multipolygon = sf_geom_to_multipolygon_coords(sub[i, ])
+      type = "Feature",
+      id = zone_id,
+      properties = list(
+        zone_id = zone_id,
+        division_id = div_id,
+        school_name = sub$school_name[[i]],
+        level = level_label,
+        grades_lo = sub$grades_lo[[i]],
+        grades_hi = sub$grades_hi[[i]],
+        grade_span = grade_span,
+        nces_school_id = sub$nces_school_id[[i]],
+        source = "sabs",
+        popup = mk_popup(sub$school_name[[i]], level_label, grade_span),
+        style = list(
+          weight = 1.0,
+          opacity = 0.9,
+          fillOpacity = 0.12,
+          color = stroke,
+          fillColor = stroke
+        )
+      ),
+      geometry = list(
+        type = "MultiPolygon",
+        coordinates = sf_geom_to_multipolygon_coords(sub[i, ])
+      )
     )
   }
 
-  jsonlite::write_json(list(division_id = div_id, features = feats), file.path(out_dir, paste0(div_id, ".json")), auto_unbox = TRUE)
+  jsonlite::write_json(
+    list(type = "FeatureCollection", features = feats),
+    file.path(out_dir, paste0(div_id, ".json")),
+    auto_unbox = TRUE
+  )
 }
 
 message("Done.")

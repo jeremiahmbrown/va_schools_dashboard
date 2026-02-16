@@ -908,12 +908,25 @@ server <- function(input, output, session) {
         return()
       }
 
+      # Avoid rendering heavy zone polygons at statewide zoom levels.
+      zoom <- suppressWarnings(as.numeric(input$map_zoom))
+      if (length(zoom) != 1 || !is.finite(zoom)) zoom <- NA_real_
+
       if ((is.null(division_id) || !nzchar(division_id)) && !is.null(school_id) && nzchar(school_id)) {
         div_row <- schools %>% filter(school_id == !!school_id) %>% slice(1)
         if (nrow(div_row) == 1) division_id <- div_row$division_id[[1]]
       }
 
       if (is.null(division_id) || !nzchar(division_id)) return()
+
+      if (is.finite(zoom) && zoom < 9) {
+        key <- paste0("zoneszoom::", division_id)
+        if (!identical(zones_warned_key(), key)) {
+          zones_warned_key(key)
+          showNotification("Zoom in further to display attendance zones.", type = "message", duration = 4)
+        }
+        return()
+      }
 
       data_dir <- file.path(app_dir, "data")
       # Prefer division sources when present; otherwise fall back to SABS if present.
@@ -931,8 +944,8 @@ server <- function(input, output, session) {
         return()
       }
 
-      zones_geojson <- zones_json_to_geojson(zone_path)
-      if (is.null(zones_geojson)) return()
+      zones_geojson <- read_zone_geojson(zone_path)
+      if (is.null(zones_geojson) || !nzchar(zones_geojson)) return()
 
       proxy %>%
         addGeoJSON(
