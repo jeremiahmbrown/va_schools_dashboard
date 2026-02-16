@@ -13,6 +13,8 @@
 #       `data-raw/input/sabs/`
 #     (Expected: one or more shapefiles / geodatabases containing school
 #      attendance boundaries with NCES identifiers.)
+#   - Recommended invocation (avoids project renv auto-loader):
+#       `Rscript --vanilla data-raw/build_zones_sabs.R`
 #
 # Outputs:
 #   - `app/data/zones/sabs/<division_id>.json` (one file per LEAID/division_id)
