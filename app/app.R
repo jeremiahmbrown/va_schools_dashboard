@@ -331,7 +331,7 @@ ui <- fluidPage(
         column(width = 6, uiOutput("needs_panel"))
       ),
       tags$hr(),
-      plotOutput("trend_plot", height = 300)
+      plotOutput("trend_plot", height = 375)
     )
   )
 )
@@ -1223,7 +1223,7 @@ server <- function(input, output, session) {
       ) +
       theme_classic(base_size = 12) +
       theme(
-        axis.text.y = element_blank(),
+        axis.text.y = element_text(size = 9, color = "#333333"),
         axis.ticks.y = element_blank(),
         axis.line = element_line(color = "#333333", linewidth = 0.6),
         axis.ticks.x = element_line(color = "#333333", linewidth = 0.6),
@@ -1235,6 +1235,7 @@ server <- function(input, output, session) {
         legend.key.width = grid::unit(1.3, "lines"),
         plot.margin = margin(t = 6, r = 8, b = 6, l = 6)
       ) +
+      scale_y_continuous(limits = c(0, 100), breaks = c(0, 50, 100), labels = c("0", "50", "100")) +
       guides(color = guide_legend(order = 1, nrow = 1, byrow = TRUE)) +
       coord_cartesian(clip = "off")
   })
@@ -1300,7 +1301,18 @@ server <- function(input, output, session) {
       mutate(metric_id = factor(metric_id, levels = metric_ids)) %>%
       arrange(metric_id) %>%
       mutate(
-        value_str = ifelse(is.finite(value), fmt_value(value, format = format, unit = unit), "\u2014"),
+        value_str = dplyr::if_else(
+          is.finite(value),
+          mapply(
+            function(v, f, u) fmt_value(v, format = f, unit = u),
+            value,
+            as.character(format),
+            as.character(unit),
+            SIMPLIFY = TRUE,
+            USE.NAMES = FALSE
+          ),
+          "\u2014"
+        ),
         pct_state_str = ifelse(is.finite(pct_state), sprintf("%d", as.integer(round(pct_state))), "\u2014"),
         pct_division_str = ifelse(is.finite(pct_division), sprintf("%d", as.integer(round(pct_division))), "\u2014")
       )
@@ -1433,7 +1445,18 @@ server <- function(input, output, session) {
       mutate(metric_id = factor(metric_id, levels = needs_ids)) %>%
       arrange(metric_id) %>%
       mutate(
-        value_str = ifelse(is.finite(value), fmt_value(value, format = format, unit = unit), "\u2014"),
+        value_str = dplyr::if_else(
+          is.finite(value),
+          mapply(
+            function(v, f, u) fmt_value(v, format = f, unit = u),
+            value,
+            as.character(format),
+            as.character(unit),
+            SIMPLIFY = TRUE,
+            USE.NAMES = FALSE
+          ),
+          "\u2014"
+        ),
         pct_state_str = ifelse(is.finite(pct_state), sprintf("%d", as.integer(round(pct_state))), "\u2014"),
         pct_division_str = ifelse(is.finite(pct_division), sprintf("%d", as.integer(round(pct_division))), "\u2014")
       )

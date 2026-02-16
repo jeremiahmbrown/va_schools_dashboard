@@ -48,6 +48,18 @@ find_shapefiles <- function(dir_path) {
 
 shps <- find_shapefiles(input_dir)
 if (length(shps) == 0) {
+  # Allow a simpler workflow: user drops the SABS zip(s) into the folder without
+  # manually unzipping. We extract in-place, then re-scan for shapefiles.
+  zips <- list.files(input_dir, pattern = "\\.zip$", full.names = TRUE, recursive = FALSE, ignore.case = TRUE)
+  if (length(zips) > 0) {
+    message("No shapefiles found; extracting zip(s) under: ", input_dir)
+    for (z in zips) {
+      utils::unzip(z, exdir = input_dir)
+    }
+    shps <- find_shapefiles(input_dir)
+  }
+}
+if (length(shps) == 0) {
   stop("No .shp files found under ", input_dir, ".")
 }
 
@@ -128,4 +140,3 @@ for (div_id in div_ids) {
 }
 
 message("Done.")
-
