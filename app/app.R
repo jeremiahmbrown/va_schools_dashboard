@@ -344,6 +344,7 @@ server <- function(input, output, session) {
   selected_division_id <- reactiveVal(NULL)
   search_ready <- reactiveVal(FALSE)
   zones_warned_key <- reactiveVal(NULL)
+  last_map_entity_click_at <- reactiveVal(as.POSIXct(NA_real_, origin = "1970-01-01"))
 
   perf_metric_id <- reactive({
     # Default to the legacy overall ACR composite.
@@ -615,13 +616,15 @@ server <- function(input, output, session) {
   observeEvent(input$map_marker_click, {
     marker_id <- input$map_marker_click$id
     if (is.null(marker_id)) return()
+    last_map_entity_click_at(Sys.time())
 
     if (startsWith(marker_id, "school::")) {
       school_id <- sub("^school::", "", marker_id)
-      selected_school_id(school_id)
-      selected_division_id(NULL)
-
       school_row <- schools %>% filter(school_id == !!school_id) %>% slice(1)
+      division_id <- if (nrow(school_row) == 1) school_row$division_id[[1]] else NULL
+
+      selected_school_id(school_id)
+      if (!is.null(division_id) && nzchar(division_id)) selected_division_id(division_id)
       if (nrow(school_row) == 1 && is.finite(school_row$lat[[1]]) && is.finite(school_row$lon[[1]])) {
         # Clicking a school should not zoom *out* if the user is already zoomed in.
         # (Leaflet provides input$map_zoom for the current zoom level.)
@@ -656,6 +659,7 @@ server <- function(input, output, session) {
   observeEvent(input$map_shape_click, {
     polygon_id <- input$map_shape_click$id
     if (is.null(polygon_id) || !nzchar(polygon_id)) return()
+    last_map_entity_click_at(Sys.time())
     mapped <- polygon_division_map %>%
       filter(polygon_division_id == polygon_id) %>%
       slice(1)
@@ -671,6 +675,18 @@ server <- function(input, output, session) {
         fitBounds(lng1 = bb[1, 1], lat1 = bb[2, 1], lng2 = bb[1, 2], lat2 = bb[2, 2])
     }
   })
+
+  # Clicking on the basemap (not a marker/polygon) should clear a school selection,
+  # reverting zones (if enabled) back to the division overview.
+  observeEvent(input$map_click, {
+    # Leaflet sometimes emits a map_click immediately after marker clicks; ignore
+    # clicks within a short window.
+    t_last <- last_map_entity_click_at()
+    if (!is.na(t_last) && as.numeric(difftime(Sys.time(), t_last, units = "secs")) < 0.4) return()
+    if (!is.null(selected_school_id()) && nzchar(selected_school_id())) {
+      selected_school_id(NULL)
+    }
+  }, ignoreInit = TRUE)
   } else {
     observeEvent(input$map_plot_click, {
       click <- input$map_plot_click
@@ -688,7 +704,7 @@ server <- function(input, output, session) {
       # Rough threshold in degrees (works OK for VA-scale clicking).
       if (length(idx) == 1 && is.finite(dist2[[idx]]) && dist2[[idx]] < (0.06 * 0.06)) {
         selected_school_id(schools_joined$school_id[[idx]])
-        selected_division_id(NULL)
+        selected_division_id(schools_joined$division_id[[idx]])
         return()
       }
 
@@ -710,9 +726,11 @@ server <- function(input, output, session) {
     if (startsWith(val, "school::")) {
       school_id <- sub("^school::", "", val)
       selected_school_id(school_id)
-      selected_division_id(NULL)
 
       school_row <- schools %>% filter(school_id == !!school_id) %>% slice(1)
+      if (nrow(school_row) == 1 && nzchar(school_row$division_id[[1]])) {
+        selected_division_id(school_row$division_id[[1]])
+      }
       if (nrow(school_row) == 1 && is.finite(school_row$lat[[1]]) && is.finite(school_row$lon[[1]])) {
         leafletProxy("map") %>%
           flyTo(lng = school_row$lon[[1]], lat = school_row$lat[[1]], zoom = 12)
@@ -891,10 +909,15 @@ server <- function(input, output, session) {
       if (zoom <= division_rollup_zoom_max) {
         selected_school_id(NULL)
         selected_division_id(NULL)
+      } else if (!is.null(selected_school_id()) && nzchar(selected_school_id()) && zoom < 11) {
+        # When zooming out a good bit, revert from single-school mode back to the
+        # division overview (keep the division selection).
+        selected_school_id(NULL)
       }
     }, ignoreInit = TRUE)
 
-    # Optional attendance zone overlay (renders only when an entity is selected).
+    # Optional attendance zone overlay (renders for the selected division; if a
+    # specific school is selected, we filter to that school's zone only).
     zones_zoom_debounced <- reactive(input$map_zoom) %>% debounce(250)
     zones_render_key <- reactiveVal("off")
     zones_pending_token <- reactiveVal(0L)
@@ -922,6 +945,7 @@ server <- function(input, output, session) {
         # tick/animation; only when state changes (enabled/disabled, division changes,
         # or crossing the zoom threshold).
         desired_key <- "off"
+        zone_mode <- "division"
         if (enabled) {
           if (is.null(division_id) || !nzchar(division_id)) {
             desired_key <- "enabled::noselection"
@@ -933,7 +957,12 @@ server <- function(input, output, session) {
             if (is.null(zone_path) || !file.exists(zone_path)) {
               desired_key <- paste0("enabled::missing::", division_id)
             } else {
-              desired_key <- paste0("enabled::show::", division_id)
+              if (!is.null(school_id) && nzchar(school_id)) zone_mode <- "school"
+              if (identical(zone_mode, "school")) {
+                desired_key <- paste0("enabled::show_school::", division_id, "::", school_id)
+              } else {
+                desired_key <- paste0("enabled::show_division::", division_id)
+              }
             }
           }
         }
@@ -973,7 +1002,7 @@ server <- function(input, output, session) {
           return()
         }
 
-        # enabled::show::<division_id>
+        # enabled::show_*::<division_id>[::<school_id>]
         token <- zones_pending_token() + 1L
         zones_pending_token(token)
         zone_path <- pick_zone_file(file.path(app_dir, "data"), division_id, mode = "division")
@@ -983,6 +1012,8 @@ server <- function(input, output, session) {
           token = token,
           desired_key = desired_key,
           division_id = division_id,
+          zone_mode = zone_mode,
+          school_id = if (identical(zone_mode, "school")) school_id else NULL,
           zone_path = zone_path,
           scheduled_at = Sys.time()
         ))
@@ -1010,6 +1041,23 @@ server <- function(input, output, session) {
       if (is.null(zones_geojson) || !nzchar(zones_geojson)) {
         zones_pending(NULL)
         return()
+      }
+
+      if (identical(pend$zone_mode, "school") && !is.null(pend$school_id) && nzchar(pend$school_id)) {
+        filtered <- filter_zone_geojson_by_school_id(zones_geojson, pend$school_id)
+        if (!is.null(filtered) && nzchar(filtered)) {
+          zones_geojson <- filtered
+        } else {
+          key <- paste0("nozones_school::", pend$division_id, "::", pend$school_id)
+          if (!identical(zones_warned_key(), key)) {
+            zones_warned_key(key)
+            showNotification(
+              "No attendance zone boundary found for this school in the current snapshot; showing all division zones.",
+              type = "warning",
+              duration = 6
+            )
+          }
+        }
       }
 
       t0 <- proc.time()[[3]]

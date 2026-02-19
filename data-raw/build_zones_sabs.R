@@ -43,6 +43,87 @@ repo_root <- normalizePath(file.path(getwd(), "."), mustWork = TRUE)
 input_dir <- file.path(repo_root, "data-raw", "input", "sabs")
 out_dir <- file.path(repo_root, "app", "data", "zones", "sabs")
 
+schools_path <- file.path(repo_root, "app", "data", "schools.csv")
+schools_app <- NULL
+if (file.exists(schools_path)) {
+  schools_app <- tryCatch(
+    read.csv(schools_path, stringsAsFactors = FALSE) %>%
+      transmute(
+        school_id = as.character(school_id),
+        school_name = as.character(school_name),
+        division_id = as.character(division_id),
+        school_level = as.character(school_level)
+      ),
+    error = function(e) NULL
+  )
+}
+
+norm_school_name <- function(x) {
+  x <- as.character(x)
+  if (is.na(x) || !nzchar(x)) return("")
+  x <- tolower(x)
+  x <- gsub("&", " and ", x, fixed = TRUE)
+  x <- gsub("[^a-z0-9 ]+", " ", x)
+  x <- gsub("\\s+", " ", x)
+  trimws(x)
+}
+
+strip_level_tokens <- function(x) {
+  x <- as.character(x)
+  if (is.na(x) || !nzchar(x)) return("")
+  x <- gsub("\\b(elementary|middle|high|school|academy|center|centre|primary|intermediate)\\b", " ", x)
+  x <- gsub("\\s+", " ", x)
+  trimws(x)
+}
+
+match_app_school_id <- function(zone_school_name, level_label, division_schools) {
+  # Attempt to match SABS zone features to this app's school_id so the Shiny app
+  # can filter to a single zone when a school is selected.
+  if (is.null(division_schools) || nrow(division_schools) == 0) return(NA_character_)
+
+  z_norm <- norm_school_name(zone_school_name)
+  if (!nzchar(z_norm)) return(NA_character_)
+  z_nolevel <- strip_level_tokens(z_norm)
+
+  cands <- division_schools
+  if (!is.na(level_label) && level_label %in% c("Elementary", "Middle", "High")) {
+    ok <- cands$school_level %in% c(level_label, "Combined")
+    if (any(ok, na.rm = TRUE)) cands <- cands[ok, , drop = FALSE]
+  }
+
+  idx <- which(cands$name_norm == z_norm)
+  if (length(idx) == 1) return(cands$school_id[[idx]])
+
+  idx <- which(cands$name_norm_nolevel == z_nolevel)
+  if (length(idx) == 1) return(cands$school_id[[idx]])
+
+  # Conservative fuzzy match (within-division only). Prefer correctness over coverage.
+  if (!nzchar(z_nolevel)) return(NA_character_)
+  d <- suppressWarnings(utils::adist(z_nolevel, cands$name_norm_nolevel))
+  if (length(d) == 0) return(NA_character_)
+  d <- as.integer(d[1, ])
+  if (all(!is.finite(d))) return(NA_character_)
+  ord <- order(d, na.last = NA)
+  if (length(ord) == 0) return(NA_character_)
+  best <- ord[[1]]
+  min_d <- d[[best]]
+  second_d <- if (length(ord) >= 2) d[[ord[[2]]]] else Inf
+
+  len <- nchar(z_nolevel)
+  thr <- max(2L, floor(0.08 * len))
+  if (!is.finite(min_d) || min_d > thr) return(NA_character_)
+  if (is.finite(second_d) && second_d == min_d) return(NA_character_) # ambiguous
+
+  cand_nm <- cands$name_norm_nolevel[[best]]
+  if (nzchar(cand_nm)) {
+    if (substr(z_nolevel, 1, 3) != substr(cand_nm, 1, 3) && substr(z_nolevel, 1, 2) != substr(cand_nm, 1, 2)) {
+      return(NA_character_)
+    }
+  }
+
+  cands$school_id[[best]]
+}
+
 if (!dir.exists(input_dir)) {
   stop(
     "Missing SABS input directory: ", input_dir, "\n",
@@ -277,35 +358,50 @@ for (div_id in div_ids) {
   sub <- zones %>% filter(division_id == div_id)
   if (nrow(sub) == 0) next
 
+  division_schools <- NULL
+  if (!is.null(schools_app)) {
+    division_schools <- schools_app %>%
+      filter(division_id == div_id) %>%
+      mutate(
+        name_norm = vapply(school_name, norm_school_name, character(1)),
+        name_norm_nolevel = vapply(vapply(school_name, norm_school_name, character(1)), strip_level_tokens, character(1))
+      )
+  }
+
   feats <- vector("list", nrow(sub))
   for (i in seq_len(nrow(sub))) {
     zone_id <- paste0(div_id, "_", i)
     grade_span <- mk_grade_span(sub$grades_lo[[i]], sub$grades_hi[[i]])
     level_label <- to_level_label(sub$level[[i]], lo = sub$grades_lo[[i]], hi = sub$grades_hi[[i]])
     stroke <- unname(level_cols[[level_label]])
+    app_school_id <- match_app_school_id(sub$school_name[[i]], level_label, division_schools)
+    if (is.na(app_school_id) || !nzchar(app_school_id)) app_school_id <- NULL
+
+    props <- list(
+      zone_id = zone_id,
+      division_id = div_id,
+      school_name = sub$school_name[[i]],
+      level = level_label,
+      grades_lo = sub$grades_lo[[i]],
+      grades_hi = sub$grades_hi[[i]],
+      grade_span = grade_span,
+      nces_school_id = sub$nces_school_id[[i]],
+      source = "sabs",
+      popup = mk_popup(sub$school_name[[i]], level_label, grade_span),
+      style = list(
+        weight = 1.0,
+        opacity = 0.9,
+        fillOpacity = 0.12,
+        color = stroke,
+        fillColor = stroke
+      )
+    )
+    if (!is.null(app_school_id)) props$app_school_id <- app_school_id
 
     feats[[i]] <- list(
       type = "Feature",
       id = zone_id,
-      properties = list(
-        zone_id = zone_id,
-        division_id = div_id,
-        school_name = sub$school_name[[i]],
-        level = level_label,
-        grades_lo = sub$grades_lo[[i]],
-        grades_hi = sub$grades_hi[[i]],
-        grade_span = grade_span,
-        nces_school_id = sub$nces_school_id[[i]],
-        source = "sabs",
-        popup = mk_popup(sub$school_name[[i]], level_label, grade_span),
-        style = list(
-          weight = 1.0,
-          opacity = 0.9,
-          fillOpacity = 0.12,
-          color = stroke,
-          fillColor = stroke
-        )
-      ),
+      properties = props,
       geometry = list(
         type = "MultiPolygon",
         coordinates = sf_geom_to_multipolygon_coords(sub[i, ])
