@@ -1,5 +1,5 @@
 "Accreditation Rates"
-2/13/2026
+10/20/2026
 
 Year,Division,School,Indicator,Subgroup,"Level Code","Percent Passing","Percent Passing With Recovery","Percent Showing Growth","Percent Showing EL Progress or Proficiency","Accreditation Combined Rate","No Proficiency or Growth"
 2022,"Accomack County Public Schools","Accawmacke Elementary","Academic Achievement - Math","All Students",SCH,58,15,18,,91,9
@@ -29,7 +29,7 @@ Year,Division,School,Indicator,Subgroup,"Level Code","Percent Passing","Percent 
 2022,"Albemarle County Public Schools","Leslie H. Walton Middle","Academic Achievement - Math","All Students",SCH,67,6,11,,85,15
 2022,"Albemarle County Public Schools","Mary Carr Greer Elementary","Academic Achievement - Math","All Students",SCH,39,8,31,,78,22
 2022,"Albemarle County Public Schools","Monticello High","Academic Achievement - Math","All Students",SCH,66,0,0,,66,34
-2022,"Albemarle County Public Schools","Mountain View Elementary","Academic Achievement - Math","All Students",SCH,49,7,24,,79,21
+2022,"Albemarle County Public Schools","Mountain View Upper Elementary","Academic Achievement - Math","All Students",SCH,49,7,24,,79,21
 2022,"Albemarle County Public Schools","Red Hill Elementary","Academic Achievement - Math","All Students",SCH,38,6,25,,68,32
 2022,"Albemarle County Public Schools","Scottsville Elementary","Academic Achievement - Math","All Students",SCH,41,7,25,,73,27
 2022,"Albemarle County Public Schools","Stone Robinson Elementary","Academic Achievement - Math","All Students",SCH,67,4,17,,88,12
@@ -61,7 +61,7 @@ Year,Division,School,Indicator,Subgroup,"Level Code","Percent Passing","Percent 
 2022,"Alleghany Highlands Public Schools","Mountain View Elementary","Academic Achievement - Math","All Students",SCH,57,8,25,,90,10
 2022,"Alleghany Highlands Public Schools","Sharon Elementary","Academic Achievement - Math","All Students",SCH,92,4,2,,99,1
 2022,"Amelia County Public Schools","Amelia County Elementary","Academic Achievement - Math","All Students",SCH,55,9,19,,84,16
-2022,"Amelia County Public Schools","Amelia County High","Academic Achievement - Math","All Students",SCH,78,3,0,,81,19
+2022,"Amelia County Public Schools","Amelia County High School","Academic Achievement - Math","All Students",SCH,78,3,0,,81,19
 2022,"Amelia County Public Schools","Amelia County Middle","Academic Achievement - Math","All Students",SCH,49,12,18,,79,21
 2022,"Amherst County Public Schools","Amelon Elementary","Academic Achievement - Math","All Students",SCH,51,8,25,,84,16
 2022,"Amherst County Public Schools","Amherst County High","Academic Achievement - Math","All Students",SCH,66,0,0,,66,34
@@ -167,17 +167,10 @@ Year,Division,School,Indicator,Subgroup,"Level Code","Percent Passing","Percent 
 2022,"Bristol City Public Schools","Virginia Middle","Academic Achievement - Math","All Students",SCH,56,6,18,,79,21
 2022,"Brunswick County Public Schools","Brunswick High","Academic Achievement - Math","All Students",SCH,69,0,0,,69,31
 2022,"Brunswick County Public Schools","James S. Russell Middle","Academic Achievement - Math","All Students",SCH,33,12,27,,73,27
-2022,"Brunswick County Public Schools","Meherrin Powellton Elementary","Academic Achievement - Math","All Students",SCH,64,16,16,,97,3
-2022,"Brunswick County Public Schools","Red Oak-Sturgeon Elementary","Academic Achievement - Math","All Students",SCH,52,17,20,,90,10
-2022,"Brunswick County Public Schools","Totaro Elementary","Academic Achievement - Math","All Students",SCH,56,13,21,,90,10
 2022,"Buchanan County Public Schools","Council Elementary/Middle","Academic Achievement - Math","All Students",SCH,60,0,24,,84,16
-2022,"Buchanan County Public Schools","Council High ","Academic Achievement - Math","All Students",SCH,70,14,11,,95,5
-2022,"Buchanan County Public Schools","Grundy High","Academic Achievement - Math","All Students",SCH,88,0,0,,88,12
 2022,"Buchanan County Public Schools","Hurley Elementary/Middle","Academic Achievement - Math","All Students",SCH,47,0,26,,73,27
-2022,"Buchanan County Public Schools","Hurley High","Academic Achievement - Math","All Students",SCH,57,13,11,,81,19
 2022,"Buchanan County Public Schools","Riverview Elementary/Middle","Academic Achievement - Math","All Students",SCH,50,7,23,,80,20
 2022,"Buchanan County Public Schools","Twin Valley Elementary/Middle","Academic Achievement - Math","All Students",SCH,59,0,31,,89,11
-2022,"Buchanan County Public Schools","Twin Valley High","Academic Achievement - Math","All Students",SCH,54,8,9,,71,29
 2022,"Buckingham County Public Schools","Buckingham Co Elementary","Academic Achievement - Math","All Students",SCH,48,0,25,,72,28
 2022,"Buckingham County Public Schools","Buckingham Co Primary","Academic Achievement - Math","All Students",SCH,48,0,25,,72,28
 2022,"Buckingham County Public Schools","Buckingham County High","Academic Achievement - Math","All Students",SCH,86,0,0,,86,14
@@ -228,7 +221,6 @@ Year,Division,School,Indicator,Subgroup,"Level Code","Percent Passing","Percent 
 2022,"Charlottesville City Public Schools","Sunrise Elementary","Academic Achievement - Math","All Students",SCH,63,1,22,,87,13
 2022,"Charlottesville City Public Schools","Tall Oaks Elementary","Academic Achievement - Math","All Students",SCH,60,4,24,,87,13
 2022,"Charlottesville City Public Schools","Trailblazer Elementary","Academic Achievement - Math","All Students",SCH,64,3,23,,90,10
-2022,"Charlottesville City Public Schools","Walker Upper Elementary","Academic Achievement - Math","All Students",SCH,47,12,15,,75,25
 2022,"Chesapeake City Public Schools","Butts Road Intermediate","Academic Achievement - Math","All Students",SCH,84,7,5,,96,4
 2022,"Chesapeake City Public Schools","Butts Road Primary","Academic Achievement - Math","All Students",SCH,84,7,5,,96,4
 2022,"Chesapeake City Public Schools","Camelot Elementary","Academic Achievement - Math","All Students",SCH,65,10,15,,91,9
@@ -1012,7 +1004,6 @@ Year,Division,School,Indicator,Subgroup,"Level Code","Percent Passing","Percent 
 2022,"Martinsville City Public Schools","Patrick Henry Elementary","Academic Achievement - Math","All Students",SCH,46,11,26,,83,17
 2022,"Mathews County Public Schools","Mathews Elementary","Academic Achievement - Math","All Students",SCH,75,12,11,,98,2
 2022,"Mathews County Public Schools","Mathews High","Academic Achievement - Math","All Students",SCH,59,10,0,,69,31
-2022,"Mathews County Public Schools","Thomas Hunter Middle ","Academic Achievement - Math","All Students",SCH,45,15,15,,75,25
 2022,"Mecklenburg County Public Schools","Chase City Elementary","Academic Achievement - Math","All Students",SCH,56,9,18,,83,17
 2022,"Mecklenburg County Public Schools","Clarksville Elementary","Academic Achievement - Math","All Students",SCH,67,5,16,,88,12
 2022,"Mecklenburg County Public Schools","LaCrosse Elementary ","Academic Achievement - Math","All Students",SCH,69,12,15,,96,4
@@ -1066,7 +1057,6 @@ Year,Division,School,Indicator,Subgroup,"Level Code","Percent Passing","Percent 
 2022,"Newport News City Public Schools","Hilton Elementary","Academic Achievement - Math","All Students",SCH,55,11,19,,86,14
 2022,"Newport News City Public Schools","Homer L. Hines Middle","Academic Achievement - Math","All Students",SCH,43,12,22,,76,24
 2022,"Newport News City Public Schools","Huntington Middle","Academic Achievement - Math","All Students",SCH,18,5,25,,47,53
-2022,"Newport News City Public Schools","John Marshall Early Childhood Center","Academic Achievement - Math","All Students",SCH,37,6,21,,64,36
 2022,"Newport News City Public Schools","Joseph H. Saunders Elementary","Academic Achievement - Math","All Students",SCH,34,10,32,,76,24
 2022,"Newport News City Public Schools","Katherine Johnson Elementary","Academic Achievement - Math","All Students",SCH,27,6,34,,67,33
 2022,"Newport News City Public Schools","Kiln Creek Elementary","Academic Achievement - Math","All Students",SCH,41,10,27,,78,22
@@ -1109,11 +1099,9 @@ Year,Division,School,Indicator,Subgroup,"Level Code","Percent Passing","Percent 
 2022,"Norfolk City Public Schools","Mary Calcott Elementary","Academic Achievement - Math","All Students",SCH,73,12,11,,96,4
 2022,"Norfolk City Public Schools","Matthew Fontaine Maury High","Academic Achievement - Math","All Students",SCH,78,0,0,,78,22
 2022,"Norfolk City Public Schools","Northside Middle","Academic Achievement - Math","All Students",SCH,37,13,24,,75,25
-2022,"Norfolk City Public Schools","Norview Elementary","Academic Achievement - Math","All Students",SCH,38,11,31,,79,21
 2022,"Norfolk City Public Schools","Norview High","Academic Achievement - Math","All Students",SCH,59,10,0,,69,31
 2022,"Norfolk City Public Schools","Norview Middle","Academic Achievement - Math","All Students",SCH,27,8,27,,61,39
 2022,"Norfolk City Public Schools","Ocean View Elementary","Academic Achievement - Math","All Students",SCH,47,11,22,,79,21
-2022,"Norfolk City Public Schools","Oceanair Elementary","Academic Achievement - Math","All Students",SCH,43,13,30,,86,14
 2022,"Norfolk City Public Schools","P.B. Young Sr. Elementary ","Academic Achievement - Math","All Students",SCH,32,14,34,,80,20
 2022,"Norfolk City Public Schools","Richard Bowling Elementary","Academic Achievement - Math","All Students",SCH,19,3,37,,59,41
 2022,"Norfolk City Public Schools","Ruffner School","Academic Achievement - Math","All Students",SCH,13,6,31,,51,49
@@ -1292,7 +1280,6 @@ Year,Division,School,Indicator,Subgroup,"Level Code","Percent Passing","Percent 
 2022,"Prince William County Public Schools","Potomac High","Academic Achievement - Math","All Students",SCH,78,0,0,,78,22
 2022,"Prince William County Public Schools","Potomac Middle","Academic Achievement - Math","All Students",SCH,44,11,21,,76,24
 2022,"Prince William County Public Schools","Potomac Shores Middle","Academic Achievement - Math","All Students",SCH,50,11,16,,77,23
-2022,"Prince William County Public Schools","Potomac View Elementary","Academic Achievement - Math","All Students",SCH,60,13,20,,93,7
 2022,"Prince William County Public Schools","R. Dean Kilby Elementary","Academic Achievement - Math","All Students",SCH,54,8,28,,90,10
 2022,"Prince William County Public Schools","Rippon Middle","Academic Achievement - Math","All Students",SCH,53,10,16,,79,21
 2022,"Prince William County Public Schools","River Oaks Elementary","Academic Achievement - Math","All Students",SCH,70,9,15,,93,7
@@ -1317,6 +1304,7 @@ Year,Division,School,Indicator,Subgroup,"Level Code","Percent Passing","Percent 
 2022,"Prince William County Public Schools","Victory Elementary","Academic Achievement - Math","All Students",SCH,76,5,10,,92,8
 2022,"Prince William County Public Schools","West Gate Elementary","Academic Achievement - Math","All Students",SCH,57,6,33,,96,4
 2022,"Prince William County Public Schools","Westridge Elementary","Academic Achievement - Math","All Students",SCH,84,6,6,,96,4
+2022,"Prince William County Public Schools","Woodbridge Elementary","Academic Achievement - Math","All Students",SCH,60,13,20,,93,7
 2022,"Prince William County Public Schools","Woodbridge High","Academic Achievement - Math","All Students",SCH,73,0,0,,73,27
 2022,"Prince William County Public Schools","Woodbridge Middle","Academic Achievement - Math","All Students",SCH,69,1,16,,86,14
 2022,"Prince William County Public Schools","Yorkshire Elementary","Academic Achievement - Math","All Students",SCH,60,9,23,,93,7
@@ -1823,7 +1811,7 @@ Year,Division,School,Indicator,Subgroup,"Level Code","Percent Passing","Percent 
 2023,"Albemarle County Public Schools","Leslie H. Walton Middle","Academic Achievement - Math","All Students",SCH,64,8,10,,82,18
 2023,"Albemarle County Public Schools","Mary Carr Greer Elementary","Academic Achievement - Math","All Students",SCH,43,5,27,,75,25
 2023,"Albemarle County Public Schools","Monticello High","Academic Achievement - Math","All Students",SCH,72,0,0,,72,28
-2023,"Albemarle County Public Schools","Mountain View Elementary","Academic Achievement - Math","All Students",SCH,58,5,17,,80,20
+2023,"Albemarle County Public Schools","Mountain View Upper Elementary","Academic Achievement - Math","All Students",SCH,58,5,17,,80,20
 2023,"Albemarle County Public Schools","Red Hill Elementary","Academic Achievement - Math","All Students",SCH,37,5,25,,67,33
 2023,"Albemarle County Public Schools","Scottsville Elementary","Academic Achievement - Math","All Students",SCH,53,10,16,,79,21
 2023,"Albemarle County Public Schools","Stone Robinson Elementary","Academic Achievement - Math","All Students",SCH,71,8,10,,89,11
@@ -1855,7 +1843,7 @@ Year,Division,School,Indicator,Subgroup,"Level Code","Percent Passing","Percent 
 2023,"Alleghany Highlands Public Schools","Mountain View Elementary","Academic Achievement - Math","All Students",SCH,63,9,17,,89,11
 2023,"Alleghany Highlands Public Schools","Sharon Elementary","Academic Achievement - Math","All Students",SCH,92,1,1,,95,5
 2023,"Amelia County Public Schools","Amelia County Elementary","Academic Achievement - Math","All Students",SCH,51,8,17,,77,23
-2023,"Amelia County Public Schools","Amelia County High","Academic Achievement - Math","All Students",SCH,82,2,0,,84,16
+2023,"Amelia County Public Schools","Amelia County High School","Academic Achievement - Math","All Students",SCH,82,2,0,,84,16
 2023,"Amelia County Public Schools","Amelia County Middle","Academic Achievement - Math","All Students",SCH,51,10,9,,71,29
 2023,"Amherst County Public Schools","Amelon Elementary","Academic Achievement - Math","All Students",SCH,58,6,13,,76,24
 2023,"Amherst County Public Schools","Amherst County High","Academic Achievement - Math","All Students",SCH,69,14,0,,82,18
@@ -1961,17 +1949,10 @@ Year,Division,School,Indicator,Subgroup,"Level Code","Percent Passing","Percent 
 2023,"Bristol City Public Schools","Virginia Middle","Academic Achievement - Math","All Students",SCH,56,4,6,,66,34
 2023,"Brunswick County Public Schools","Brunswick High","Academic Achievement - Math","All Students",SCH,78,0,0,,78,22
 2023,"Brunswick County Public Schools","James S. Russell Middle","Academic Achievement - Math","All Students",SCH,38,6,10,,53,47
-2023,"Brunswick County Public Schools","Meherrin Powellton Elementary","Academic Achievement - Math","All Students",SCH,77,3,4,,85,15
-2023,"Brunswick County Public Schools","Red Oak-Sturgeon Elementary","Academic Achievement - Math","All Students",SCH,60,8,15,,82,18
-2023,"Brunswick County Public Schools","Totaro Elementary","Academic Achievement - Math","All Students",SCH,68,5,12,,86,14
 2023,"Buchanan County Public Schools","Council Elementary/Middle","Academic Achievement - Math","All Students",SCH,54,0,16,,70,30
-2023,"Buchanan County Public Schools","Council High ","Academic Achievement - Math","All Students",SCH,75,11,2,,89,11
-2023,"Buchanan County Public Schools","Grundy High","Academic Achievement - Math","All Students",SCH,87,0,0,,87,13
 2023,"Buchanan County Public Schools","Hurley Elementary/Middle","Academic Achievement - Math","All Students",SCH,51,14,11,,76,24
-2023,"Buchanan County Public Schools","Hurley High","Academic Achievement - Math","All Students",SCH,66,9,3,,78,22
 2023,"Buchanan County Public Schools","Riverview Elementary/Middle","Academic Achievement - Math","All Students",SCH,55,9,11,,74,26
 2023,"Buchanan County Public Schools","Twin Valley Elementary/Middle","Academic Achievement - Math","All Students",SCH,66,3,9,,78,22
-2023,"Buchanan County Public Schools","Twin Valley High","Academic Achievement - Math","All Students",SCH,55,4,2,,61,39
 2023,"Buckingham County Public Schools","Buckingham Co Elementary","Academic Achievement - Math","All Students",SCH,49,6,22,,77,23
 2023,"Buckingham County Public Schools","Buckingham Co Primary","Academic Achievement - Math","All Students",SCH,49,6,22,,77,23
 2023,"Buckingham County Public Schools","Buckingham County High","Academic Achievement - Math","All Students",SCH,87,0,0,,87,13
@@ -2022,7 +2003,6 @@ Year,Division,School,Indicator,Subgroup,"Level Code","Percent Passing","Percent 
 2023,"Charlottesville City Public Schools","Sunrise Elementary","Academic Achievement - Math","All Students",SCH,70,5,11,,87,13
 2023,"Charlottesville City Public Schools","Tall Oaks Elementary","Academic Achievement - Math","All Students",SCH,62,2,18,,81,19
 2023,"Charlottesville City Public Schools","Trailblazer Elementary","Academic Achievement - Math","All Students",SCH,73,9,12,,93,7
-2023,"Charlottesville City Public Schools","Walker Upper Elementary","Academic Achievement - Math","All Students",SCH,53,5,11,,69,31
 2023,"Chesapeake City Public Schools","Butts Road Intermediate","Academic Achievement - Math","All Students",SCH,88,4,4,,95,5
 2023,"Chesapeake City Public Schools","Butts Road Primary","Academic Achievement - Math","All Students",SCH,88,4,4,,95,5
 2023,"Chesapeake City Public Schools","Camelot Elementary","Academic Achievement - Math","All Students",SCH,75,6,10,,91,9
@@ -2571,7 +2551,6 @@ Year,Division,School,Indicator,Subgroup,"Level Code","Percent Passing","Percent 
 2023,"Henrico County Public Schools","Harold Macon Ratcliffe Elementary","Academic Achievement - Math","All Students",SCH,36,7,24,,67,33
 2023,"Henrico County Public Schools","Harvie Elementary","Academic Achievement - Math","All Students",SCH,61,8,12,,80,20
 2023,"Henrico County Public Schools","Henrico High","Academic Achievement - Math","All Students",SCH,60,12,0,,71,29
-2023,"Henrico County Public Schools","Henrico Virtual Academy","Academic Achievement - Math","All Students",SCH,39,6,9,,54,46
 2023,"Henrico County Public Schools","Henry D. Ward Elementary","Academic Achievement - Math","All Students",SCH,53,4,18,,75,25
 2023,"Henrico County Public Schools","Hermitage High","Academic Achievement - Math","All Students",SCH,64,15,0,,79,21
 2023,"Henrico County Public Schools","Highland Springs Elementary","Academic Achievement - Math","All Students",SCH,26,8,27,,61,39
@@ -2811,7 +2790,6 @@ Year,Division,School,Indicator,Subgroup,"Level Code","Percent Passing","Percent 
 2023,"Martinsville City Public Schools","Patrick Henry Elementary","Academic Achievement - Math","All Students",SCH,54,5,17,,76,24
 2023,"Mathews County Public Schools","Mathews Elementary","Academic Achievement - Math","All Students",SCH,68,2,15,,86,14
 2023,"Mathews County Public Schools","Mathews High","Academic Achievement - Math","All Students",SCH,56,3,0,,58,42
-2023,"Mathews County Public Schools","Thomas Hunter Middle ","Academic Achievement - Math","All Students",SCH,53,4,6,,63,37
 2023,"Mecklenburg County Public Schools","Chase City Elementary","Academic Achievement - Math","All Students",SCH,61,5,14,,80,20
 2023,"Mecklenburg County Public Schools","Clarksville Elementary","Academic Achievement - Math","All Students",SCH,75,2,9,,86,14
 2023,"Mecklenburg County Public Schools","LaCrosse Elementary ","Academic Achievement - Math","All Students",SCH,80,6,6,,92,8
@@ -2868,7 +2846,6 @@ Year,Division,School,Indicator,Subgroup,"Level Code","Percent Passing","Percent 
 2023,"Newport News City Public Schools","Hilton Elementary","Academic Achievement - Math","All Students",SCH,70,7,10,,87,13
 2023,"Newport News City Public Schools","Homer L. Hines Middle","Academic Achievement - Math","All Students",SCH,50,10,14,,74,26
 2023,"Newport News City Public Schools","Huntington Middle","Academic Achievement - Math","All Students",SCH,27,7,18,,52,48
-2023,"Newport News City Public Schools","John Marshall Early Childhood Center","Academic Achievement - Math","All Students",SCH,44,7,20,,71,29
 2023,"Newport News City Public Schools","Joseph H. Saunders Elementary","Academic Achievement - Math","All Students",SCH,40,7,23,,70,30
 2023,"Newport News City Public Schools","Katherine Johnson Elementary","Academic Achievement - Math","All Students",SCH,37,9,28,,74,26
 2023,"Newport News City Public Schools","Kiln Creek Elementary","Academic Achievement - Math","All Students",SCH,51,9,17,,77,23
@@ -2911,11 +2888,9 @@ Year,Division,School,Indicator,Subgroup,"Level Code","Percent Passing","Percent 
 2023,"Norfolk City Public Schools","Mary Calcott Elementary","Academic Achievement - Math","All Students",SCH,78,3,4,,85,15
 2023,"Norfolk City Public Schools","Matthew Fontaine Maury High","Academic Achievement - Math","All Students",SCH,67,10,0,,77,23
 2023,"Norfolk City Public Schools","Northside Middle","Academic Achievement - Math","All Students",SCH,42,12,12,,67,33
-2023,"Norfolk City Public Schools","Norview Elementary","Academic Achievement - Math","All Students",SCH,42,9,18,,69,31
 2023,"Norfolk City Public Schools","Norview High","Academic Achievement - Math","All Students",SCH,62,4,0,,66,34
 2023,"Norfolk City Public Schools","Norview Middle","Academic Achievement - Math","All Students",SCH,31,8,10,,49,51
 2023,"Norfolk City Public Schools","Ocean View Elementary","Academic Achievement - Math","All Students",SCH,63,6,12,,80,20
-2023,"Norfolk City Public Schools","Oceanair Elementary","Academic Achievement - Math","All Students",SCH,50,6,16,,72,28
 2023,"Norfolk City Public Schools","P.B. Young Sr. Elementary ","Academic Achievement - Math","All Students",SCH,41,3,30,,75,25
 2023,"Norfolk City Public Schools","Richard Bowling Elementary","Academic Achievement - Math","All Students",SCH,33,9,26,,68,32
 2023,"Norfolk City Public Schools","Ruffner School","Academic Achievement - Math","All Students",SCH,19,7,12,,38,62
@@ -3094,7 +3069,6 @@ Year,Division,School,Indicator,Subgroup,"Level Code","Percent Passing","Percent 
 2023,"Prince William County Public Schools","Potomac High","Academic Achievement - Math","All Students",SCH,87,1,0,,88,12
 2023,"Prince William County Public Schools","Potomac Middle","Academic Achievement - Math","All Students",SCH,47,11,11,,69,31
 2023,"Prince William County Public Schools","Potomac Shores Middle","Academic Achievement - Math","All Students",SCH,59,8,8,,76,24
-2023,"Prince William County Public Schools","Potomac View Elementary","Academic Achievement - Math","All Students",SCH,65,9,12,,86,14
 2023,"Prince William County Public Schools","R. Dean Kilby Elementary","Academic Achievement - Math","All Students",SCH,63,8,14,,84,16
 2023,"Prince William County Public Schools","Rippon Middle","Academic Achievement - Math","All Students",SCH,58,6,7,,71,29
 2023,"Prince William County Public Schools","River Oaks Elementary","Academic Achievement - Math","All Students",SCH,63,2,15,,81,19
@@ -3119,6 +3093,7 @@ Year,Division,School,Indicator,Subgroup,"Level Code","Percent Passing","Percent 
 2023,"Prince William County Public Schools","Victory Elementary","Academic Achievement - Math","All Students",SCH,80,2,8,,90,10
 2023,"Prince William County Public Schools","West Gate Elementary","Academic Achievement - Math","All Students",SCH,67,9,16,,92,8
 2023,"Prince William County Public Schools","Westridge Elementary","Academic Achievement - Math","All Students",SCH,88,2,5,,95,5
+2023,"Prince William County Public Schools","Woodbridge Elementary","Academic Achievement - Math","All Students",SCH,65,9,12,,86,14
 2023,"Prince William County Public Schools","Woodbridge High","Academic Achievement - Math","All Students",SCH,73,1,0,,74,26
 2023,"Prince William County Public Schools","Woodbridge Middle","Academic Achievement - Math","All Students",SCH,63,5,7,,74,26
 2023,"Prince William County Public Schools","Yorkshire Elementary","Academic Achievement - Math","All Students",SCH,68,8,17,,93,7
@@ -3627,7 +3602,7 @@ Year,Division,School,Indicator,Subgroup,"Level Code","Percent Passing","Percent 
 2024,"Albemarle County Public Schools","Leslie H. Walton Middle","Academic Achievement - Math","All Students",SCH,60,10,10,,80,20
 2024,"Albemarle County Public Schools","Mary Carr Greer Elementary","Academic Achievement - Math","All Students",SCH,49,7,30,,86,14
 2024,"Albemarle County Public Schools","Monticello High","Academic Achievement - Math","All Students",SCH,89,0,0,,89,11
-2024,"Albemarle County Public Schools","Mountain View Elementary","Academic Achievement - Math","All Students",SCH,61,3,18,,82,18
+2024,"Albemarle County Public Schools","Mountain View Upper Elementary","Academic Achievement - Math","All Students",SCH,61,3,18,,82,18
 2024,"Albemarle County Public Schools","Red Hill Elementary","Academic Achievement - Math","All Students",SCH,59,0,24,,83,17
 2024,"Albemarle County Public Schools","Scottsville Elementary","Academic Achievement - Math","All Students",SCH,56,9,13,,78,22
 2024,"Albemarle County Public Schools","Stone Robinson Elementary","Academic Achievement - Math","All Students",SCH,81,3,5,,90,10
@@ -3659,7 +3634,7 @@ Year,Division,School,Indicator,Subgroup,"Level Code","Percent Passing","Percent 
 2024,"Alleghany Highlands Public Schools","Mountain View Elementary","Academic Achievement - Math","All Students",SCH,62,8,15,,85,15
 2024,"Alleghany Highlands Public Schools","Sharon Elementary","Academic Achievement - Math","All Students",SCH,95,5,0,,100,0
 2024,"Amelia County Public Schools","Amelia County Elementary","Academic Achievement - Math","All Students",SCH,54,8,21,,83,17
-2024,"Amelia County Public Schools","Amelia County High","Academic Achievement - Math","All Students",SCH,67,11,0,,78,22
+2024,"Amelia County Public Schools","Amelia County High School","Academic Achievement - Math","All Students",SCH,67,11,0,,78,22
 2024,"Amelia County Public Schools","Amelia County Middle","Academic Achievement - Math","All Students",SCH,56,6,7,,70,30
 2024,"Amherst County Public Schools","Amelon Elementary","Academic Achievement - Math","All Students",SCH,54,5,17,,75,25
 2024,"Amherst County Public Schools","Amherst County High","Academic Achievement - Math","All Students",SCH,69,12,0,,81,19
@@ -3765,17 +3740,10 @@ Year,Division,School,Indicator,Subgroup,"Level Code","Percent Passing","Percent 
 2024,"Bristol City Public Schools","Virginia Middle","Academic Achievement - Math","All Students",SCH,61,5,8,,74,26
 2024,"Brunswick County Public Schools","Brunswick High","Academic Achievement - Math","All Students",SCH,59,21,0,,80,20
 2024,"Brunswick County Public Schools","James S. Russell Middle","Academic Achievement - Math","All Students",SCH,48,8,11,,68,32
-2024,"Brunswick County Public Schools","Meherrin Powellton Elementary","Academic Achievement - Math","All Students",SCH,86,6,3,,95,5
-2024,"Brunswick County Public Schools","Red Oak-Sturgeon Elementary","Academic Achievement - Math","All Students",SCH,68,9,18,,95,5
-2024,"Brunswick County Public Schools","Totaro Elementary","Academic Achievement - Math","All Students",SCH,74,6,10,,90,10
 2024,"Buchanan County Public Schools","Council Elementary/Middle","Academic Achievement - Math","All Students",SCH,60,10,13,,83,17
-2024,"Buchanan County Public Schools","Council High ","Academic Achievement - Math","All Students",SCH,74,11,7,,91,9
-2024,"Buchanan County Public Schools","Grundy High","Academic Achievement - Math","All Students",SCH,86,0,0,,86,14
 2024,"Buchanan County Public Schools","Hurley Elementary/Middle","Academic Achievement - Math","All Students",SCH,73,0,9,,82,18
-2024,"Buchanan County Public Schools","Hurley High","Academic Achievement - Math","All Students",SCH,70,2,4,,76,24
 2024,"Buchanan County Public Schools","Riverview Elementary/Middle","Academic Achievement - Math","All Students",SCH,64,7,14,,85,15
 2024,"Buchanan County Public Schools","Twin Valley Elementary/Middle","Academic Achievement - Math","All Students",SCH,67,6,10,,83,17
-2024,"Buchanan County Public Schools","Twin Valley High","Academic Achievement - Math","All Students",SCH,49,0,3,,51,49
 2024,"Buckingham County Public Schools","Buckingham Co Elementary","Academic Achievement - Math","All Students",SCH,54,6,19,,79,21
 2024,"Buckingham County Public Schools","Buckingham Co Primary","Academic Achievement - Math","All Students",SCH,54,6,19,,79,21
 2024,"Buckingham County Public Schools","Buckingham County High","Academic Achievement - Math","All Students",SCH,70,17,0,,87,13
@@ -3826,7 +3794,6 @@ Year,Division,School,Indicator,Subgroup,"Level Code","Percent Passing","Percent 
 2024,"Charlottesville City Public Schools","Sunrise Elementary","Academic Achievement - Math","All Students",SCH,79,1,13,,93,7
 2024,"Charlottesville City Public Schools","Tall Oaks Elementary","Academic Achievement - Math","All Students",SCH,61,4,20,,85,15
 2024,"Charlottesville City Public Schools","Trailblazer Elementary","Academic Achievement - Math","All Students",SCH,71,3,13,,86,14
-2024,"Charlottesville City Public Schools","Walker Upper Elementary","Academic Achievement - Math","All Students",SCH,58,5,10,,73,27
 2024,"Chesapeake City Public Schools","Butts Road Intermediate","Academic Achievement - Math","All Students",SCH,88,2,4,,94,6
 2024,"Chesapeake City Public Schools","Butts Road Primary","Academic Achievement - Math","All Students",SCH,88,2,4,,94,6
 2024,"Chesapeake City Public Schools","Camelot Elementary","Academic Achievement - Math","All Students",SCH,69,4,14,,88,12
@@ -4377,7 +4344,6 @@ Year,Division,School,Indicator,Subgroup,"Level Code","Percent Passing","Percent 
 2024,"Henrico County Public Schools","Harold Macon Ratcliffe Elementary","Academic Achievement - Math","All Students",SCH,31,7,27,,64,36
 2024,"Henrico County Public Schools","Harvie Elementary","Academic Achievement - Math","All Students",SCH,62,5,13,,81,19
 2024,"Henrico County Public Schools","Henrico High","Academic Achievement - Math","All Students",SCH,61,17,0,,78,22
-2024,"Henrico County Public Schools","Henrico Virtual Academy","Academic Achievement - Math","All Students",SCH,41,11,13,,64,36
 2024,"Henrico County Public Schools","Henry D. Ward Elementary","Academic Achievement - Math","All Students",SCH,52,3,17,,72,28
 2024,"Henrico County Public Schools","Hermitage High","Academic Achievement - Math","All Students",SCH,62,17,0,,79,21
 2024,"Henrico County Public Schools","Highland Springs Elementary","Academic Achievement - Math","All Students",SCH,25,10,32,,66,34
@@ -4617,7 +4583,6 @@ Year,Division,School,Indicator,Subgroup,"Level Code","Percent Passing","Percent 
 2024,"Martinsville City Public Schools","Patrick Henry Elementary","Academic Achievement - Math","All Students",SCH,63,7,14,,83,17
 2024,"Mathews County Public Schools","Mathews Elementary","Academic Achievement - Math","All Students",SCH,73,5,9,,87,13
 2024,"Mathews County Public Schools","Mathews High","Academic Achievement - Math","All Students",SCH,54,9,0,,62,38
-2024,"Mathews County Public Schools","Thomas Hunter Middle ","Academic Achievement - Math","All Students",SCH,56,6,12,,74,26
 2024,"Mecklenburg County Public Schools","Chase City Elementary","Academic Achievement - Math","All Students",SCH,59,3,18,,80,20
 2024,"Mecklenburg County Public Schools","Clarksville Elementary","Academic Achievement - Math","All Students",SCH,72,2,11,,84,16
 2024,"Mecklenburg County Public Schools","LaCrosse Elementary ","Academic Achievement - Math","All Students",SCH,80,6,10,,96,4
@@ -4674,7 +4639,6 @@ Year,Division,School,Indicator,Subgroup,"Level Code","Percent Passing","Percent 
 2024,"Newport News City Public Schools","Hilton Elementary","Academic Achievement - Math","All Students",SCH,72,7,12,,91,9
 2024,"Newport News City Public Schools","Homer L. Hines Middle","Academic Achievement - Math","All Students",SCH,49,12,9,,70,30
 2024,"Newport News City Public Schools","Huntington Middle","Academic Achievement - Math","All Students",SCH,32,10,15,,57,43
-2024,"Newport News City Public Schools","John Marshall Early Childhood Center","Academic Achievement - Math","All Students",SCH,49,5,16,,70,30
 2024,"Newport News City Public Schools","Joseph H. Saunders Elementary","Academic Achievement - Math","All Students",SCH,46,7,21,,75,25
 2024,"Newport News City Public Schools","Katherine Johnson Elementary","Academic Achievement - Math","All Students",SCH,46,9,27,,82,18
 2024,"Newport News City Public Schools","Kiln Creek Elementary","Academic Achievement - Math","All Students",SCH,56,5,16,,77,23
@@ -4717,11 +4681,9 @@ Year,Division,School,Indicator,Subgroup,"Level Code","Percent Passing","Percent 
 2024,"Norfolk City Public Schools","Mary Calcott Elementary","Academic Achievement - Math","All Students",SCH,73,1,10,,84,16
 2024,"Norfolk City Public Schools","Matthew Fontaine Maury High","Academic Achievement - Math","All Students",SCH,79,1,0,,79,21
 2024,"Norfolk City Public Schools","Northside Middle","Academic Achievement - Math","All Students",SCH,43,8,14,,65,35
-2024,"Norfolk City Public Schools","Norview Elementary","Academic Achievement - Math","All Students",SCH,48,6,18,,72,28
 2024,"Norfolk City Public Schools","Norview High","Academic Achievement - Math","All Students",SCH,76,0,0,,76,24
 2024,"Norfolk City Public Schools","Norview Middle","Academic Achievement - Math","All Students",SCH,30,5,13,,48,52
 2024,"Norfolk City Public Schools","Ocean View Elementary","Academic Achievement - Math","All Students",SCH,60,5,14,,78,22
-2024,"Norfolk City Public Schools","Oceanair Elementary","Academic Achievement - Math","All Students",SCH,49,5,19,,72,28
 2024,"Norfolk City Public Schools","P.B. Young Sr. Elementary ","Academic Achievement - Math","All Students",SCH,22,5,11,,39,61
 2024,"Norfolk City Public Schools","Richard Bowling Elementary","Academic Achievement - Math","All Students",SCH,44,4,19,,67,33
 2024,"Norfolk City Public Schools","Ruffner School","Academic Achievement - Math","All Students",SCH,22,5,11,,39,61
@@ -4901,7 +4863,6 @@ Year,Division,School,Indicator,Subgroup,"Level Code","Percent Passing","Percent 
 2024,"Prince William County Public Schools","Potomac High","Academic Achievement - Math","All Students",SCH,83,2,0,,86,14
 2024,"Prince William County Public Schools","Potomac Middle","Academic Achievement - Math","All Students",SCH,50,5,9,,64,36
 2024,"Prince William County Public Schools","Potomac Shores Middle","Academic Achievement - Math","All Students",SCH,66,6,6,,78,22
-2024,"Prince William County Public Schools","Potomac View Elementary","Academic Achievement - Math","All Students",SCH,74,4,11,,89,11
 2024,"Prince William County Public Schools","R. Dean Kilby Elementary","Academic Achievement - Math","All Students",SCH,67,6,17,,89,11
 2024,"Prince William County Public Schools","Rippon Middle","Academic Achievement - Math","All Students",SCH,60,8,8,,76,24
 2024,"Prince William County Public Schools","River Oaks Elementary","Academic Achievement - Math","All Students",SCH,61,4,16,,82,18
@@ -4926,6 +4887,7 @@ Year,Division,School,Indicator,Subgroup,"Level Code","Percent Passing","Percent 
 2024,"Prince William County Public Schools","Victory Elementary","Academic Achievement - Math","All Students",SCH,82,1,7,,90,10
 2024,"Prince William County Public Schools","West Gate Elementary","Academic Achievement - Math","All Students",SCH,66,8,20,,94,6
 2024,"Prince William County Public Schools","Westridge Elementary","Academic Achievement - Math","All Students",SCH,87,3,5,,95,5
+2024,"Prince William County Public Schools","Woodbridge Elementary","Academic Achievement - Math","All Students",SCH,74,4,11,,89,11
 2024,"Prince William County Public Schools","Woodbridge High","Academic Achievement - Math","All Students",SCH,83,3,0,,86,14
 2024,"Prince William County Public Schools","Woodbridge Middle","Academic Achievement - Math","All Students",SCH,62,5,8,,75,25
 2024,"Prince William County Public Schools","Yorkshire Elementary","Academic Achievement - Math","All Students",SCH,69,7,15,,91,9
@@ -4978,7 +4940,6 @@ Year,Division,School,Indicator,Subgroup,"Level Code","Percent Passing","Percent 
 2024,"Richmond City Public Schools","Richmond Community High","Academic Achievement - Math","All Students",SCH,87,0,0,,87,13
 2024,"Richmond City Public Schools","Richmond High School for the Arts","Academic Achievement - Math","All Students",SCH,43,14,0,,58,42
 2024,"Richmond City Public Schools","Richmond Success Academy","Academic Achievement - Math","All Students",SCH,4,0,22,,26,74
-2024,"Richmond City Public Schools","Richmond Virtual Academy","Academic Achievement - Math","All Students",SCH,23,6,11,,40,60
 2024,"Richmond City Public Schools","River City Middle","Academic Achievement - Math","All Students",SCH,32,14,15,,60,40
 2024,"Richmond City Public Schools","Southampton Elementary","Academic Achievement - Math","All Students",SCH,45,4,20,,69,31
 2024,"Richmond City Public Schools","Swansboro Elementary","Academic Achievement - Math","All Students",SCH,46,11,32,,88,12

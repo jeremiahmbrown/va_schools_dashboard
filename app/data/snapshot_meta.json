@@ -1,8 +1,202 @@
 {
-  "snapshot_date": "2026-02-15",
+  "snapshot_date": "2026-10-20",
   "year_min": 2022,
-  "year_max": 2024,
-  "transform_version": 5,
+  "year_max": 2026,
+  "transform_version": 6,
+  "nces_match": {
+    "total": 1828,
+    "matched": 1810,
+    "unmatched": [
+      {
+        "division_name": "Albemarle County Public Schools",
+        "school_name": "Mountain View Upper Elementary"
+      },
+      {
+        "division_name": "Amelia County Public Schools",
+        "school_name": "Amelia County High School"
+      },
+      {
+        "division_name": "Charlottesville City Public Schools",
+        "school_name": "Charlottesville Middle"
+      },
+      {
+        "division_name": "Charlottesville City Public Schools",
+        "school_name": "Sunrise Elementary"
+      },
+      {
+        "division_name": "Charlottesville City Public Schools",
+        "school_name": "Tall Oaks Elementary"
+      },
+      {
+        "division_name": "Chesapeake City Public Schools",
+        "school_name": "B.M. Williams Elementary"
+      },
+      {
+        "division_name": "Chesapeake City Public Schools",
+        "school_name": "Crestwood Elementary School"
+      },
+      {
+        "division_name": "Danville City Public Schools",
+        "school_name": "Arnett Hills Elementary"
+      },
+      {
+        "division_name": "Falls Church City Public Schools",
+        "school_name": "Mary Ellen Henderson Middle School"
+      },
+      {
+        "division_name": "Falls Church City Public Schools",
+        "school_name": "Meridian High School"
+      },
+      {
+        "division_name": "Falls Church City Public Schools",
+        "school_name": "Mount Daniel Elementary School"
+      },
+      {
+        "division_name": "Falls Church City Public Schools",
+        "school_name": "Oak Street Elementary School"
+      },
+      {
+        "division_name": "Fredericksburg City Public Schools",
+        "school_name": "Gladys West Elementary"
+      },
+      {
+        "division_name": "Loudoun County Public Schools",
+        "school_name": "Gum Spring Middle"
+      },
+      {
+        "division_name": "Loudoun County Public Schools",
+        "school_name": "Richard and Mildred Loving Elementary"
+      },
+      {
+        "division_name": "Manassas City Public Schools",
+        "school_name": "Virginia Virtual Academy at Manassas"
+      },
+      {
+        "division_name": "Prince William County Public Schools",
+        "school_name": "Woodbridge Elementary"
+      },
+      {
+        "division_name": "Richmond City Public Schools",
+        "school_name": "Richmond Success Academy"
+      }
+    ]
+  },
+  "source_files": {
+    "1": {
+      "file": "vdoe_short_term_suspensions.csv",
+      "sha256": "5d189a78fd851921f6afaba69cdfc94492718ca00511363707fbb87532a61df9",
+      "bytes": 2049679,
+      "cache_modified_at": "2026-10-20 01:25:53 UTC"
+    },
+    "2": {
+      "file": "vdoe_long_term_suspensions.csv",
+      "sha256": "3bf66afe1a53f083ff4508d0fd570bda42a9a7385fdbadfe8b721932d9a2a16a",
+      "bytes": 1982898,
+      "cache_modified_at": "2026-10-20 01:25:56 UTC"
+    },
+    "3": {
+      "file": "vdoe_enrollment.csv",
+      "sha256": "8de8890f3f0311e581a0d494694658a0798c8c561d707f30ea430a16ab6a5218",
+      "bytes": 2937360,
+      "cache_modified_at": "2026-10-20 01:26:00 UTC"
+    },
+    "4": {
+      "file": "vdoe_absenteeism.csv",
+      "sha256": "c9163af03ed1a127935016358be9f3fdd14171bca220ed5ff009718c830a20ab",
+      "bytes": 7059342,
+      "cache_modified_at": "2026-10-20 01:26:05 UTC"
+    },
+    "5": {
+      "file": "vdoe_expulsions.csv",
+      "sha256": "164570dec5dae8fe90e18306447148669cbba54569c3501bc23bb883cac7f6ab",
+      "bytes": 1974114,
+      "cache_modified_at": "2026-10-20 01:26:11 UTC"
+    },
+    "6": {
+      "file": "vdoe_fr_eligibility.csv",
+      "sha256": "91631f1195c56ed0f6ce2a7eae9f8f5247273d746546895a2173231fd6a26d43",
+      "bytes": 426450,
+      "cache_modified_at": "2026-10-20 01:26:13 UTC"
+    },
+    "7": {
+      "file": "vdoe_fr_breakfast.csv",
+      "sha256": "5768ca0435f3682f499d84d5f6a4413bd1ffc444110db7460bf4a3201fcc7796",
+      "bytes": 426309,
+      "cache_modified_at": "2026-10-20 01:26:14 UTC"
+    },
+    "8": {
+      "file": "vdoe_fr_lunch.csv",
+      "sha256": "b606248b33152ce4d72f38d60d05369d878e3b1c9bcfa106ce64d31dd08f1f33",
+      "bytes": 425477,
+      "cache_modified_at": "2026-10-20 01:26:15 UTC"
+    },
+    "9": {
+      "file": "vdoe_accreditation_english.csv",
+      "sha256": "66f085f3962b8464f4f6965754a11a3858b08270bac74828e9bfec9f949383c5",
+      "bytes": 691647,
+      "cache_modified_at": "2026-10-20 01:26:17 UTC"
+    },
+    "10": {
+      "file": "vdoe_accreditation_math.csv",
+      "sha256": "55ad2deb3ab1ff7b306f5010d53b780e237c2dcc1ed74c76f98c438d6408c506",
+      "bytes": 671710,
+      "cache_modified_at": "2026-10-20 01:26:19 UTC"
+    },
+    "11": {
+      "file": "vdoe_accreditation_science.csv",
+      "sha256": "0991174f5b414aca71a8947f3ee671629d2a60df5105b09349b89303375c8974",
+      "bytes": 637051,
+      "cache_modified_at": "2026-10-20 01:26:21 UTC"
+    },
+    "12": {
+      "file": "EDGE_GEOCODE_PUBLICSCH_2425.zip",
+      "sha256": "9dc51ecd5cdf6e38bdb679f7ac95e2bf73ee3fb48718b8612cf830800cffb288",
+      "bytes": 30448565,
+      "cache_modified_at": "2026-02-13 20:46:02 UTC"
+    },
+    "13": {
+      "file": "EDGE_GEOCODE_PUBLICLEA_2425.zip",
+      "sha256": "d7f89ec77c4819c62e0b37212cd4bf5d15b6e7873629f14d7fd1b01266ef287f",
+      "bytes": 8220921,
+      "cache_modified_at": "2026-02-13 20:49:16 UTC"
+    },
+    "14": {
+      "file": "tl_2024_51_unsd.zip",
+      "sha256": "b890ea45a92ff3cdf5646879c788471bfb72a7beefa3fdede5558d6d05d8bd88",
+      "bytes": 5347721,
+      "cache_modified_at": "2026-02-13 21:01:28 UTC"
+    },
+    "enrollment": {
+      "file": "vdoe_enrollment_baseline.csv.gz",
+      "sha256": "af84d9aaa9edc2a6e593aee62bf889a38ade288f1d85be4bf322a0a6a1ffaa72",
+      "bytes": 223490,
+      "cache_modified_at": "2026-10-20 01:38:47 UTC"
+    },
+    "absenteeism": {
+      "file": "vdoe_absenteeism_baseline.csv.gz",
+      "sha256": "b75f37121601c4c4c34419f1ec36ebc7bb7a72c586674f3da8cf7222caab173f",
+      "bytes": 719956,
+      "cache_modified_at": "2026-10-20 01:38:48 UTC"
+    },
+    "fr_eligibility": {
+      "file": "vdoe_fr_eligibility_baseline.csv.gz",
+      "sha256": "ccd23ac4ec4756d2fba1e16f06101b2d3f9bce4b5c4f7f24e015f0d3ee35dd91",
+      "bytes": 57039,
+      "cache_modified_at": "2026-10-20 01:38:48 UTC"
+    },
+    "fr_breakfast": {
+      "file": "vdoe_fr_breakfast_baseline.csv.gz",
+      "sha256": "744b0003170faf5bab1d69d130f4569c587a3402867771479e373b83c5ce22e4",
+      "bytes": 57915,
+      "cache_modified_at": "2026-10-20 01:38:48 UTC"
+    },
+    "fr_lunch": {
+      "file": "vdoe_fr_lunch_baseline.csv.gz",
+      "sha256": "50d7f9f8397b85e1632f6d1f92998e50e7c1d8d8e92f8a86e3444875a3c24a58",
+      "bytes": 54789,
+      "cache_modified_at": "2026-10-20 01:38:48 UTC"
+    }
+  },
   "notes": "Built from VDOE School Quality Profiles downloads + NCES EDGE geocodes + TIGER/Line boundaries. Includes subject-level ACR and SOL pass rates, plus learning climate and school nutrition metrics where available.",
   "sources": [
     {

@@ -1,6 +1,6 @@
 # Data Inventory (Snapshot + Cached Raw Exports)
 
-- Generated: 2026-02-15 18:57:04 EST
+- Generated: 2026-10-20 05:16:46 EDT
 - Snapshot dir: `/home/jeremiah/code/va_schools_dashboard/app/data`
 - Raw cache dir: `/home/jeremiah/code/va_schools_dashboard/data-raw/input`
 

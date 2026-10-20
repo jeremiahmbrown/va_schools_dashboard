@@ -5,3 +5,6 @@ data-raw/
 docs/
 scripts/
 .git/
+
+.beads/
+tests/

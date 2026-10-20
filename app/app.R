@@ -53,8 +53,10 @@ division_subject_perf <- snapshot$division_subject_perf
 divisions_sp <- snapshot$divisions_sp
 
 available_years <- sort(unique(school_metrics$year))
-default_year <- max(available_years, na.rm = TRUE)
 default_metric <- "test_overall_perf_index"
+default_year <- max(school_metrics$year[
+  school_metrics$metric_id == default_metric & is.finite(school_metrics$value)
+], na.rm = TRUE)
 
 metric_defs_by_id <- metric_defs %>% distinct(metric_id, .keep_all = TRUE)
 
@@ -177,7 +179,11 @@ ui <- fluidPage(
       ".side-controls .form-group { margin-bottom: 10px; }
        .side-controls .control-label { margin-bottom: 3px; }
        .meta-note { font-size: 12px; color: #444; margin-top: 10px; }
-       .detail-panel { margin: 10px 0 14px 0; padding: 10px 12px; border: 1px solid #e3e3e3; border-radius: 6px; background: #fbfbfb; }
+       .detail-panel { margin: 10px 0 14px 0; padding: 10px 12px; border: 1px solid #e3e3e3; border-radius: 6px; background: #fbfbfb; overflow-x: auto; }
+       .meta-note details { margin-top: 9px; }
+       .meta-note summary { cursor: pointer; font-weight: 700; }
+       .mobile-map-link { display: none; }
+       @media (max-width: 767px) { #map { height: 55vh !important; min-height: 340px; } .side-controls { margin-bottom: 18px; } .mobile-map-link { display: inline-block; margin: 0 0 10px 0; font-weight: 700; } }
        .detail-panel h4 { margin-top: 0; margin-bottom: 8px; font-size: 16px; }
        .metric-table { width: 100%; font-size: 13px; }
        .metric-table th { font-weight: 700; color: #333; padding: 6px 6px; border-bottom: 1px solid #ddd; }
@@ -187,16 +193,18 @@ ui <- fluidPage(
     ))
   ),
   titlePanel("Virginia Public Schools Dashboard"),
+  tags$a("Jump to map ↓", href = "#map", class = "mobile-map-link"),
   sidebarLayout(
     sidebarPanel(
       div(
         class = "side-controls",
         selectInput(
           "year",
-          "Year",
+          "Data year",
           choices = available_years,
           selected = default_year
         ),
+        tags$p(class = "meta-note", "For school-year data, 2026 means 2025–26. Accreditation exports use their stated year."),
         checkboxInput("threshold_enabled", "Enable threshold filter", value = FALSE),
         conditionalPanel(
           condition = "input.threshold_enabled == true",
@@ -226,10 +234,11 @@ ui <- fluidPage(
         selectInput(
           "category",
           "Metric category",
-          choices = c("Performance" = "test", "Behavior" = "behavior", "Demographics" = "demographics"),
+          choices = c("Performance" = "test", "Behavior" = "behavior", "Attendance" = "attendance", "School meals" = "needs", "Demographics" = "demographics"),
           selected = "test"
         ),
         uiOutput("metric_selector"),
+        uiOutput("metric_availability"),
         checkboxGroupInput(
           "layers",
           "Layers",
@@ -262,7 +271,8 @@ ui <- fluidPage(
         ),
         tags$div(
           class = "meta-note",
-          tags$strong("Performance metrics"),
+          tags$details(
+          tags$summary("How performance values are made"),
           tags$p(
             "This app supports two subject-level performance measures from VDOE School Quality Profiles:",
             tags$br(),
@@ -273,9 +283,8 @@ ui <- fluidPage(
           ),
           tags$p(
             tags$strong("Overall"),
-            "values shown in the app are app-defined composites computed as the mean across available subjects",
-            "for the selected metric (ACR or Pass Rate). They are provided for convenience and are not an",
-            "official VDOE accreditation label."
+            "values are app-defined means across available subjects. Science ACR is blank in the current VDOE export,",
+            "so the ACR mean uses English and Math. These values are not official VDOE ratings or SPSF results."
           ),
           tags$p(
             "Division values for subjects are aggregated as enrollment-weighted averages across schools. Division",
@@ -285,16 +294,19 @@ ui <- fluidPage(
             "ACR provides equal credit for students who passed SOL tests and students who did not pass but met",
             "growth/progress benchmarks (see the VDOE glossary definition of 'Combined Rate')."
           )
+          )
         ),
         tags$div(
           class = "meta-note",
-          tags$strong("Sources"),
+          tags$details(
+          tags$summary("Data sources"),
           tags$ul(
             tags$li(tags$a("VDOE School Quality Profiles — Download Data", href = "https://schoolquality.virginia.gov/download-data", target = "_blank")),
             tags$li(tags$a("VDOE School Accreditation (Standards of Accreditation)", href = "https://www.doe.virginia.gov/data-policy-funding/data-reports/statistics-reports/accreditation-federal-reports/soa-school-accreditation", target = "_blank")),
             tags$li(tags$a("VDOE / School Quality Profiles glossary", href = "https://schoolquality.virginia.gov/glossary", target = "_blank")),
             tags$li(tags$a("NCES EDGE Public School/LEA Geocodes", href = "https://nces.ed.gov/programs/edge/", target = "_blank")),
             tags$li(tags$a("U.S. Census TIGER/Line School District Boundaries", href = "https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html", target = "_blank"))
+          )
           )
         ),
         tags$div(
@@ -312,10 +324,10 @@ ui <- fluidPage(
         ),
         tags$div(
           class = "meta-note",
-          tags$strong("Attendance zones: "),
-          "Turn on the zones layer, then select a school or division to load that division's zones.",
-          tags$br(),
-          "Boundaries may be incomplete or outdated; verify with the school division."
+          tags$details(tags$summary("About attendance zones"),
+            "Turn on the zones layer, then select a school or division to load that division's zones.",
+            tags$br(),
+            "Boundaries may be incomplete or outdated; verify with the school division.")
         )
       ),
       width = 3
@@ -367,6 +379,42 @@ server <- function(input, output, session) {
       input$metric_id
     }
   })
+
+  metric_available_years <- reactive({
+    metric <- metric_id_selected()
+    req(metric)
+    sort(unique(school_metrics$year[
+      school_metrics$metric_id == metric & is.finite(school_metrics$value) &
+        !(school_metrics$suppressed %in% TRUE)
+    ]))
+  })
+
+  output$metric_availability <- renderUI({
+    years <- metric_available_years()
+    metric <- metric_id_selected()
+    row <- metric_defs_by_id %>% filter(metric_id == metric) %>% slice(1)
+    if (length(years) == 0) {
+      return(tags$p(class = "meta-note", "No published values for this measure in the snapshot."))
+    }
+    selected <- suppressWarnings(as.integer(input$year))
+    message <- if (length(selected) == 1 && is.finite(selected) && !selected %in% years) {
+      paste0("No values for ", selected, "; latest available: ", max(years), ".")
+    } else {
+      paste0("Available through ", max(years), ".")
+    }
+    if (metric == "test_overall_perf_index") {
+      message <- paste(message, "App-defined English and Math ACR mean.")
+    } else if (metric == "test_overall_pass_index") {
+      message <- paste(message, "App-defined mean across available subjects.")
+    }
+    tags$div(class = "meta-note", tags$strong(message),
+             tags$details(tags$summary("Metric definition"), row$label_long[[1]]))
+  })
+
+  observeEvent(metric_id_selected(), {
+    years <- metric_available_years()
+    if (length(years) > 0) updateSelectInput(session, "year", selected = max(years))
+  }, ignoreInit = TRUE)
 
   perf_metric_ids <- metric_defs_by_id %>%
     filter(category == "test") %>%
@@ -608,7 +656,7 @@ server <- function(input, output, session) {
         addMapPane(name = "divisionPolygonPane", zIndex = 380) %>%
         addMapPane(name = "zonePolygonPane", zIndex = 410) %>%
         addMapPane(name = "schoolPointPane", zIndex = 440) %>%
-        addProviderTiles(providers$CartoDB.Positron) %>%
+        addProviderTiles(providers$OpenStreetMap.Mapnik) %>%
         setView(lng = -78.7, lat = 37.5, zoom = 7)
     })
 
@@ -1450,7 +1498,7 @@ server <- function(input, output, session) {
       ),
       tags$div(
         class = "meta-note",
-        "Percentiles are empirical ranks among peers for the same year (percent of peers with value \u2264 the selected school/division). Higher percentile means a higher observed value."
+        "Higher percentiles mean better performance or lower absence/behavior rates. For meals and demographics, they show position only. An em dash means data is missing, suppressed, or unavailable for that year."
       )
     )
   })

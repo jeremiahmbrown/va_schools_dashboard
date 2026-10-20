@@ -23,12 +23,12 @@
 #
 # Key Details / Debugging:
 #   - VDOE downloads are fetched from `schoolquality.virginia.gov/download-data`.
-#     In this environment, TLS chain verification may fail; this script will
-#     retry with `curl -k` if the secure request fails with an SSL error.
+#     Set VA_DASH_CURL_CA_BUNDLE to a verified CA bundle if VDOE omits the
+#     intermediate certificate. TLS verification is never disabled.
 #   - VDOE files include 2 header lines + blank line; we auto-detect the CSV
 #     header row.
 #   - The "Overall Performance Index" is computed (not VDOE-published) as:
-#       mean(Accreditation Combined Rate) across English, Math, Science
+#       mean(available Accreditation Combined Rate) across subjects
 #     for "All Students" at the school level.
 #   - School geocoding relies on name-based matching between VDOE and NCES.
 #     The script reports match rates and will stop if matching is too poor.
@@ -53,7 +53,20 @@ if (!dir.exists(input_dir)) {
 }
 
 snapshot_dir <- file.path("app", "data")
-if (!dir.exists(snapshot_dir)) dir.create(snapshot_dir, recursive = TRUE)
+if (!dir.exists(snapshot_dir)) stop("Existing snapshot is missing: ", snapshot_dir)
+snapshot_stage <- tempfile("snapshot-stage-", tmpdir = "app")
+if (!dir.create(snapshot_stage)) stop("Could not create snapshot staging directory")
+# Zone overlays are independent of metric refreshes; retain them in the bundle.
+if (dir.exists(file.path(snapshot_dir, "zones"))) {
+  copied <- file.copy(file.path(snapshot_dir, "zones"), snapshot_stage, recursive = TRUE)
+  if (!all(copied)) stop("Could not preserve attendance-zone files")
+}
+refresh_vdoe <- identical(Sys.getenv("VA_DASH_REFRESH_VDOE", "0"), "1")
+curl_ca_bundle <- Sys.getenv("VA_DASH_CURL_CA_BUNDLE", "")
+curl_ca_args <- if (nzchar(curl_ca_bundle)) c("--cacert", curl_ca_bundle) else character(0)
+if (nzchar(curl_ca_bundle) && !file.exists(curl_ca_bundle)) {
+  stop("VA_DASH_CURL_CA_BUNDLE does not exist: ", curl_ca_bundle)
+}
 
 need_cmd <- function(cmd) {
   ok <- nzchar(Sys.which(cmd))
@@ -100,74 +113,95 @@ read_vdoe_csv <- function(path) {
 }
 
 curl_post_download <- function(dest_path, url, form_fields) {
-  # Try secure request first; if SSL chain fails (curl 60), retry with -k.
-  args_base <- c(
-    "-sS",
-    "-L",
-    "--max-time", "120",
-    "-X", "POST",
-    url
-  )
-
-  args_fields <- character(0)
-  for (k in names(form_fields)) {
-    v <- form_fields[[k]]
-    if (length(v) == 0) next
-    for (one in v) {
-      args_fields <- c(args_fields, "--data-urlencode", paste0(k, "=", one))
-    }
-  }
-
-  run <- function(extra_args = character(0)) {
-    args <- c(args_base, extra_args, args_fields, "-o", dest_path)
-    res <- system2("curl", args = args)
-    as.integer(res)
-  }
-
-  code <- run()
+  args_fields <- unlist(lapply(names(form_fields), function(k) {
+    unlist(lapply(form_fields[[k]], function(one) {
+      c("--data-urlencode", paste0(k, "=", one))
+    }))
+  }), use.names = FALSE)
+  args <- c("-sS", "-L", "--fail", "--max-time", "120", curl_ca_args,
+            "-X", "POST", args_fields, "-o", dest_path, url)
+  code <- system2("curl", args = args)
   if (is.na(code) || code != 0) {
-    # Retry with --insecure for the known TLS-chain issue.
-    code2 <- run(c("-k"))
-    if (is.na(code2) || code2 != 0) {
-      stop("curl POST failed for ", url, " (exit code ", code2, ").")
-    } else {
-      message("Downloaded with `curl -k` due to TLS verification failure: ", basename(dest_path))
-    }
+    stop("Verified curl POST failed for ", url, " (exit code ", code, ").")
   }
 }
 
 curl_get_download <- function(dest_path, url) {
-  args <- c("-sS", "-L", "--max-time", "240", url, "-o", dest_path)
+  args <- c("-sS", "-L", "--fail", "--max-time", "240", curl_ca_args,
+            "-o", dest_path, url)
   code <- system2("curl", args = args)
   if (!is.na(code) && code == 0) return(invisible(TRUE))
-  stop("curl GET failed for ", url, " (exit code ", code, ").")
+  stop("Verified curl GET failed for ", url, " (exit code ", code, ").")
 }
 
 vdoe_url <- "https://schoolquality.virginia.gov/download-data"
 
 download_cached <- function(filename, downloader, validator = NULL) {
   dest <- file.path(input_dir, filename)
-  if (file.exists(dest) && file.info(dest)$size > 0) {
-    ok <- TRUE
-    if (!is.null(validator)) {
-      ok <- isTRUE(validator(dest))
-    }
-    if (ok) {
+  is_vdoe <- startsWith(filename, "vdoe_")
+  has_cache <- file.exists(dest) && file.info(dest)$size > 0
+  if (has_cache && !(is_vdoe && refresh_vdoe)) {
+    if (is.null(validator) || isTRUE(validator(dest))) {
       message("Using cached: ", filename)
       return(dest)
     }
-    message("Cached file failed validation, re-downloading: ", filename)
-    unlink(dest)
+    message("Cached file failed validation; fetching replacement: ", filename)
   }
+  tmp <- tempfile(paste0(filename, "-"), tmpdir = input_dir)
+  on.exit(unlink(tmp), add = TRUE)
   message("Downloading: ", filename)
-  downloader(dest)
+  downloader(tmp)
+  if (!file.exists(tmp) || file.info(tmp)$size == 0 ||
+      (!is.null(validator) && !isTRUE(validator(tmp)))) {
+    stop("Downloaded file failed validation: ", filename)
+  }
+  old <- tempfile(paste0(filename, "-old-"), tmpdir = input_dir)
+  if (file.exists(dest) && !file.rename(dest, old)) stop("Cannot back up cached file: ", dest)
+  if (!file.rename(tmp, dest)) {
+    if (file.exists(old)) file.rename(old, dest)
+    stop("Cannot publish cached file: ", dest)
+  }
+  if (file.exists(old)) unlink(old)
   dest
 }
 
 validate_not_html <- function(path) {
-  first <- tryCatch(readLines(path, n = 1, warn = FALSE), error = function(e) character(0))
-  if (length(first) == 0) return(FALSE)
-  !grepl("^\\s*<", first[[1]])
+  lines <- tryCatch(readLines(path, n = 50, warn = FALSE),
+                    error = function(e) character(0))
+  if (length(lines) < 3 || any(grepl("^\\s*<(!doctype|html)", lines, ignore.case = TRUE))) return(FALSE)
+  df <- tryCatch(read_vdoe_csv(path), error = function(e) NULL)
+  if (is.null(df) || !all(c("Year", "Division", "School") %in% names(df))) return(FALSE)
+  parsed_years <- vapply(df$Year, parse_end_year, integer(1))
+  current_year <- as.integer(format(Sys.Date(), "%Y"))
+  if (anyNA(parsed_years) || any(parsed_years < 2000L | parsed_years > current_year + 1L)) return(FALSE)
+
+  name <- basename(path)
+  if (startsWith(name, "vdoe_enrollment")) {
+    required <- c("Level", "Grade", "Count")
+    minimum_per_year <- 10000L
+  } else if (startsWith(name, "vdoe_absenteeism")) {
+    required <- c("Level", "Subgroup", "Count Below 10", "Count Above 10", "Percent above 10")
+    minimum_per_year <- 20000L
+  } else if (startsWith(name, "vdoe_fr_")) {
+    required <- c("Level", "Percent")
+    minimum_per_year <- 1600L
+  } else if (startsWith(name, "vdoe_accreditation_")) {
+    required <- c("Indicator", "Subgroup", "Level Code", "Accreditation Combined Rate", "Percent Passing")
+    minimum_per_year <- 1600L
+  } else if (startsWith(name, "vdoe_short_term_suspensions")) {
+    required <- c("Level", "Subgroup", "Number Suspended Short Term", "Number of Short Term Suspendable Incidents")
+    minimum_per_year <- 9000L
+  } else if (startsWith(name, "vdoe_long_term_suspensions")) {
+    required <- c("Level", "Subgroup", "Number Suspended Long Term", "Number of Long Term Suspendable Incidents")
+    minimum_per_year <- 9000L
+  } else if (startsWith(name, "vdoe_expulsions")) {
+    required <- c("Level", "Subgroup", "Number Expelled", "Number of Expellable Incidents")
+    minimum_per_year <- 9000L
+  } else {
+    stop("No VDOE schema rule for ", name)
+  }
+  all(required %in% names(df)) && length(unique(df$Year)) >= 1 &&
+    all(table(df$Year) >= minimum_per_year)
 }
 
 vdoe_short_path <- download_cached("vdoe_short_term_suspensions.csv", function(dest) {
@@ -303,6 +337,25 @@ acc_eng_df <- read_vdoe_csv(vdoe_acc_eng_path)
 acc_math_df <- read_vdoe_csv(vdoe_acc_math_path)
 acc_sci_df <- read_vdoe_csv(vdoe_acc_sci_path)
 
+# The live VDOE download keeps a rolling three-year window. Retain baseline
+# public CSV rows only for years absent from the current response.
+history_path <- function(name) file.path("data-raw", "historical", paste0("vdoe_", name, "_baseline.csv.gz"))
+append_missing_years <- function(current, name) {
+  path <- history_path(name)
+  if (!file.exists(path)) stop("Historical source file missing: ", path)
+  old <- read.csv(gzfile(path), stringsAsFactors = FALSE, check.names = FALSE)
+  if (!identical(names(old), names(current))) stop("Historical source schema changed: ", name)
+  old <- old[!old$Year %in% unique(current$Year), , drop = FALSE]
+  if (nrow(old)) message("Retained ", nrow(old), " archived rows for ", name,
+                         " in years ", paste(unique(old$Year), collapse = ", "))
+  dplyr::bind_rows(current, old)
+}
+enroll_df <- append_missing_years(enroll_df, "enrollment")
+abs_df <- append_missing_years(abs_df, "absenteeism")
+fr_elig_df <- append_missing_years(fr_elig_df, "fr_eligibility")
+fr_breakfast_df <- append_missing_years(fr_breakfast_df, "fr_breakfast")
+fr_lunch_df <- append_missing_years(fr_lunch_df, "fr_lunch")
+
 # Enrollment: sum across grades to get a per-school total.
 enroll_totals <- enroll_df %>%
   transmute(
@@ -402,8 +455,8 @@ overall_perf <- stg_perf %>%
     test_overall_pass_index = mean(pass_rate, na.rm = TRUE),
     n_subjects_acr_present = sum(is.finite(acr_rate)),
     n_subjects_pass_present = sum(is.finite(pass_rate)),
-    test_overall_perf_suppressed = any(isTRUE(acr_suppressed)) | n_subjects_acr_present == 0,
-    test_overall_pass_suppressed = any(isTRUE(pass_suppressed)) | n_subjects_pass_present == 0,
+    test_overall_perf_suppressed = any((acr_suppressed %in% TRUE)) | n_subjects_acr_present == 0,
+    test_overall_pass_suppressed = any((pass_suppressed %in% TRUE)) | n_subjects_pass_present == 0,
     .groups = "drop"
   )
 
@@ -434,7 +487,7 @@ extract_absenteeism <- function(df) {
     filter(level == "SCH", subgroup == "All Students") %>%
     mutate(
       chronic_absent_pct = pmin(pmax(chronic_absent_pct, 0), 100),
-      chronic_absent_suppressed = isTRUE(chronic_absent_suppressed) | is.na(chronic_absent_pct)
+      chronic_absent_suppressed = (chronic_absent_suppressed %in% TRUE) | is.na(chronic_absent_pct)
     )
 }
 
@@ -454,7 +507,7 @@ extract_fr_percent <- function(df, metric_id) {
     filter(level == "SCH") %>%
     mutate(
       value = pmin(pmax(value, 0), 100),
-      suppressed = isTRUE(suppressed) | is.na(value)
+      suppressed = (suppressed %in% TRUE) | is.na(value)
     )
 }
 
@@ -513,26 +566,26 @@ susp_totals <- bind_rows(short_counts, long_counts) %>%
   group_by(year, division_name, school_name, metric_tag) %>%
   summarise(
     students_n = if (any(is.finite(students_n))) sum(students_n, na.rm = TRUE) else NA_real_,
-    students_suppressed = !any(is.finite(students_n)) | any(isTRUE(students_suppressed)),
+    students_suppressed = !any(is.finite(students_n)) | any((students_suppressed %in% TRUE)),
     incidents_n = if (any(is.finite(incidents_n))) sum(incidents_n, na.rm = TRUE) else NA_real_,
-    incidents_suppressed = !any(is.finite(incidents_n)) | any(isTRUE(incidents_suppressed)),
+    incidents_suppressed = !any(is.finite(incidents_n)) | any((incidents_suppressed %in% TRUE)),
     .groups = "drop"
   ) %>%
   tidyr::pivot_wider(names_from = metric_tag, values_from = c(students_n, students_suppressed, incidents_n, incidents_suppressed), names_sep = "_") %>%
   mutate(
     susp_short_n = students_n_short,
     susp_long_n = students_n_long,
-    susp_short_suppressed = isTRUE(students_suppressed_short) | is.na(susp_short_n),
-    susp_long_suppressed = isTRUE(students_suppressed_long) | is.na(susp_long_n),
+    susp_short_suppressed = (students_suppressed_short %in% TRUE) | is.na(susp_short_n),
+    susp_long_suppressed = (students_suppressed_long %in% TRUE) | is.na(susp_long_n),
     susp_incidents_short_n = incidents_n_short,
     susp_incidents_long_n = incidents_n_long,
-    susp_incidents_short_suppressed = isTRUE(incidents_suppressed_short) | is.na(susp_incidents_short_n),
-    susp_incidents_long_suppressed = isTRUE(incidents_suppressed_long) | is.na(susp_incidents_long_n),
+    susp_incidents_short_suppressed = (incidents_suppressed_short %in% TRUE) | is.na(susp_incidents_short_n),
+    susp_incidents_long_suppressed = (incidents_suppressed_long %in% TRUE) | is.na(susp_incidents_long_n),
     susp_n = coalesce(susp_short_n, 0) + coalesce(susp_long_n, 0),
-    susp_suppressed = isTRUE(susp_short_suppressed) | isTRUE(susp_long_suppressed) |
+    susp_suppressed = (susp_short_suppressed %in% TRUE) | (susp_long_suppressed %in% TRUE) |
       (is.na(susp_short_n) & is.na(susp_long_n)),
     susp_incidents_n = coalesce(susp_incidents_short_n, 0) + coalesce(susp_incidents_long_n, 0),
-    susp_incidents_suppressed = isTRUE(susp_incidents_short_suppressed) | isTRUE(susp_incidents_long_suppressed) |
+    susp_incidents_suppressed = (susp_incidents_short_suppressed %in% TRUE) | (susp_incidents_long_suppressed %in% TRUE) |
       (is.na(susp_incidents_short_n) & is.na(susp_incidents_long_n))
   )
 
@@ -556,14 +609,14 @@ extract_expulsions_totals <- function(df) {
     group_by(year, division_name, school_name) %>%
     summarise(
       expelled_n = if (any(is.finite(expelled_n))) sum(expelled_n, na.rm = TRUE) else NA_real_,
-      expelled_suppressed = !any(is.finite(expelled_n)) | any(isTRUE(expelled_suppressed)),
+      expelled_suppressed = !any(is.finite(expelled_n)) | any((expelled_suppressed %in% TRUE)),
       expel_incidents_n = if (any(is.finite(expel_incidents_n))) sum(expel_incidents_n, na.rm = TRUE) else NA_real_,
-      expel_incidents_suppressed = !any(is.finite(expel_incidents_n)) | any(isTRUE(expel_incidents_suppressed)),
+      expel_incidents_suppressed = !any(is.finite(expel_incidents_n)) | any((expel_incidents_suppressed %in% TRUE)),
       .groups = "drop"
     ) %>%
     mutate(
-      expelled_suppressed = isTRUE(expelled_suppressed) | is.na(expelled_n),
-      expel_incidents_suppressed = isTRUE(expel_incidents_suppressed) | is.na(expel_incidents_n)
+      expelled_suppressed = (expelled_suppressed %in% TRUE) | is.na(expelled_n),
+      expel_incidents_suppressed = (expel_incidents_suppressed %in% TRUE) | is.na(expel_incidents_n)
     )
 }
 
@@ -604,16 +657,19 @@ race_df <- race_raw %>%
   mutate(
     total = sum(value_raw, na.rm = TRUE),
     value = ifelse(is.finite(total) & total > 0, 100 * value_raw / total, NA_real_),
-    suppressed = isTRUE(suppressed_raw) | is.na(value)
+    suppressed = (suppressed_raw %in% TRUE) | is.na(value)
   ) %>%
   ungroup() %>%
   mutate(value = pmin(pmax(value, 0), 100)) %>%
   select(year, division_name, school_name, metric_id, value, suppressed)
 
-# Choose the 5 most recent years common to our core series.
-years_core <- sort(unique(overall_perf$year))
-if (length(years_core) < 1) stop("No years detected in accreditation exports.")
-years_keep <- tail(years_core, 5)
+# Keep recent years from any available measure. Each metric retains its own
+# source years; the historical accreditation export ends in 2024.
+years_all <- sort(unique(c(overall_perf$year, susp_totals$year, abs_keep$year,
+                           expulsions_keep$year, enroll_totals$year,
+                           race_df$year, fr_keep$year)))
+if (length(years_all) < 1 || anyNA(years_all)) stop("Invalid or missing source years")
+years_keep <- tail(years_all, 5)
 message("Keeping years: ", paste(years_keep, collapse = ", "))
 
 overall_perf_keep <- overall_perf %>% filter(year %in% years_keep)
@@ -625,8 +681,17 @@ enroll_keep <- enroll_totals %>% filter(year %in% years_keep)
 race_keep <- race_df %>% filter(year %in% years_keep)
 fr_keep <- fr_keep %>% filter(year %in% years_keep)
 
-core_join <- overall_perf_keep %>%
-  select(
+core_keys <- dplyr::bind_rows(
+  overall_perf_keep %>% select(year, division_name, school_name),
+  susp_keep %>% select(year, division_name, school_name),
+  abs_keep %>% select(year, division_name, school_name),
+  expulsions_keep %>% select(year, division_name, school_name),
+  enroll_keep %>% select(year, division_name, school_name),
+  fr_keep %>% select(year, division_name, school_name)
+) %>% distinct()
+
+core_join <- core_keys %>%
+  left_join(overall_perf_keep %>% select(
     year,
     division_name,
     school_name,
@@ -636,7 +701,7 @@ core_join <- overall_perf_keep %>%
     test_overall_pass_suppressed,
     n_subjects_acr_present,
     n_subjects_pass_present
-  ) %>%
+  ), by = c("year", "division_name", "school_name")) %>%
   left_join(
     susp_keep %>%
       select(
@@ -667,23 +732,23 @@ core_join <- overall_perf_keep %>%
 core_join <- core_join %>%
   mutate(
     behavior_susp_per_100 = ifelse(is.finite(enrollment) & enrollment > 0, 100 * susp_n / enrollment, NA_real_),
-    behavior_susp_suppressed = isTRUE(susp_suppressed) | is.na(behavior_susp_per_100),
+    behavior_susp_suppressed = (susp_suppressed %in% TRUE) | is.na(behavior_susp_per_100),
     behavior_susp_short_per_100 = ifelse(is.finite(enrollment) & enrollment > 0, 100 * susp_short_n / enrollment, NA_real_),
-    behavior_susp_short_suppressed = isTRUE(susp_short_suppressed) | is.na(behavior_susp_short_per_100),
+    behavior_susp_short_suppressed = (susp_short_suppressed %in% TRUE) | is.na(behavior_susp_short_per_100),
     behavior_susp_long_per_100 = ifelse(is.finite(enrollment) & enrollment > 0, 100 * susp_long_n / enrollment, NA_real_),
-    behavior_susp_long_suppressed = isTRUE(susp_long_suppressed) | is.na(behavior_susp_long_per_100),
+    behavior_susp_long_suppressed = (susp_long_suppressed %in% TRUE) | is.na(behavior_susp_long_per_100),
     behavior_susp_incidents_per_100 = ifelse(is.finite(enrollment) & enrollment > 0, 100 * susp_incidents_n / enrollment, NA_real_),
-    behavior_susp_incidents_suppressed = isTRUE(susp_incidents_suppressed) | is.na(behavior_susp_incidents_per_100),
+    behavior_susp_incidents_suppressed = (susp_incidents_suppressed %in% TRUE) | is.na(behavior_susp_incidents_per_100),
     behavior_susp_incidents_short_per_100 = ifelse(is.finite(enrollment) & enrollment > 0, 100 * susp_incidents_short_n / enrollment, NA_real_),
-    behavior_susp_incidents_short_suppressed = isTRUE(susp_incidents_short_suppressed) | is.na(behavior_susp_incidents_short_per_100),
+    behavior_susp_incidents_short_suppressed = (susp_incidents_short_suppressed %in% TRUE) | is.na(behavior_susp_incidents_short_per_100),
     behavior_susp_incidents_long_per_100 = ifelse(is.finite(enrollment) & enrollment > 0, 100 * susp_incidents_long_n / enrollment, NA_real_),
-    behavior_susp_incidents_long_suppressed = isTRUE(susp_incidents_long_suppressed) | is.na(behavior_susp_incidents_long_per_100),
+    behavior_susp_incidents_long_suppressed = (susp_incidents_long_suppressed %in% TRUE) | is.na(behavior_susp_incidents_long_per_100),
     behavior_expulsions_per_100 = ifelse(is.finite(enrollment) & enrollment > 0, 100 * expelled_n / enrollment, NA_real_),
-    behavior_expulsions_suppressed = isTRUE(expelled_suppressed) | is.na(behavior_expulsions_per_100),
+    behavior_expulsions_suppressed = (expelled_suppressed %in% TRUE) | is.na(behavior_expulsions_per_100),
     behavior_expulsion_incidents_per_100 = ifelse(is.finite(enrollment) & enrollment > 0, 100 * expel_incidents_n / enrollment, NA_real_),
-    behavior_expulsion_incidents_suppressed = isTRUE(expel_incidents_suppressed) | is.na(behavior_expulsion_incidents_per_100),
+    behavior_expulsion_incidents_suppressed = (expel_incidents_suppressed %in% TRUE) | is.na(behavior_expulsion_incidents_per_100),
     attendance_chronic_absent_pct = chronic_absent_pct,
-    attendance_chronic_absent_suppressed = isTRUE(chronic_absent_suppressed) | is.na(attendance_chronic_absent_pct)
+    attendance_chronic_absent_suppressed = (chronic_absent_suppressed %in% TRUE) | is.na(attendance_chronic_absent_pct)
   )
 
 # Attach enrollment to race metrics so we can derive numerator/denominator
@@ -904,9 +969,9 @@ perf_subject_metrics <- stg_perf_keep %>%
     year = year,
     subject = subject,
     acr_rate = pmin(acr_rate, 100),
-    acr_suppressed = isTRUE(acr_suppressed) | is.na(acr_rate),
+    acr_suppressed = (acr_suppressed %in% TRUE) | is.na(acr_rate),
     pass_rate = pmin(pass_rate, 100),
-    pass_suppressed = isTRUE(pass_suppressed) | is.na(pass_rate),
+    pass_suppressed = (pass_suppressed %in% TRUE) | is.na(pass_rate),
     denominator = as.numeric(enrollment)
   )
 
@@ -934,7 +999,7 @@ school_metrics_out <- bind_rows(
       metric_id = "test_overall_perf_index",
       value = pmin(test_overall_perf_index, 100),
       unit = "index",
-      suppressed = test_overall_perf_suppressed,
+      suppressed = (test_overall_perf_suppressed %in% TRUE) | is.na(test_overall_perf_index),
       numerator = ifelse(is.finite(enrollment) & enrollment > 0 & is.finite(test_overall_perf_index), test_overall_perf_index * enrollment, NA_real_),
       denominator = as.numeric(enrollment),
       source = "vdoe_accreditation_rates"
@@ -948,7 +1013,7 @@ school_metrics_out <- bind_rows(
       metric_id = "test_overall_pass_index",
       value = pmin(test_overall_pass_index, 100),
       unit = "index",
-      suppressed = test_overall_pass_suppressed,
+      suppressed = (test_overall_pass_suppressed %in% TRUE) | is.na(test_overall_pass_index),
       numerator = ifelse(is.finite(enrollment) & enrollment > 0 & is.finite(test_overall_pass_index), test_overall_pass_index * enrollment, NA_real_),
       denominator = as.numeric(enrollment),
       source = "vdoe_accreditation_rates"
@@ -1136,7 +1201,19 @@ school_metrics_out <- bind_rows(
       denominator = denominator,
       source = "vdoe_learning_climate_short_term_suspensions"
     )
-)
+) %>%
+  filter(
+    !(startsWith(metric_id, "test_overall_") & !year %in% overall_perf_keep$year),
+    !(startsWith(metric_id, "behavior_susp") & !year %in% susp_keep$year),
+    !(startsWith(metric_id, "behavior_exp") & !year %in% expulsions_keep$year),
+    !(metric_id == "attendance_chronic_absent_pct" & !year %in% abs_keep$year)
+  ) %>%
+  mutate(
+    suppressed = (suppressed %in% TRUE) | !is.finite(value),
+    value = ifelse(suppressed, NA_real_, value),
+    numerator = ifelse(suppressed, NA_real_, numerator),
+    denominator = ifelse(suppressed, NA_real_, denominator)
+  )
 
 # Division aggregation.
 division_metrics_base <- school_metrics_out %>%
@@ -1183,9 +1260,9 @@ division_metrics_base <- school_metrics_out %>%
         }
       }
     },
-    suppressed = all(isTRUE(suppressed) | is.na(value)),
+    suppressed = all((suppressed %in% TRUE) | is.na(value)),
     n_included = sum(is.finite(value)),
-    n_suppressed = sum(isTRUE(suppressed) | is.na(value)),
+    n_suppressed = sum((suppressed %in% TRUE) | is.na(value)),
     agg_method = {
       unit0 <- dplyr::first(unit)
       if (unit0 %in% c("pct", "per_100")) "total_rate" else if (unit0 == "index") "weighted_mean" else "mean"
@@ -1206,9 +1283,9 @@ division_perf_overall <- division_perf_subject %>%
   group_by(division_id, year, perf_metric) %>%
   summarise(
     value = if (all(!is.finite(value))) NA_real_ else mean(value, na.rm = TRUE),
-    suppressed = all(!is.finite(value)) | all(isTRUE(suppressed)),
+    suppressed = all(!is.finite(value)) | all((suppressed %in% TRUE)),
     n_included = sum(is.finite(value)),
-    n_suppressed = sum(isTRUE(suppressed) | is.na(value)),
+    n_suppressed = sum((suppressed %in% TRUE) | is.na(value)),
     agg_method = "mean_subjects",
     .groups = "drop"
   ) %>%
@@ -1244,11 +1321,11 @@ division_subject_perf_out <- division_perf_subject %>%
     },
     acr_suppressed = {
       x <- suppressed[perf_metric == "acr"]
-      if (length(x) == 0) TRUE else all(isTRUE(x))
+      if (length(x) == 0) TRUE else all((x %in% TRUE))
     },
     pass_suppressed = {
       x <- suppressed[perf_metric == "pass"]
-      if (length(x) == 0) TRUE else all(isTRUE(x))
+      if (length(x) == 0) TRUE else all((x %in% TRUE))
     },
     weight_basis = "enrollment",
     source = "vdoe_accreditation_rates",
@@ -1438,7 +1515,7 @@ metric_defs_out <- data.frame(
     "% Two+"
   ),
   label_long = c(
-    "Overall Accreditation Combined Rate (ACR) (0-100), computed as the mean of subject-level ACR across English (ELA), Math, and Science for All Students. This is an app-defined composite for convenience.",
+    "Overall Accreditation Combined Rate (ACR) (0-100), computed as the mean of available subject-level ACR values for All Students. VDOE currently supplies English and Math ACR; Science ACR is blank. This is an app-defined composite, not an official VDOE rating.",
     "Overall SOL Pass Rate (0-100), computed as the mean of subject-level Percent Passing across English (ELA), Math, and Science for All Students. This is an app-defined composite for convenience.",
     "Accreditation Combined Rate (ACR) for English (ELA), All Students (VDOE School Quality Profiles download).",
     "Accreditation Combined Rate (ACR) for Math, All Students (VDOE School Quality Profiles download).",
@@ -1497,18 +1574,50 @@ metric_defs_out <- data.frame(
   stringsAsFactors = FALSE
 )
 
+# Stop before publishing if the output has broken keys or suppression rules.
+if (anyDuplicated(school_metrics_out[c("school_id", "year", "metric_id")]) ||
+    anyDuplicated(division_metrics_out[c("division_id", "year", "metric_id")])) {
+  stop("Duplicate metric keys in staged snapshot")
+}
+if (any(is.finite(school_metrics_out$value) & school_metrics_out$suppressed %in% TRUE) ||
+    any(is.finite(division_metrics_out$value) & division_metrics_out$suppressed %in% TRUE)) {
+  stop("Suppressed numeric value in staged snapshot")
+}
+if (any(!is.finite(school_metrics_out$value) & !(school_metrics_out$suppressed %in% TRUE)) ||
+    any(!is.finite(division_metrics_out$value) & !(division_metrics_out$suppressed %in% TRUE))) {
+  stop("Missing metric value lacks suppression flag")
+}
+
 # Write snapshot artifacts (overwrite atomically).
 write_csv_atomic <- function(df, path) {
   tmp <- paste0(path, ".tmp")
   write.csv(df, tmp, row.names = FALSE, na = "")
-  file.rename(tmp, path)
+  if (!file.rename(tmp, path)) stop("Cannot write snapshot file: ", path)
+}
+
+source_file_info <- function(path) {
+  hash_line <- system2("sha256sum", args = shQuote(path), stdout = TRUE)
+  if (length(hash_line) != 1) stop("Cannot hash source file: ", path)
+  list(file = basename(path), sha256 = strsplit(hash_line, " ", fixed = TRUE)[[1]][[1]],
+       bytes = unname(file.info(path)$size),
+       cache_modified_at = format(file.info(path)$mtime, tz = "UTC", usetz = TRUE))
 }
 
 snapshot_meta <- list(
   snapshot_date = as.character(Sys.Date()),
   year_min = min(years_keep),
   year_max = max(years_keep),
-  transform_version = 5,
+  transform_version = 6,
+  nces_match = list(total = nrow(matched), matched = sum(!is.na(matched$school_id)),
+                    unmatched = matched %>% filter(is.na(school_id)) %>%
+                      select(division_name, school_name)),
+  source_files = lapply(c(vdoe_short_path, vdoe_long_path, vdoe_enroll_path,
+    vdoe_abs_path, vdoe_expulsions_path, vdoe_fr_elig_path,
+    vdoe_fr_breakfast_path, vdoe_fr_lunch_path, vdoe_acc_eng_path,
+    vdoe_acc_math_path, vdoe_acc_sci_path, nces_sch_zip_path,
+    nces_lea_zip_path, tiger_zip_path,
+    vapply(c("enrollment", "absenteeism", "fr_eligibility", "fr_breakfast", "fr_lunch"),
+           history_path, character(1))), source_file_info),
   notes = "Built from VDOE School Quality Profiles downloads + NCES EDGE geocodes + TIGER/Line boundaries. Includes subject-level ACR and SOL pass rates, plus learning climate and school nutrition metrics where available.",
   sources = list(
     list(id = "vdoe_schoolquality_download_data", url = vdoe_url),
@@ -1518,13 +1627,20 @@ snapshot_meta <- list(
   )
 )
 
-jsonlite::write_json(snapshot_meta, file.path(snapshot_dir, "snapshot_meta.json"), pretty = TRUE, auto_unbox = TRUE)
-write_csv_atomic(metric_defs_out, file.path(snapshot_dir, "metric_defs.csv"))
-write_csv_atomic(schools_out, file.path(snapshot_dir, "schools.csv"))
-write_csv_atomic(school_metrics_out, file.path(snapshot_dir, "school_metrics.csv"))
-write_csv_atomic(division_metrics_out, file.path(snapshot_dir, "division_metrics.csv"))
-write_csv_atomic(school_subject_perf_out, file.path(snapshot_dir, "school_subject_perf.csv"))
-write_csv_atomic(division_subject_perf_out, file.path(snapshot_dir, "division_subject_perf.csv"))
-jsonlite::write_json(division_polys_out, file.path(snapshot_dir, "divisions_polygons.json"), pretty = FALSE, auto_unbox = TRUE)
+jsonlite::write_json(snapshot_meta, file.path(snapshot_stage, "snapshot_meta.json"), pretty = TRUE, auto_unbox = TRUE)
+write_csv_atomic(metric_defs_out, file.path(snapshot_stage, "metric_defs.csv"))
+write_csv_atomic(schools_out, file.path(snapshot_stage, "schools.csv"))
+write_csv_atomic(school_metrics_out, file.path(snapshot_stage, "school_metrics.csv"))
+write_csv_atomic(division_metrics_out, file.path(snapshot_stage, "division_metrics.csv"))
+write_csv_atomic(school_subject_perf_out, file.path(snapshot_stage, "school_subject_perf.csv"))
+write_csv_atomic(division_subject_perf_out, file.path(snapshot_stage, "division_subject_perf.csv"))
+jsonlite::write_json(division_polys_out, file.path(snapshot_stage, "divisions_polygons.json"), pretty = FALSE, auto_unbox = TRUE)
 
+snapshot_backup <- tempfile("snapshot-backup-", tmpdir = "app")
+if (!file.rename(snapshot_dir, snapshot_backup)) stop("Cannot back up previous snapshot")
+if (!file.rename(snapshot_stage, snapshot_dir)) {
+  if (!file.rename(snapshot_backup, snapshot_dir)) stop("CRITICAL: restore previous snapshot from ", snapshot_backup)
+  stop("Cannot publish new snapshot; previous snapshot restored")
+}
+unlink(snapshot_backup, recursive = TRUE)
 message("Snapshot written to: ", normalizePath(snapshot_dir))

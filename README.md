@@ -1,138 +1,38 @@
-# Virginia Public Schools Dashboard (R Shiny)
+# Virginia Public Schools Dashboard
 
-Interactive Shiny dashboard to explore Virginia public schools via a map + drill-down details:
-- Division boundaries (county + independent city school divisions) as polygons
-- Individual schools as points (shown when zoomed in)
-- A small set of key metrics (performance, behavior/attendance, demographics)
+This R Shiny dashboard maps Virginia public school divisions and schools. It uses a frozen public-data snapshot in `app/data/`; opening the app does not download data. The [public app](https://jeremiahmbrown.shinyapps.io/va_schools_dashboard/) keeps its existing name and URL.
 
-This repo is set up for **shinyapps.io** deployment with a **frozen snapshot** dataset bundled under `app/data/`.
+## What you can explore
 
-## Live App
-https://jeremiahmbrown.shinyapps.io/va_schools_dashboard/
+- Division polygons and school points, with metric values and detail charts.
+- Historical Accreditation Combined Rate (ACR) and SOL pass rate from VDOE School Quality Profiles accreditation exports. The latest available year for these exports is 2024. The app's "Overall" values are simple subject means, not official VDOE ratings. Science ACR is blank in these files, so the ACR mean uses English and Math. The pass-rate mean can use all three subjects.
+- Discipline measures through 2023–24, and chronic absence and meal measures through 2025–26 where values are reportable.
+- Student race and ethnicity shares based on available VDOE subgroup data.
 
-## What’s On The Map
-- **Divisions (polygons):** Virginia public school division boundaries (includes independent cities).
-- **Schools (points):** Individual public schools with NCES geocoded locations (shown at higher zoom levels).
-- **Hover/click:** Hover shows the currently selected metric; clicking selects an entity and updates the charts below the map.
+The year control uses the **ending year** for school-year data: `2026` means 2025–26. Accreditation exports use their stated year. The app shows the latest available year for the chosen metric and says when a selected year has no values. Suppressed values appear as missing, not zero. For measures with a clear better direction, a higher percentile means a better result among reportable peers in the same year.
 
-## Metrics
-This dashboard focuses on three categories:
+The optional attendance-zone overlay can be incomplete or old. Check a division's current boundaries before using it for an address decision.
 
-### Performance (ACR + SOL Pass Rate)
-This dashboard supports two **subject-level** performance measures for **All Students**, for:
-- English (ELA)
-- Math
-- Science
+## Current source limits
 
-#### Accreditation Combined Rate (ACR)
-**Accreditation Combined Rate (ACR)** is sourced from VDOE School Quality Profiles accreditation exports. In general terms, the related **Combined Rate** is designed to give equal credit for:
-- Students who pass SOL tests, and
-- Students who do not pass but still demonstrate sufficient growth/progress (see VDOE glossary).
+The new VDOE School Performance and Support Framework (SPSF) is a different accountability system from historical ACR. This dashboard does not join them into one trend. The official 2025–26 SOL files were listed but could not be retrieved directly from this environment, so this snapshot does not include them. See the [source and year matrix](docs/SOURCE_MATRIX_2026-10-19.md), [methodology](docs/METHODOLOGY.md), and [refresh QA](docs/REFRESH_QA_2026-10-20.md) for exact years and checks.
 
-#### SOL Pass Rate (Proficiency-Only)
-**SOL Pass Rate** in this app is sourced from the same VDOE accreditation exports as **Percent Passing** (proficiency-only).
+School coordinates use NCES 2024–25 geocodes and division polygons use Census 2024 boundaries. The current match is 1,810 of 1,828 VDOE school names; the 18 unmatched schools are listed in `app/data/snapshot_meta.json`.
 
-#### “Overall” In The App
-The app provides an **Overall** view for each performance metric (ACR or Pass Rate):
-- `Overall = mean(subject values)` across English (ELA), Math, and Science for the selected school-year/division-year.
-- If one subject is missing/suppressed, the mean is taken over available subjects and the app tracks how many subjects were present.
+## Run it in Ubuntu on Windows
 
-Important notes:
-- These “Overall” composites are **app-defined** for convenience and are **not** official VDOE accreditation labels.
-- The app does **not** create any derived indicator from `ACR − Pass`. Public data do not decompose ACR into separate “pass vs growth” counts at the same grain.
+The checkout is at `/home/jeremiah/code/va_schools_dashboard` in WSL Ubuntu. Open an Ubuntu terminal and run:
 
-### Behavior & Attendance
-The detail page includes a “Behavior & Attendance” panel. Metrics are displayed for the **selected year** and include division/state **percentiles**.
+```bash
+cd /home/jeremiah/code/va_schools_dashboard
+Rscript tests/check_snapshot.R
+Rscript -e 'shiny::runApp("app", port = 3838, launch.browser = FALSE)'
+```
 
-#### Percentiles
-Percentiles are empirical ranks among peers for the same year:
-- **State percentile:** compared to all Virginia schools (or divisions) with reportable values.
-- **Division percentile:** compared to schools within the same division (only shown for schools).
+Open `http://localhost:3838` in a Windows browser. Press `Ctrl+C` in Ubuntu to stop the app. The [WSL runbook](docs/WSL_RUNBOOK.md) explains the Windows path, R package lockfile, Beads (`bd`), and data refresh commands.
 
-For metrics where **lower values are better** (e.g., suspensions), percentiles are **inverted** so:
-- Higher percentile = better (lower adverse outcome).
+## Maintain or release it
 
-#### Suspensions / Incidents / Expulsions (per 100)
-Discipline outcomes are reported as **per 100 students** using VDOE counts and school enrollment totals:
+The [improvement plan](docs/IMPROVEMENT_ROADMAP.md) lists each work phase and its Beads issue. The [maintenance guide](docs/MAINTENANCE.md) gives the data build, verification, same-name shinyapps.io deployment, and rollback steps. Local code or data changes do not update the public URL until deployed.
 
-`100 * (short-term suspensions + long-term suspensions) / enrollment`
-
-When available, the app also shows:
-- Short-term vs long-term suspensions per 100
-- Suspendable incidents per 100 (short/long and total)
-- Expulsions per 100 and expellable incidents per 100
-
-Counts come from VDOE School Quality Profiles “School Environment / Learning Climate” exports, and enrollment comes from VDOE enrollment exports.
-
-#### Chronic absenteeism (%)
-Chronic absenteeism is shown as the **percent of students missing 10%+ of school days** (VDOE School Quality Profiles export).
-
-### Demographics (Race/Ethnicity)
-Race/ethnicity is displayed as a **horizontal 100% stacked bar**:
-- No in-bar labels (to keep tiny segments readable)
-- The legend lists each category with its percentage value
-- If the legend becomes long, the app can collapse to “Top N + Other” (implementation is designed to support this)
-
-Values are derived from VDOE subgroup percentages and normalized to sum to 100 across the included categories.
-
-### Student Needs & Programs
-The detail page includes a “Student needs & programs” panel (when metrics are available in the snapshot). Current snapshot metrics include:
-- Meal eligibility (%)
-- Breakfast participation among eligible students (%)
-- Lunch participation among eligible students (%)
-
-## Computation & Aggregation
-### Division Aggregation (Performance)
-- Division **subject-level** ACR and Pass Rate values are computed as **enrollment-weighted averages across schools**.
-- Division **Overall** values are computed as the **mean across the division’s subject-level values** for the selected metric.
-
-### Limitations
-- Public exports may suppress values for small groups; suppressed/missing values appear as “No data”.
-- Public data do not provide a clean decomposition of ACR into separate “pass vs growth” counts at the same grain.
-- Program/needs percentages may be reported without denominators in public exports; aggregation may use enrollment-weighted fallbacks when necessary.
-
-## Attendance Zones (Optional)
-The map supports an optional “Attendance zones” overlay:
-- **Division sources (when available):** a curated registry is seeded for the top 15 divisions by enrollment under `app/data/zones/zone_sources.csv`.
-- **NCES SABS fallback:** can be generated from the NCES School Attendance Boundary Survey (SABS) dataset.
-
-Boundaries may be incomplete or outdated; verify with the school division.
-
-## Where The Accreditation Data Comes From
-Accreditation-related fields (including **Accreditation Combined Rate** and **Percent Passing**) are sourced from **VDOE School Quality Profiles** download exports:
-- https://schoolquality.virginia.gov/download-data
-
-### What Is “Accreditation Combined Rate”?
-VDOE’s School Quality Profiles exports include **Accreditation Combined Rate** values for core subjects. In general terms, the related **Combined Rate** is designed to give equal credit for:
-- Students who pass SOL tests, and
-- Students who do not pass but still demonstrate sufficient growth/progress.
-
-This dashboard uses those reported values (for the **All Students** subgroup) as the building block for the app’s ACR and Overall composites.
-
-### How Virginia Accredits Schools (High-Level)
-Virginia’s accreditation system (Standards of Accreditation) evaluates multiple indicators and assigns levels (commonly described as Level One/Two/Three). Schools are typically reported as **Accredited** or **Accredited with Conditions** based on performance across those indicators. For official definitions and the current rules, refer to VDOE.
-
-For background on how Virginia accredits schools (Standards of Accreditation):
-- https://www.doe.virginia.gov/data-policy-funding/data-reports/statistics-reports/accreditation-federal-reports/soa-school-accreditation
-
-For glossary definitions (including “Combined Rate”):
-- https://schoolquality.virginia.gov/glossary
-
-## Quickstart
-1. Install R packages (see `scripts/bootstrap.R`).
-2. Run locally:
-   - `R -e "shiny::runApp('va_schools_dashboard/app', port = 3838, launch.browser = FALSE)"`
-
-## Data Sources
-- VDOE School Quality Profiles downloads: https://schoolquality.virginia.gov/download-data
-- VDOE Standards of Accreditation overview: https://www.doe.virginia.gov/data-policy-funding/data-reports/statistics-reports/accreditation-federal-reports/soa-school-accreditation
-- NCES EDGE geocodes (school + LEA points): https://nces.ed.gov/programs/edge/
-- U.S. Census TIGER/Line school district boundaries (used for division polygons): https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html
-- NCES School Attendance Boundary Survey (SABS): https://nces.ed.gov/surveys/sabs/
-
-## Data Model
-See `va_schools_dashboard/docs/DATA_SCHEMA.md`.
-See `va_schools_dashboard/docs/DATA_INVENTORY.md` for an automatically generated inventory of what metrics exist in the current snapshot.
-
-## Map Behavior
-See `va_schools_dashboard/docs/MAP_SPEC.md`.
+Source agencies: [VDOE School Quality Profiles](https://schoolquality.virginia.gov/download-data), [NCES EDGE](https://nces.ed.gov/programs/edge/), [Census TIGER/Line](https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html), and [NCES SABS](https://nces.ed.gov/surveys/sabs/). See [data schema](docs/DATA_SCHEMA.md), [data inventory](docs/DATA_INVENTORY.md), and [map specification](docs/MAP_SPEC.md) for the existing data model.

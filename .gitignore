@@ -16,3 +16,6 @@ data-raw/input/sabs/
 .beads-credential-key
 .beads/proxieddb/
 *.gate.lock*
+
+app/snapshot-stage-*/
+app/snapshot-backup-*/
