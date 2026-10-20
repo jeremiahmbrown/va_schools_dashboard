@@ -134,4 +134,4 @@ The steps below extend B2/B4 and F1 without changing the Shiny app identity.
 2. **Sidebar (`va_schools_dashboard-osa.5.5`):** Implemented locally after SOL import. Search comes first; year and performance measure are together; map layers and attendance zones follow; less-used point filters are under **More filters**. A selected school's zone can be cleared to show the full division. Desktop app interaction passed. A mobile viewport check remains open in Beads.
 3. **Zone switch delay (`va_schools_dashboard-osa.5.6`):** The fixed 0.6-second animation wait is skipped when the level changes within the same selected division. The wait remains for new division selections. Roanoke City middle zones rendered locally; a timing comparison and County level check remain open in Beads.
 
-These changes remain in the WSL checkout. The public shinyapps.io app has not been redeployed.
+The data, map, and navigation changes were released to the existing shinyapps.io app on 2026-10-20. See the [release record](RELEASE_2026-10-20.md). The zone timing work and statewide geography follow-ups remain open in Beads.

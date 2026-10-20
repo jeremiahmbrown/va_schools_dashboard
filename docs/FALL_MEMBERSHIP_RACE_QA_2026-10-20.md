@@ -36,4 +36,4 @@ Rscript data-raw/build_snapshot.R
 Rscript tests/check_snapshot.R
 ```
 
-The first command writes the tracked, checked `data-raw/fall_membership_race_school.csv.gz` and source manifest. The second command builds a staged frozen snapshot and publishes it only if its validation passes. The final snapshot check passed on 2026-10-20. `git diff --check` also passed. The public shinyapps.io app has not been redeployed.
+The first command writes the tracked, checked `data-raw/fall_membership_race_school.csv.gz` and source manifest. The second command builds a staged frozen snapshot and publishes it only if its validation passes. The final snapshot check passed on 2026-10-20. `git diff --check` also passed. The public app was released later that day; see the [release record](RELEASE_2026-10-20.md).

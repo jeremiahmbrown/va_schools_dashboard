@@ -1,8 +1,9 @@
 # Annual SOL school subject import: QA record
 
 Checked 2026-10-20 in Ubuntu on `improve-data-refresh-and-ui`. This import
-keeps the existing R Shiny app and frozen `app/data/` snapshot. The public
-shinyapps.io app has not yet been redeployed.
+keeps the existing R Shiny app and frozen `app/data/` snapshot. This was a
+pre-release QA checkpoint; the public app was released later that day. See the
+[release record](RELEASE_2026-10-20.md).
 
 ## Source and extraction
 
