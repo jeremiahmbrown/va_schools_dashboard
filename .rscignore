@@ -7,3 +7,6 @@ scripts
 .beads
 tests
 .vscode
+.beads.gate.lock
+AGENTS.md
+README.md
