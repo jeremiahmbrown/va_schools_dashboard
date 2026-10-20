@@ -1,0 +1,7 @@
+{
+  "database": "dolt",
+  "backend": "dolt",
+  "dolt_mode": "embedded",
+  "dolt_database": "va_schools_dashboard",
+  "project_id": "194c7c11-d8fd-465d-8228-cb37834afbcb"
+}
