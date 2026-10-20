@@ -118,3 +118,20 @@ From Ubuntu in the repository:
 Claim a ready bead with `bd update <id> --claim`; close it with
 `bd close <id> --reason="what was verified"`. `bd show <id>` displays its
 description, acceptance condition and dependencies.
+
+## 2026-10-20 follow-up: ACR, SOL, and polygon audit
+
+The steps below extend B2/B4 and F1 without changing the Shiny app identity.
+
+1. **ACR source check (`va_schools_dashboard-ai4`):** Inspect the old-system 2024–25 accreditation workbook. Confirm the underlying performance year and exact ACR field before adding any 2025 point. Keep the 2025–26 SPSF indicators separate. Evidence and manual handoff: `docs/ACR_SOL_STATUS_2026-10-20.md`.
+2. **SOL source import (`va_schools_dashboard-5uv`):** Obtain the public 2024–25 and 2025–26 school subject files, validate schema, suppression, denominators, school IDs, years, and source hashes, then add a separate SOL series. The user supplied both workbooks on 2026-10-20; the separate annual series and QA are in `docs/ANNUAL_SOL_IMPORT_QA_2026-10-20.md`.
+3. **Zone repair (`va_schools_dashboard-e9i`):** Count division and school coverage, replace Roanoke County's old SABS fallback with its public GIS source, split overlapping school levels, and stop showing all zones when one school has no match. Verify through an app smoke test and `tests/check_zones.R`.
+4. **Remaining geography (`va_schools_dashboard-4qu`, `va_schools_dashboard-nlf`, `va_schools_dashboard-6v0`):** Resolve unmatched school joins, missing attendance zones, and the Lexington City division polygon. Add current public division sources only after each source's school names, effective date, geometry, and coverage pass checks. Do not infer assignments from a school point alone.
+
+## 2026-10-20 follow-up: map and navigation
+
+1. **Quiet gray map (`va_schools_dashboard-osa.5.4`):** Done locally. The map uses Esri Light Gray Canvas base and reference tiles. Polygon fills, school points, place names, and attribution were checked in the running app. See `docs/MAP_SPEC.md` for the tile service and its December 2029 retirement date.
+2. **Sidebar (`va_schools_dashboard-osa.5.5`):** Implemented locally after SOL import. Search comes first; year and performance measure are together; map layers and attendance zones follow; less-used point filters are under **More filters**. A selected school's zone can be cleared to show the full division. Desktop app interaction passed. A mobile viewport check remains open in Beads.
+3. **Zone switch delay (`va_schools_dashboard-osa.5.6`):** The fixed 0.6-second animation wait is skipped when the level changes within the same selected division. The wait remains for new division selections. Roanoke City middle zones rendered locally; a timing comparison and County level check remain open in Beads.
+
+These changes remain in the WSL checkout. The public shinyapps.io app has not been redeployed.

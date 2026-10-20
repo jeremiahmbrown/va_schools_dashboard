@@ -1,0 +1,30 @@
+{
+  "source_page": "https://www.doe.virginia.gov/data-policy-funding/data-reports/statistics-reports/enrollment-demographics",
+  "selection": "Fall Membership Build-A-Table; school, year, race; all genders and grades; full-time plus part-time",
+  "source_files": [
+    {
+      "file": "fall_membership_statistics.csv",
+      "bytes": 2561351,
+      "sha256": "38fe76721147456402b44b79f33e86aeb612cfb02fc268e0d0cb00dc40832286"
+    },
+    {
+      "file": "fall_membership_statistics (1).csv",
+      "bytes": 1678917,
+      "sha256": "70dda291d3ee2e806918d95a2a92f437ba51f5df9a69b4f10031fc302891c259"
+    },
+    {
+      "file": "fall_membership_statistics (2).csv",
+      "bytes": 2561351,
+      "sha256": "38fe76721147456402b44b79f33e86aeb612cfb02fc268e0d0cb00dc40832286"
+    }
+  ],
+  "race_rows": 21978,
+  "blank_race_counts": 7,
+  "school_years": 3726,
+  "school_year_totals": {
+    "2025": 1260956,
+    "2026": 1246285
+  },
+  "archive_file": "fall_membership_race_school.csv.gz",
+  "archive_sha256": "5502946a5f0981ae02422b0440b9b291587e67cea19cd3b7efa2636d8e85b03b"
+}

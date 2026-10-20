@@ -53,7 +53,7 @@ division_subject_perf <- snapshot$division_subject_perf
 divisions_sp <- snapshot$divisions_sp
 
 available_years <- sort(unique(school_metrics$year))
-default_metric <- "test_overall_perf_index"
+default_metric <- "test_sol_annual_overall"
 default_year <- max(school_metrics$year[
   school_metrics$metric_id == default_metric & is.finite(school_metrics$value)
 ], na.rm = TRUE)
@@ -177,6 +177,11 @@ ui <- fluidPage(
   tags$head(
     tags$style(HTML(
       ".side-controls .form-group { margin-bottom: 10px; }
+       .side-controls .side-section-title { font-size: 15px; font-weight: 700; margin: 14px 0 8px; padding-top: 12px; border-top: 1px solid #d9dee3; }
+       .side-controls .side-section-title:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
+       .side-controls .filter-details { margin: 12px 0; padding: 10px; border: 1px solid #d9dee3; border-radius: 5px; background: #fff; }
+       .side-controls .filter-details summary { cursor: pointer; font-weight: 700; }
+       .side-controls .filter-details .form-group:first-of-type { margin-top: 10px; }
        .side-controls .control-label { margin-bottom: 3px; }
        .meta-note { font-size: 12px; color: #444; margin-top: 10px; }
        .detail-panel { margin: 10px 0 14px 0; padding: 10px 12px; border: 1px solid #e3e3e3; border-radius: 6px; background: #fbfbfb; overflow-x: auto; }
@@ -198,39 +203,26 @@ ui <- fluidPage(
     sidebarPanel(
       div(
         class = "side-controls",
+        tags$h4(class = "side-section-title", "Find a place"),
+        selectizeInput(
+          "entity_search",
+          "School, division, or boundary",
+          choices = character(0),
+          selected = character(0),
+          options = list(
+            placeholder = "Search schools, divisions, or boundaries...",
+            # Prevent auto-selecting the first available option on load/refresh.
+            onInitialize = I("function() { this.clear(true); }")
+          )
+        ),
+        tags$h4(class = "side-section-title", "Choose a measure"),
         selectInput(
           "year",
           "Data year",
           choices = available_years,
           selected = default_year
         ),
-        tags$p(class = "meta-note", "For school-year data, 2026 means 2025–26. Accreditation exports use their stated year."),
-        checkboxInput("threshold_enabled", "Enable threshold filter", value = FALSE),
-        conditionalPanel(
-          condition = "input.threshold_enabled == true",
-          radioButtons(
-            "threshold_scope",
-            "Threshold applies to",
-            choices = c("Schools and divisions" = "both", "Schools only" = "schools", "Divisions only" = "divisions"),
-            selected = "both"
-          ),
-          sliderInput(
-            "min_perf_threshold",
-            "Minimum performance",
-            min = 0,
-            max = 100,
-            value = 90,
-            step = 0.5
-          ),
-          sliderInput(
-            "max_susp_threshold",
-            "Maximum suspensions per 100",
-            min = 0,
-            max = 50,
-            value = 5,
-            step = 0.1
-          )
-        ),
+        tags$p(class = "meta-note", "2026 means school year 2025–26. ACR and SQP Percent Passing end in 2024; later years use annual SOL results."),
         selectInput(
           "category",
           "Metric category",
@@ -239,34 +231,64 @@ ui <- fluidPage(
         ),
         uiOutput("metric_selector"),
         uiOutput("metric_availability"),
+        tags$h4(class = "side-section-title", "Map layers"),
         checkboxGroupInput(
           "layers",
-          "Layers",
+          "Show",
           choices = c("Schools (points)" = "schools", "Divisions (choropleth)" = "divisions"),
           selected = c("schools", "divisions")
         ),
         checkboxInput("zones_enabled", "Show attendance zones (when available)", value = FALSE),
-        selectInput(
-          "school_level",
-          "School level",
-          choices = c("All", sort(unique(stats::na.omit(schools$school_level)))),
-          selected = "All"
+        conditionalPanel(
+          condition = "input.zones_enabled == true",
+          selectInput(
+            "zone_level", "Zone level",
+            choices = c("Elementary", "Middle", "High", "Unclassified (older source)" = "Unknown"), selected = "Elementary"
+          ),
+          tags$p(class = "meta-note", "Select a division for all its zones, or a school for one zone. School levels can overlap. Confirm an address with the division."),
+          uiOutput("zone_selection_action"),
+          uiOutput("zone_source_note")
         ),
-        selectInput(
-          "division_filter",
-          "Division filter",
-          choices = c("All", sort(unique(schools$division_name))),
-          selected = "All"
-        ),
-        selectizeInput(
-          "entity_search",
-          "Search",
-          choices = character(0),
-          selected = character(0),
-          options = list(
-            placeholder = "Search schools or divisions...",
-            # Prevent auto-selecting the first available option on load/refresh.
-            onInitialize = I("function() { this.clear(true); }")
+        tags$details(
+          class = "filter-details",
+          tags$summary("More filters"),
+          selectInput(
+            "school_level",
+            "School level (points)",
+            choices = c("All", sort(unique(stats::na.omit(schools$school_level)))),
+            selected = "All"
+          ),
+          selectInput(
+            "division_filter",
+            "Division filter (school points)",
+            choices = c("All", sort(unique(schools$division_name))),
+            selected = "All"
+          ),
+          checkboxInput("threshold_enabled", "Enable threshold filter", value = FALSE),
+          conditionalPanel(
+            condition = "input.threshold_enabled == true",
+            radioButtons(
+              "threshold_scope",
+              "Threshold applies to",
+              choices = c("Schools and divisions" = "both", "Schools only" = "schools", "Divisions only" = "divisions"),
+              selected = "both"
+            ),
+            sliderInput(
+              "min_perf_threshold",
+              "Minimum performance",
+              min = 0,
+              max = 100,
+              value = 90,
+              step = 0.5
+            ),
+            sliderInput(
+              "max_susp_threshold",
+              "Maximum suspensions per 100",
+              min = 0,
+              max = 50,
+              value = 5,
+              step = 0.1
+            )
           )
         ),
         tags$div(
@@ -274,12 +296,14 @@ ui <- fluidPage(
           tags$details(
           tags$summary("How performance values are made"),
           tags$p(
-            "This app supports two subject-level performance measures from VDOE School Quality Profiles:",
+            "This app keeps three performance measures separate:",
             tags$br(),
             tags$strong("Accreditation Combined Rate (ACR)"),
             "and",
-            tags$strong("SOL Pass Rate (Percent Passing)"),
-            "for English (ELA), Math, and Science (All Students)."
+            tags$strong("School Quality Profiles Percent Passing"),
+            "from the older accreditation export (through 2024); and",
+            tags$strong("Annual SOL Pass Rate"),
+            "from VDOE test-administration school files (2023–2026)."
           ),
           tags$p(
             tags$strong("Overall"),
@@ -287,8 +311,9 @@ ui <- fluidPage(
             "so the ACR mean uses English and Math. These values are not official VDOE ratings or SPSF results."
           ),
           tags$p(
-            "Division values for subjects are aggregated as enrollment-weighted averages across schools. Division",
-            "overall values are computed as the mean across the division's subject-level values."
+            "Annual SOL division subject rates use reported test counts from matched schools. Older ACR and",
+            "School Quality Profiles Percent Passing division subjects use enrollment weights. Division overall",
+            "values are app-defined means across available subject values."
           ),
           tags$p(
             "ACR provides equal credit for students who passed SOL tests and students who did not pass but met",
@@ -302,6 +327,7 @@ ui <- fluidPage(
           tags$summary("Data sources"),
           tags$ul(
             tags$li(tags$a("VDOE School Quality Profiles — Download Data", href = "https://schoolquality.virginia.gov/download-data", target = "_blank")),
+            tags$li(tags$a("VDOE SOL Test Pass Rates and Other Results", href = "https://www.doe.virginia.gov/data-policy-funding/data-reports/statistics-reports/sol-test-pass-rates-other-results", target = "_blank")),
             tags$li(tags$a("VDOE School Accreditation (Standards of Accreditation)", href = "https://www.doe.virginia.gov/data-policy-funding/data-reports/statistics-reports/accreditation-federal-reports/soa-school-accreditation", target = "_blank")),
             tags$li(tags$a("VDOE / School Quality Profiles glossary", href = "https://schoolquality.virginia.gov/glossary", target = "_blank")),
             tags$li(tags$a("NCES EDGE Public School/LEA Geocodes", href = "https://nces.ed.gov/programs/edge/", target = "_blank")),
@@ -327,7 +353,7 @@ ui <- fluidPage(
           tags$details(tags$summary("About attendance zones"),
             "Turn on the zones layer, then select a school or division to load that division's zones.",
             tags$br(),
-            "Boundaries may be incomplete or outdated; verify with the school division.")
+            "Most zones are from NCES SABS 2015–16. Roanoke County and Roanoke City use local public GIS. Boundary dates and completeness vary. Verify an address with the school division.")
         )
       ),
       width = 3
@@ -356,20 +382,48 @@ server <- function(input, output, session) {
   selected_division_id <- reactiveVal(NULL)
   search_ready <- reactiveVal(FALSE)
   zones_warned_key <- reactiveVal(NULL)
+
+  output$zone_source_note <- renderUI({
+    division_id <- selected_division_id()
+    if (is.null(division_id) || !nzchar(division_id)) return(NULL)
+    note <- if (identical(division_id, "5103300")) {
+      "Roanoke City: 2026–27 elementary Phase 1 zones; City middle and high GIS. The source has a small overlap between Preston Park and Round Hill elementary areas. Confirm an address with RCPS."
+    } else if (identical(division_id, "5103330")) {
+      "Roanoke County: public county GIS, retrieved 2026-10-20. The service does not state a boundary effective date."
+    } else if (file.exists(file.path(app_dir, "data", "zones", "sabs", paste0(division_id, ".json")))) {
+      "NCES SABS 2015–16 survey zones. These may not match current attendance rules."
+    } else {
+      "No attendance-zone file is available for this division in the current snapshot."
+    }
+    tags$p(class = "meta-note", note)
+  })
+  output$zone_selection_action <- renderUI({
+    if (!isTRUE(input$zones_enabled) || is.null(selected_school_id())) return(NULL)
+    actionButton("show_division_zones", "Show all zones in this division")
+  })
+  observeEvent(input$show_division_zones, {
+    selected_school_id(NULL)
+  }, ignoreInit = TRUE)
+
   last_map_entity_click_at <- reactiveVal(as.POSIXct(NA_real_, origin = "1970-01-01"))
 
   perf_metric_id <- reactive({
-    # Default to the legacy overall ACR composite.
-    metric <- if (is.null(input$perf_metric) || !nzchar(input$perf_metric)) "acr" else input$perf_metric
+    metric <- if (is.null(input$perf_metric) || !nzchar(input$perf_metric)) "sol" else input$perf_metric
     view <- if (is.null(input$perf_view) || !nzchar(input$perf_view)) "overall" else input$perf_view
     subj <- if (is.null(input$perf_subject) || !nzchar(input$perf_subject)) "ela" else input$perf_subject
 
     if (view == "overall") {
-      return(if (metric == "pass") "test_overall_pass_index" else "test_overall_perf_index")
+      return(dplyr::case_when(
+        metric == "sol" ~ "test_sol_annual_overall",
+        metric == "pass" ~ "test_overall_pass_index",
+        TRUE ~ "test_overall_perf_index"
+      ))
     }
 
     suffix <- subj
-    if (metric == "pass") paste0("test_pass_", suffix) else paste0("test_acr_", suffix)
+    if (metric == "sol") return(paste0("test_sol_annual_", suffix))
+    if (metric == "pass") return(paste0("test_pass_", suffix))
+    paste0("test_acr_", suffix)
   })
 
   metric_id_selected <- reactive({
@@ -404,16 +458,22 @@ server <- function(input, output, session) {
     }
     if (metric == "test_overall_perf_index") {
       message <- paste(message, "App-defined English and Math ACR mean.")
-    } else if (metric == "test_overall_pass_index") {
+    } else if (metric %in% c("test_overall_pass_index", "test_sol_annual_overall")) {
       message <- paste(message, "App-defined mean across available subjects.")
     }
     tags$div(class = "meta-note", tags$strong(message),
              tags$details(tags$summary("Metric definition"), row$label_long[[1]]))
   })
 
-  observeEvent(metric_id_selected(), {
-    years <- metric_available_years()
-    if (length(years) > 0) updateSelectInput(session, "year", selected = max(years))
+  # For years after the historical accreditation export, select the annual
+  # SOL measure and preserve the year the user chose.
+  observeEvent(input$year, {
+    year <- suppressWarnings(as.integer(input$year))
+    if (identical(input$category, "test") && length(year) == 1 &&
+        is.finite(year) && year >= 2025 &&
+        !identical(input$perf_metric, "sol")) {
+      updateRadioButtons(session, "perf_metric", selected = "sol")
+    }
   }, ignoreInit = TRUE)
 
   perf_metric_ids <- metric_defs_by_id %>%
@@ -465,8 +525,10 @@ server <- function(input, output, session) {
         radioButtons(
           "perf_metric",
           "Performance metric",
-          choices = c("Accreditation Combined Rate (ACR)" = "acr", "SOL Pass Rate" = "pass"),
-          selected = "acr"
+          choices = c("Annual SOL Pass Rate" = "sol",
+                      "Accreditation Combined Rate (ACR)" = "acr",
+                      "SQP Percent Passing" = "pass"),
+          selected = if (default_year >= 2025) "sol" else "acr"
         ),
         radioButtons(
           "perf_view",
@@ -656,7 +718,15 @@ server <- function(input, output, session) {
         addMapPane(name = "divisionPolygonPane", zIndex = 380) %>%
         addMapPane(name = "zonePolygonPane", zIndex = 410) %>%
         addMapPane(name = "schoolPointPane", zIndex = 440) %>%
-        addProviderTiles(providers$OpenStreetMap.Mapnik) %>%
+        # Light Gray Canvas keeps roads faint and location names sparse.
+        # Use Esri's raster base and reference tiles, with source attribution.
+        addTiles(
+          "https://services.arcgisonline.com/arcgis/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
+          attribution = "Tiles &copy; Esri, HERE, Garmin, &copy; OpenStreetMap contributors, and the GIS user community"
+        ) %>%
+        addTiles(
+          "https://services.arcgisonline.com/arcgis/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}"
+        ) %>%
         setView(lng = -78.7, lat = 37.5, zoom = 7)
     })
 
@@ -973,11 +1043,13 @@ server <- function(input, output, session) {
     zones_debug <- isTRUE(getOption("va_zones_debug")) || Sys.getenv("VA_ZONES_DEBUG") == "1"
 
     observeEvent(
-      list(input$zones_enabled, selected_division_id(), selected_school_id(), zones_zoom_debounced()),
+      list(input$zones_enabled, input$zone_level, selected_division_id(), selected_school_id(), zones_zoom_debounced()),
       {
         enabled <- isTRUE(input$zones_enabled)
         division_id <- selected_division_id()
         school_id <- selected_school_id()
+        zone_level <- input$zone_level
+        if (is.null(zone_level) || !zone_level %in% c("Elementary", "Middle", "High", "Unknown")) zone_level <- "Elementary"
         zoom <- suppressWarnings(as.numeric(zones_zoom_debounced()))
         if (length(zoom) != 1 || !is.finite(zoom)) zoom <- NA_real_
 
@@ -1009,15 +1081,19 @@ server <- function(input, output, session) {
               if (identical(zone_mode, "school")) {
                 desired_key <- paste0("enabled::show_school::", division_id, "::", school_id)
               } else {
-                desired_key <- paste0("enabled::show_division::", division_id)
+                desired_key <- paste0("enabled::show_division::", division_id, "::", zone_level)
               }
             }
           }
         }
 
-        if (identical(zones_render_key(), desired_key)) {
+        previous_key <- zones_render_key()
+        if (identical(previous_key, desired_key)) {
           return()
         }
+        same_division_level_change <-
+          startsWith(previous_key, paste0("enabled::show_division::", division_id, "::")) &&
+          startsWith(desired_key, paste0("enabled::show_division::", division_id, "::"))
         zones_render_key(desired_key)
         if (zones_debug) message("zones observer: desired_key=", desired_key, " zoom=", if (is.finite(zoom)) zoom else "NA")
 
@@ -1062,7 +1138,9 @@ server <- function(input, output, session) {
           division_id = division_id,
           zone_mode = zone_mode,
           school_id = if (identical(zone_mode, "school")) school_id else NULL,
+          zone_level = zone_level,
           zone_path = zone_path,
+          delay_s = if (same_division_level_change) 0 else 0.6,
           scheduled_at = Sys.time()
         ))
       },
@@ -1075,7 +1153,7 @@ server <- function(input, output, session) {
 
       shiny::invalidateLater(200, session)
 
-      if (is.null(pend$scheduled_at) || as.numeric(difftime(Sys.time(), pend$scheduled_at, units = "secs")) < 0.6) {
+      if (is.null(pend$scheduled_at) || as.numeric(difftime(Sys.time(), pend$scheduled_at, units = "secs")) < pend$delay_s) {
         return()
       }
 
@@ -1100,12 +1178,29 @@ server <- function(input, output, session) {
           if (!identical(zones_warned_key(), key)) {
             zones_warned_key(key)
             showNotification(
-              "No attendance zone boundary found for this school in the current snapshot; showing all division zones.",
+              "No attendance zone boundary found for this school in the current snapshot.",
               type = "warning",
               duration = 6
             )
           }
+          zones_pending(NULL)
+          return()
         }
+      } else {
+        filtered <- filter_zone_geojson_by_level(zones_geojson, pend$zone_level)
+        if (is.null(filtered) || !nzchar(filtered)) {
+          key <- paste0("nozones_level::", pend$division_id, "::", pend$zone_level)
+          if (!identical(zones_warned_key(), key)) {
+            zones_warned_key(key)
+            showNotification(
+              paste0("No ", if (pend$zone_level == "Unknown") "unclassified" else tolower(pend$zone_level), " attendance zones found for this division in the current snapshot."),
+              type = "warning", duration = 6
+            )
+          }
+          zones_pending(NULL)
+          return()
+        }
+        zones_geojson <- filtered
       }
 
       t0 <- proc.time()[[3]]
@@ -1249,8 +1344,13 @@ server <- function(input, output, session) {
       return()
     }
 
-    metric_key <- if (!is.null(input$perf_metric) && input$perf_metric == "pass") "pass" else "acr"
-    metric_label <- if (metric_key == "pass") "SOL Pass Rate" else "Accreditation Combined Rate (ACR)"
+    metric_key <- if (!is.null(input$perf_metric) &&
+                      input$perf_metric %in% c("sol", "pass")) input$perf_metric else "acr"
+    metric_label <- dplyr::case_when(
+      metric_key == "sol" ~ "Annual SOL Pass Rate",
+      metric_key == "pass" ~ "SQP Percent Passing",
+      TRUE ~ "Accreditation Combined Rate (ACR)"
+    )
 
     # Stable ordering (and legend order) across years.
     series_levels <- c("English (ELA)", "Math", "Science", "Overall")
@@ -1262,29 +1362,9 @@ server <- function(input, output, session) {
     )
 
     if (!is.null(school_id)) {
-      if (is.null(school_subject_perf)) {
-        plot.new()
-        text(0.5, 0.5, "Subject-level performance data is not available.", cex = 1.1)
-        return()
-      }
-
-      df_subj <- school_subject_perf %>%
-        filter(school_id == !!school_id, subgroup == "All Students") %>%
-        select(year, subject, acr_rate, pass_rate)
-
       school_row <- schools %>% filter(school_id == !!school_id) %>% slice(1)
       obj_label <- paste0("School: ", school_row$school_name[[1]])
     } else {
-      if (is.null(division_subject_perf)) {
-        plot.new()
-        text(0.5, 0.5, "Subject-level performance data is not available.", cex = 1.1)
-        return()
-      }
-
-      df_subj <- division_subject_perf %>%
-        filter(division_id == !!division_id, subgroup == "All Students") %>%
-        select(year, subject, acr_rate, pass_rate)
-
       div_name <- division_name_lookup %>% filter(division_id == !!division_id) %>% slice(1) %>% pull(division_name)
       if (length(div_name) == 0) {
         div_name <- divisions_sp@data %>% filter(division_id == !!division_id) %>% slice(1) %>% pull(division_name)
@@ -1293,10 +1373,47 @@ server <- function(input, output, session) {
       obj_label <- paste0("Division: ", div_name[[1]])
     }
 
-    df_subj <- df_subj %>%
-      filter(subject %in% series_levels[series_levels != "Overall"]) %>%
-      mutate(value = if (metric_key == "pass") pass_rate else acr_rate) %>%
-      transmute(year = as.integer(year), series_name = subject, value = value)
+    if (metric_key == "sol") {
+      metric_rows <- if (!is.null(school_id)) {
+        school_metrics %>% filter(school_id == !!school_id)
+      } else {
+        division_metrics %>% filter(division_id == !!division_id)
+      }
+      df_subj <- metric_rows %>%
+        filter(metric_id %in% c("test_sol_annual_ela", "test_sol_annual_math",
+                                "test_sol_annual_science")) %>%
+        transmute(
+          year = as.integer(year),
+          series_name = dplyr::case_when(
+            metric_id == "test_sol_annual_ela" ~ "English (ELA)",
+            metric_id == "test_sol_annual_math" ~ "Math",
+            TRUE ~ "Science"
+          ),
+          value = value
+        )
+    } else {
+      if (!is.null(school_id)) {
+        if (is.null(school_subject_perf)) {
+          plot.new()
+          text(0.5, 0.5, "Subject-level performance data is not available.", cex = 1.1)
+          return()
+        }
+        historic <- school_subject_perf %>%
+          filter(school_id == !!school_id, subgroup == "All Students")
+      } else {
+        if (is.null(division_subject_perf)) {
+          plot.new()
+          text(0.5, 0.5, "Subject-level performance data is not available.", cex = 1.1)
+          return()
+        }
+        historic <- division_subject_perf %>%
+          filter(division_id == !!division_id, subgroup == "All Students")
+      }
+      df_subj <- historic %>%
+        filter(subject %in% series_levels[series_levels != "Overall"]) %>%
+        mutate(value = if (metric_key == "pass") pass_rate else acr_rate) %>%
+        transmute(year = as.integer(year), series_name = subject, value = value)
+    }
 
     overall <- df_subj %>%
       group_by(year) %>%

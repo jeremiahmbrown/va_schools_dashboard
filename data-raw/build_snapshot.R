@@ -356,18 +356,33 @@ fr_elig_df <- append_missing_years(fr_elig_df, "fr_eligibility")
 fr_breakfast_df <- append_missing_years(fr_breakfast_df, "fr_breakfast")
 fr_lunch_df <- append_missing_years(fr_lunch_df, "fr_lunch")
 
-# Enrollment: sum across grades to get a per-school total.
-enroll_totals <- enroll_df %>%
+# The export has a school total row and grade rows. Check that they agree, then
+# use only the reported total. Adding both sets of rows doubles enrollment.
+enroll_school_rows <- enroll_df %>%
   transmute(
     year = vapply(Year, parse_end_year, integer(1)),
     division_name = Division,
     school_name = School,
     level = Level,
+    grade = trimws(as.character(Grade)),
     count = suppressWarnings(as.integer(Count))
   ) %>%
-  filter(level == "SCH") %>%
+  filter(level == "SCH")
+if (anyNA(enroll_school_rows$count)) {
+  stop('Missing or invalid VDOE enrollment count.')
+}
+enroll_totals <- enroll_school_rows %>%
   group_by(year, division_name, school_name) %>%
-  summarise(enrollment = sum(count, na.rm = TRUE), .groups = "drop")
+  summarise(total_rows = sum(is.na(grade) | grade == ''),
+            enrollment = sum(count[is.na(grade) | grade == '']),
+            grade_sum = sum(count[!is.na(grade) & grade != '']),
+            grade_rows = sum(!is.na(grade) & grade != ''),
+            .groups = 'drop')
+if (any(enroll_totals$total_rows != 1 | enroll_totals$grade_rows == 0 |
+        enroll_totals$enrollment != enroll_totals$grade_sum)) {
+  stop('VDOE school enrollment total is missing or differs from grade counts.')
+}
+enroll_totals <- enroll_totals %>% select(year, division_name, school_name, enrollment)
 
 derive_school_level <- function(min_grade, max_grade) {
   if (!is.finite(min_grade) || !is.finite(max_grade)) return(NA_character_)
@@ -622,7 +637,8 @@ extract_expulsions_totals <- function(df) {
 
 expulsions_keep <- extract_expulsions_totals(expulsions_df)
 
-# Race/ethnicity %: use "Percent of the Student Population" from the suspensions export.
+# Historical race/ethnicity % in 2023–24 comes from the suspension export.
+# The later school years use checked Fall Membership counts below.
 race_map <- c(
   "American Indian" = "demo_american_indian_pct",
   "Asian" = "demo_asian_pct",
@@ -653,6 +669,7 @@ race_raw <- short_df %>%
 # Normalize race percentages to sum to 100 per school-year (handles rounding and
 # partial missingness). This makes the race category consistent for the UI.
 race_df <- race_raw %>%
+  filter(year <= 2024) %>%
   group_by(year, division_name, school_name) %>%
   mutate(
     total = sum(value_raw, na.rm = TRUE),
@@ -1215,6 +1232,22 @@ school_metrics_out <- bind_rows(
     denominator = ifelse(suppressed, NA_real_, denominator)
   )
 
+# Annual SOL test-administration data use a separate measure from the
+# School Quality Profiles accreditation-export Percent Passing field.
+source('data-raw/load_annual_sol.R')
+annual_sol_archive <- file.path('data-raw', 'annual_sol_school.csv.gz')
+annual_sol <- build_annual_sol_metrics(annual_sol_archive, schools_out,
+                                       years_keep, norm_key)
+school_metrics_out <- dplyr::bind_rows(school_metrics_out, annual_sol$metrics)
+source('data-raw/load_membership_race.R')
+membership_race_archive <- file.path('data-raw', 'fall_membership_race_school.csv.gz')
+membership_race <- build_membership_race_metrics(membership_race_archive,
+                                                 schools_out, years_keep, norm_key)
+school_metrics_out <- dplyr::bind_rows(school_metrics_out, membership_race$metrics)
+if (anyDuplicated(school_metrics_out[c('school_id', 'year', 'metric_id')])) {
+  stop('Duplicate school metric keys after annual SOL import.')
+}
+
 # Division aggregation.
 division_metrics_base <- school_metrics_out %>%
   left_join(matched %>% select(school_id, division_id), by = "school_id") %>%
@@ -1274,9 +1307,16 @@ division_metrics_base <- school_metrics_out %>%
 # across the *division subject-level* values (not a direct enrollment-weighted
 # average of school-level overall scores).
 division_perf_subject <- division_metrics_base %>%
-  filter(metric_id %in% c("test_acr_ela", "test_acr_math", "test_acr_science", "test_pass_ela", "test_pass_math", "test_pass_science")) %>%
+  filter(metric_id %in% c("test_acr_ela", "test_acr_math", "test_acr_science",
+                          "test_pass_ela", "test_pass_math", "test_pass_science",
+                          "test_sol_annual_ela", "test_sol_annual_math",
+                          "test_sol_annual_science")) %>%
   mutate(
-    perf_metric = ifelse(grepl("^test_acr_", metric_id), "acr", "pass")
+    perf_metric = dplyr::case_when(
+      grepl("^test_acr_", metric_id) ~ "acr",
+      grepl("^test_pass_", metric_id) ~ "pass",
+      TRUE ~ "sol"
+    )
   )
 
 division_perf_overall <- division_perf_subject %>%
@@ -1290,15 +1330,21 @@ division_perf_overall <- division_perf_subject %>%
     .groups = "drop"
   ) %>%
   mutate(
-    metric_id = ifelse(perf_metric == "acr", "test_overall_perf_index", "test_overall_pass_index")
+    metric_id = dplyr::case_when(
+      perf_metric == "acr" ~ "test_overall_perf_index",
+      perf_metric == "pass" ~ "test_overall_pass_index",
+      TRUE ~ "test_sol_annual_overall"
+    )
   ) %>%
   select(-perf_metric)
 
 division_metrics_out <- division_metrics_base %>%
-  filter(!metric_id %in% c("test_overall_perf_index", "test_overall_pass_index")) %>%
+  filter(!metric_id %in% c("test_overall_perf_index", "test_overall_pass_index",
+                           "test_sol_annual_overall")) %>%
   bind_rows(division_perf_overall)
 
 division_subject_perf_out <- division_perf_subject %>%
+  filter(perf_metric %in% c("acr", "pass")) %>%
   mutate(
     subject = dplyr::case_when(
       grepl("_ela$", metric_id) ~ "English (ELA)",
@@ -1458,6 +1504,10 @@ metric_defs_out <- data.frame(
     "test_pass_ela",
     "test_pass_math",
     "test_pass_science",
+    "test_sol_annual_overall",
+    "test_sol_annual_ela",
+    "test_sol_annual_math",
+    "test_sol_annual_science",
     "behavior_susp_per_100",
     "behavior_susp_short_per_100",
     "behavior_susp_long_per_100",
@@ -1479,7 +1529,7 @@ metric_defs_out <- data.frame(
     "demo_two_plus_pct"
   ),
   category = c(
-    rep("test", 8),
+    rep("test", 12),
     rep("behavior", 8),
     "attendance",
     rep("needs", 3),
@@ -1487,13 +1537,17 @@ metric_defs_out <- data.frame(
   ),
   label_short = c(
     "ACR — Overall",
-    "SOL Pass Rate — Overall",
+    "SQP Percent Passing — Overall",
     "ACR — English (ELA)",
     "ACR — Math",
     "ACR — Science",
-    "SOL Pass Rate — English (ELA)",
-    "SOL Pass Rate — Math",
-    "SOL Pass Rate — Science",
+    "SQP Percent Passing — English (ELA)",
+    "SQP Percent Passing — Math",
+    "SQP Percent Passing — Science",
+    "Annual SOL Pass Rate — Overall",
+    "Annual SOL Pass Rate — English (ELA)",
+    "Annual SOL Pass Rate — Math",
+    "Annual SOL Pass Rate — Science",
     "Suspensions per 100",
     "Short-term suspensions per 100",
     "Long-term suspensions per 100",
@@ -1516,13 +1570,17 @@ metric_defs_out <- data.frame(
   ),
   label_long = c(
     "Overall Accreditation Combined Rate (ACR) (0-100), computed as the mean of available subject-level ACR values for All Students. VDOE currently supplies English and Math ACR; Science ACR is blank. This is an app-defined composite, not an official VDOE rating.",
-    "Overall SOL Pass Rate (0-100), computed as the mean of subject-level Percent Passing across English (ELA), Math, and Science for All Students. This is an app-defined composite for convenience.",
+    "School Quality Profiles Percent Passing overall (0-100): app-defined mean across available English, Math, and Science values from the accreditation export through 2024. This differs from annual test-administration SOL pass rates.",
     "Accreditation Combined Rate (ACR) for English (ELA), All Students (VDOE School Quality Profiles download).",
     "Accreditation Combined Rate (ACR) for Math, All Students (VDOE School Quality Profiles download).",
     "Accreditation Combined Rate (ACR) for Science, All Students (VDOE School Quality Profiles download).",
-    "SOL Pass Rate (Percent Passing) for English (ELA), All Students (VDOE School Quality Profiles download).",
-    "SOL Pass Rate (Percent Passing) for Math, All Students (VDOE School Quality Profiles download).",
-    "SOL Pass Rate (Percent Passing) for Science, All Students (VDOE School Quality Profiles download).",
+    "School Quality Profiles Percent Passing for English (ELA), All Students (accreditation export; available through 2024). Its figures differ from VDOE annual test-administration pass rates.",
+    "School Quality Profiles Percent Passing for Math, All Students (accreditation export; available through 2024). Its figures differ from VDOE annual test-administration pass rates.",
+    "School Quality Profiles Percent Passing for Science, All Students (accreditation export; available through 2024). Its figures differ from VDOE annual test-administration pass rates.",
+    "Annual SOL Pass Rate — Overall: app-defined simple mean of available English Reading, Mathematics, and Science school rates for All Students. Source: VDOE School Subject-Area test-administration workbooks. A division overall value is the mean of its three subject rates.",
+    "Annual SOL Pass Rate for English Reading, All Students, from VDOE School Subject-Area test-administration workbooks; school numerators and denominators are reported by VDOE.",
+    "Annual SOL Pass Rate for Mathematics, All Students, from VDOE School Subject-Area test-administration workbooks; school numerators and denominators are reported by VDOE.",
+    "Annual SOL Pass Rate for Science, All Students, from VDOE School Subject-Area test-administration workbooks; school numerators and denominators are reported by VDOE.",
     "Suspensions per 100 students (short + long term; computed using VDOE counts and enrollment totals)",
     "Short-term suspensions per 100 students (computed using VDOE short-term suspension counts and enrollment totals).",
     "Long-term suspensions per 100 students (computed using VDOE long-term suspension counts and enrollment totals).",
@@ -1535,23 +1593,24 @@ metric_defs_out <- data.frame(
     "School nutrition meal eligibility (%), All Students (VDOE School Quality Profiles download).",
     "Breakfast participation among eligible students (%), All Students (VDOE School Quality Profiles download).",
     "Lunch participation among eligible students (%), All Students (VDOE School Quality Profiles download).",
-    "% of enrolled students who are American Indian or Alaska Native (from VDOE subgroup %; normalized to sum to 100 across race categories)",
-    "% of enrolled students who are Black or African American (from VDOE subgroup %)",
-    "% of enrolled students who are Hispanic/Latino (from VDOE subgroup %)",
-    "% of enrolled students who are White (from VDOE subgroup %)",
-    "% of enrolled students who are Asian (from VDOE subgroup %)",
-    "% of enrolled students who are Native Hawaiian or Other Pacific Islander (from VDOE subgroup %; normalized to sum to 100 across race categories)",
-    "% of enrolled students who are Two or more races (from VDOE subgroup %; normalized to sum to 100 across race categories)"
+    "% of enrolled students who are American Indian or Alaska Native. 2025–26: VDOE Fall Membership counts; 2023–24: normalized SQP subgroup percentages.",
+    "% of enrolled students who are Black or African American. Source changes from SQP subgroup percentages to Fall Membership counts in 2025.",
+    "% of enrolled students who are Hispanic/Latino. Source changes from SQP subgroup percentages to Fall Membership counts in 2025.",
+    "% of enrolled students who are White. Source changes from SQP subgroup percentages to Fall Membership counts in 2025.",
+    "% of enrolled students who are Asian. Source changes from SQP subgroup percentages to Fall Membership counts in 2025.",
+    "% of enrolled students who are Native Hawaiian or Other Pacific Islander. Source changes from SQP subgroup percentages to Fall Membership counts in 2025.",
+    "% of enrolled students who are Two or more races. Source changes from SQP subgroup percentages to Fall Membership counts in 2025."
   ),
   unit = c(
     rep("index", 8),
+    rep("pct", 4),
     rep("per_100", 8),
     "pct",
     rep("pct", 3),
     rep("pct", 7)
   ),
   better_direction = c(
-    rep("higher_better", 8),
+    rep("higher_better", 12),
     rep("lower_better", 8),
     "lower_better",
     rep("neutral", 3),
@@ -1559,13 +1618,14 @@ metric_defs_out <- data.frame(
   ),
   format = c(
     rep("num_1", 8),
+    rep("pct_1", 4),
     rep("num_1", 8),
     "pct_1",
     rep("pct_1", 3),
     rep("pct_1", 7)
   ),
   palette = c(
-    rep("viridis", 8),
+    rep("viridis", 12),
     rep("magma", 8),
     "magma",
     rep("viridis", 3),
@@ -1607,7 +1667,11 @@ snapshot_meta <- list(
   snapshot_date = as.character(Sys.Date()),
   year_min = min(years_keep),
   year_max = max(years_keep),
-  transform_version = 6,
+  transform_version = 8,
+  annual_sol_match = list(source_schools = annual_sol$source_schools,
+                          matched_schools = annual_sol$matched_schools,
+                          unmatched_schools = nrow(annual_sol$unmatched)),
+  membership_race_match = membership_race$coverage,
   nces_match = list(total = nrow(matched), matched = sum(!is.na(matched$school_id)),
                     unmatched = matched %>% filter(is.na(school_id)) %>%
                       select(division_name, school_name)),
@@ -1615,12 +1679,17 @@ snapshot_meta <- list(
     vdoe_abs_path, vdoe_expulsions_path, vdoe_fr_elig_path,
     vdoe_fr_breakfast_path, vdoe_fr_lunch_path, vdoe_acc_eng_path,
     vdoe_acc_math_path, vdoe_acc_sci_path, nces_sch_zip_path,
-    nces_lea_zip_path, tiger_zip_path,
+    nces_lea_zip_path, tiger_zip_path, annual_sol_archive,
+    membership_race_archive,
+    file.path("data-raw", "annual_sol_sources.json"),
+    file.path("data-raw", "fall_membership_race_sources.json"),
     vapply(c("enrollment", "absenteeism", "fr_eligibility", "fr_breakfast", "fr_lunch"),
            history_path, character(1))), source_file_info),
-  notes = "Built from VDOE School Quality Profiles downloads + NCES EDGE geocodes + TIGER/Line boundaries. Includes subject-level ACR and SOL pass rates, plus learning climate and school nutrition metrics where available.",
+  notes = "Built from VDOE School Quality Profiles downloads, annual SOL School Subject-Area workbooks, and 2025–26 Fall Membership race counts, plus NCES EDGE geocodes and TIGER/Line boundaries. Enrollment uses the reported school total, checked against grade counts. Historical ACR/SQP Percent Passing and annual SOL test-administration rates are separate measures.",
   sources = list(
     list(id = "vdoe_schoolquality_download_data", url = vdoe_url),
+    list(id = "vdoe_sol_school_subject_annual", url = "https://www.doe.virginia.gov/data-policy-funding/data-reports/statistics-reports/sol-test-pass-rates-other-results"),
+    list(id = "vdoe_fall_membership_race_school", url = "https://www.doe.virginia.gov/data-policy-funding/data-reports/statistics-reports/enrollment-demographics"),
     list(id = "nces_edge_public_school_geocodes", url = nces_sch_zip_url),
     list(id = "nces_edge_public_lea_geocodes", url = nces_lea_zip_url),
     list(id = "census_tiger_unsd_va", url = tiger_zip_url)

@@ -1,5 +1,7 @@
 # Snapshot refresh and verification record
 
+This records the initial refresh before the manual annual SOL and Fall Membership race imports. Its row counts and comparison statements are historical checkpoints, not counts for the current snapshot. See the [annual SOL QA](ANNUAL_SOL_IMPORT_QA_2026-10-20.md) and [Fall Membership QA](FALL_MEMBERSHIP_RACE_QA_2026-10-20.md) for later data changes, including the corrected enrollment denominator. The current snapshot has 174,159 school metric rows and 12,910 division metric rows.
+
 Checked 2026-10-20 in Ubuntu on branch `improve-data-refresh-and-ui`.
 The public shinyapps.io app still has the old snapshot until a release is made.
 

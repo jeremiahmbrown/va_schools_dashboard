@@ -19,3 +19,6 @@ data-raw/input/sabs/
 
 app/snapshot-stage-*/
 app/snapshot-backup-*/
+
+# Manually obtained public VDOE workbooks remain raw local inputs.
+data-raw/input/manual/

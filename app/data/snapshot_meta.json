@@ -2,7 +2,24 @@
   "snapshot_date": "2026-10-20",
   "year_min": 2022,
   "year_max": 2026,
-  "transform_version": 6,
+  "transform_version": 8,
+  "annual_sol_match": {
+    "source_schools": 1821,
+    "matched_schools": 1777,
+    "unmatched_schools": 47
+  },
+  "membership_race_match": [
+    {
+      "year": 2025,
+      "source_schools": 1862,
+      "matched_schools": 1795
+    },
+    {
+      "year": 2026,
+      "source_schools": 1864,
+      "matched_schools": 1810
+    }
+  ],
   "nces_match": {
     "total": 1828,
     "matched": 1810,
@@ -166,6 +183,30 @@
       "bytes": 5347721,
       "cache_modified_at": "2026-02-13 21:01:28 UTC"
     },
+    "15": {
+      "file": "annual_sol_school.csv.gz",
+      "sha256": "785a4a6716cf616ef794ba7ec82b29b855d1a647bc6ac00e574664826fd8c9c3",
+      "bytes": 286633,
+      "cache_modified_at": "2026-10-20 15:43:05 UTC"
+    },
+    "16": {
+      "file": "fall_membership_race_school.csv.gz",
+      "sha256": "5502946a5f0981ae02422b0440b9b291587e67cea19cd3b7efa2636d8e85b03b",
+      "bytes": 187254,
+      "cache_modified_at": "2026-10-20 19:33:39 UTC"
+    },
+    "17": {
+      "file": "annual_sol_sources.json",
+      "sha256": "c837e598a3761d0570b9f759eeecbede0fec7cae3f82c9f9c040cce936a86df2",
+      "bytes": 929,
+      "cache_modified_at": "2026-10-20 15:43:05 UTC"
+    },
+    "18": {
+      "file": "fall_membership_race_sources.json",
+      "sha256": "5791a9d1f6cd8ce1bde8c0030cb8f3e3f0140f67ab19539470cb1facdd542bfd",
+      "bytes": 1070,
+      "cache_modified_at": "2026-10-20 19:33:39 UTC"
+    },
     "enrollment": {
       "file": "vdoe_enrollment_baseline.csv.gz",
       "sha256": "af84d9aaa9edc2a6e593aee62bf889a38ade288f1d85be4bf322a0a6a1ffaa72",
@@ -197,11 +238,19 @@
       "cache_modified_at": "2026-10-20 01:38:48 UTC"
     }
   },
-  "notes": "Built from VDOE School Quality Profiles downloads + NCES EDGE geocodes + TIGER/Line boundaries. Includes subject-level ACR and SOL pass rates, plus learning climate and school nutrition metrics where available.",
+  "notes": "Built from VDOE School Quality Profiles downloads, annual SOL School Subject-Area workbooks, and 2025–26 Fall Membership race counts, plus NCES EDGE geocodes and TIGER/Line boundaries. Enrollment uses the reported school total, checked against grade counts. Historical ACR/SQP Percent Passing and annual SOL test-administration rates are separate measures.",
   "sources": [
     {
       "id": "vdoe_schoolquality_download_data",
       "url": "https://schoolquality.virginia.gov/download-data"
+    },
+    {
+      "id": "vdoe_sol_school_subject_annual",
+      "url": "https://www.doe.virginia.gov/data-policy-funding/data-reports/statistics-reports/sol-test-pass-rates-other-results"
+    },
+    {
+      "id": "vdoe_fall_membership_race_school",
+      "url": "https://www.doe.virginia.gov/data-policy-funding/data-reports/statistics-reports/enrollment-demographics"
     },
     {
       "id": "nces_edge_public_school_geocodes",

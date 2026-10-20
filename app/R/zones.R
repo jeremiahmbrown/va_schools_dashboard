@@ -65,6 +65,20 @@ filter_zone_geojson_by_school_id <- function(geojson_text, school_id) {
   jsonlite::toJSON(obj, auto_unbox = TRUE)
 }
 
+filter_zone_geojson_by_level <- function(geojson_text, level) {
+  # Division overview: draw one school level at a time. Levels can overlap.
+  if (is.null(geojson_text) || !nzchar(geojson_text)) return(NULL)
+  if (is.null(level) || length(level) != 1 || !level %in% c("Elementary", "Middle", "High", "Unknown")) return(NULL)
+  obj <- jsonlite::fromJSON(geojson_text, simplifyVector = FALSE)
+  feats <- obj$features
+  if (is.null(feats) || length(feats) == 0) return(NULL)
+  keep <- vapply(feats, function(f) identical(f$properties$level, level), logical(1))
+  feats2 <- feats[keep]
+  if (length(feats2) == 0) return(NULL)
+  obj$features <- feats2
+  jsonlite::toJSON(obj, auto_unbox = TRUE)
+}
+
 pick_zone_file <- function(data_dir, division_id, mode = c("division", "sabs")) {
   mode <- match.arg(mode)
   div_path <- file.path(data_dir, "zones", "division", paste0(division_id, ".json"))

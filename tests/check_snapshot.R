@@ -27,14 +27,35 @@ stopifnot(all(school$value[pct] >= 0 & school$value[pct] <= 100))
 stopifnot(all(school$year >= 2022 & school$year <= 2026))
 stopifnot(any(school$year == 2026 & school$metric_id == "attendance_chronic_absent_pct" & is.finite(school$value)))
 stopifnot(any(school$year == 2026 & school$metric_id == "needs_meal_eligibility_pct" & is.finite(school$value)))
-stopifnot(!any(school$year > 2024 & startsWith(school$metric_id, "test_")))
+stopifnot(!any(school$year > 2024 & school$metric_id %in% c(
+  "test_overall_perf_index", "test_overall_pass_index",
+  paste0("test_acr_", c("ela", "math", "science")),
+  paste0("test_pass_", c("ela", "math", "science"))
+)))
+stopifnot(any(school$year == 2025 & school$metric_id == "test_sol_annual_overall" &
+              is.finite(school$value)))
+stopifnot(any(school$year == 2026 & school$metric_id == "test_sol_annual_overall" &
+              is.finite(school$value)))
+race_ids <- defs$metric_id[defs$category == 'demographics']
+stopifnot(length(race_ids) == 7)
+for (target_year in 2025:2026) {
+  recent_race <- subset(school, year == target_year & metric_id %in% race_ids)
+  stopifnot(nrow(recent_race) > 12000,
+            all(recent_race$source == 'vdoe_fall_membership_race_school'),
+            sum(is.finite(recent_race$value)) > 12000)
+}
+stopifnot(!any(school$year <= 2024 &
+                 school$source == 'vdoe_fall_membership_race_school'))
+accawmacke <- subset(schools, school_name == 'Accawmacke Elementary' &
+                       division_name == 'Accomack County Public Schools')
+stopifnot(nrow(accawmacke) == 1, accawmacke$enrollment_latest == 483)
 stopifnot(!any(school$year > 2024 & startsWith(school$metric_id, "behavior_")))
 stopifnot(file.exists("app/data/zones/zone_sources.csv"))
 stopifnot(length(list.files("app/data/zones/sabs", pattern = "[.]json$")) > 100)
 
 # Recompute published division rates from the unsuppressed school numerators.
 school_division <- merge(school, schools[c("school_id", "division_id")], by = "school_id")
-for (metric in c("attendance_chronic_absent_pct", "needs_meal_eligibility_pct")) {
+for (metric in c("attendance_chronic_absent_pct", "needs_meal_eligibility_pct", "test_sol_annual_ela", "demo_black_pct")) {
   rows <- subset(school_division, metric_id == metric & year == 2026 &
                    is.finite(numerator) & is.finite(denominator) & denominator > 0)
   totals <- aggregate(cbind(numerator, denominator) ~ division_id + year,

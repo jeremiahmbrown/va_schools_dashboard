@@ -40,6 +40,23 @@ Beads keeps its live database in `.beads/` on this WSL machine. The tracked
 release. The export includes issue statuses and dependencies; it is not a
 full database backup. Do not hand-edit the JSONL.
 
+## Open the app in Positron
+
+In Windows Positron, press `Ctrl+Shift+P`, search for `WSL`, and choose the
+command to open a folder in WSL. Select Ubuntu, then open
+`/home/jeremiah/code/va_schools_dashboard`. Check that the Positron window
+shows `WSL: Ubuntu`. In its terminal, `pwd` should show that Linux folder and
+`which R` should show `/usr/bin/R`. If Positron asks for an R interpreter,
+select `/usr/bin/R`.
+
+Open `app/app.R`. Positron's Play button can run the Shiny app in its Viewer.
+You can also run `shiny::runApp("app")` in Positron's R console after you check
+that `getwd()` is the project root. If the console is in another folder, run
+`setwd("/home/jeremiah/code/va_schools_dashboard")` first. The Ubuntu terminal
+command below opens the app at `http://localhost:3838` in a Windows browser.
+Stop the app and start it again after changes to data files. The Source Control
+pane shows the local code changes on the current Git branch.
+
 ## Run the current snapshot and app
 
 ```bash
@@ -55,6 +72,23 @@ The app reads a frozen set of files under `app/data/`. Starting it does not
 fetch new data. `renv.lock` records the R packages; `Rscript -e
 'renv::status()'` checks for drift.
 
+## Refresh annual SOL files
+
+For a new VDOE annual SOL release, place the original School Subject-Area
+workbooks in `data-raw/input/manual/`, keeping their expected names. From the
+Ubuntu repository root, run:
+
+```bash
+Rscript data-raw/extract_annual_sol.R
+Rscript data-raw/build_snapshot.R
+Rscript tests/check_snapshot.R
+```
+
+`readxl` is needed only for the workbook extractor. The checked extract in
+`data-raw/annual_sol_school.csv.gz` and source hashes in
+`data-raw/annual_sol_sources.json` are tracked. The originals are ignored by
+Git. Review [annual SOL QA](ANNUAL_SOL_IMPORT_QA_2026-10-20.md) before a release.
+
 ## Rebuild from cached public data
 
 ```bash
@@ -68,6 +102,22 @@ The build reads the existing raw cache unless asked to refresh it. It writes
 to a staging directory and publishes the new snapshot only after the build's
 key and suppression checks pass. The current committed Git snapshot is also
 the rollback copy.
+
+## Refresh Fall Membership race files
+
+Save the official school-by-race file as `fall_membership_statistics.csv` and the
+school-by-gender/grade check file as `fall_membership_statistics (1).csv` in
+`data-raw/input/manual/`. Then run:
+
+```bash
+Rscript data-raw/extract_membership_race.R
+Rscript data-raw/build_snapshot.R
+Rscript tests/check_snapshot.R
+```
+
+The extractor checks all school totals, keeps explicit blank race counts
+missing, and writes a public-data archive and source-hash manifest. The
+original CSVs remain ignored by Git. See the [Fall Membership QA](FALL_MEMBERSHIP_RACE_QA_2026-10-20.md).
 
 ## Download the latest VDOE files
 

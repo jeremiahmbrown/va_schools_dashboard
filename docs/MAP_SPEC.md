@@ -1,5 +1,13 @@
 # Map Spec (Virginia Public Schools Shiny Dashboard)
 
+## Background tiles
+
+Use Esri Light Gray Canvas base and reference tiles. The base draws roads in
+faint gray; the reference adds sparse place labels. Keep school points,
+division choropleth, and attendance zones above both tiles. Show the tile
+service attribution on the map. Esri lists these raster services for
+retirement in December 2029, so review a vector replacement before then.
+
 ## Default View
 - Geography: Virginia.
 - Layers enabled by default:

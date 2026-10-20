@@ -13,9 +13,12 @@ The app will work without any files here.
 - `data-raw/build_zone_sources.R`
 - `data-raw/build_zones_division_sources.R`
 - `data-raw/build_zones_sabs.R`
+- `data-raw/build_roanoke_county_zones.py` (Roanoke County public GIS)
+- `data-raw/build_roanoke_city_zones.py` (Roanoke City public locator layers; requires GDAL `ogr2ogr`)
 
 ## Notes
+- Use the level selector to view elementary, middle, or high zones. These can overlap.
 - Boundaries may be incomplete or outdated. Verify with the school division.
-- Files are stored as lightweight JSON polygon rings so the deployed app does not
-  require system GIS dependencies.
+- Division files are GeoJSON read by the app without system GIS dependencies.
+  The City build script uses GDAL to repair one source polygon before saving.
 

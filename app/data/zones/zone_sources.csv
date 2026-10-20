@@ -14,3 +14,5 @@
 "5103240","Richmond City Public Schools",13,"none","","unknown","",""
 "5101800","Hampton City Public Schools",14,"none","","unknown","",""
 "5100120","Alexandria City Public Schools",15,"none","","unknown","",""
+"5103330","Roanoke County Public Schools",,"roanoke_county_gis","https://arcgis.roanokecountyva.gov/arcgisweb/rest/services/Published_Geodata/Schools/MapServer/4","Elementary, middle, and high; 26/26 schools matched","2026-10-20","Run data-raw/build_roanoke_county_zones.py; one county polygon has three school assignments. Verify address with division."
+"5103300","Roanoke City Public Schools",,"roanoke_city_gis","https://experience.arcgis.com/experience/ffab6c404bdc47188ac89c09a6bbd9ea/","2026-27 elementary phase 1 plus middle and high; 24/24 schools matched","2026-10-20","Run data-raw/build_roanoke_city_zones.py; City locator uses newer Phase 1 elementary layer. Middle and high layers have older publication metadata. Verify address with division."

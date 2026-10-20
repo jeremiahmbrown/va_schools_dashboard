@@ -106,6 +106,16 @@ for (i in seq_len(nrow(reg))) {
   url <- row$source_url[[1]]
 
   message("Processing division ", div_id, " (", stype, ") ...")
+  if (stype == "roanoke_city_gis") {
+    status <- system2("python3", file.path(repo_root, "data-raw", "build_roanoke_city_zones.py"))
+    if (status != 0) warning("Roanoke City zone build failed; prior output was preserved")
+    next
+  }
+  if (stype == "roanoke_county_gis") {
+    status <- system2("python3", file.path(repo_root, "data-raw", "build_roanoke_county_zones.py"))
+    if (status != 0) warning("Roanoke County zone build failed; prior output was preserved")
+    next
+  }
   sf_obj <- tryCatch(read_source(stype, url), error = function(e) e)
   if (inherits(sf_obj, "error")) {
     warning("Failed to read source for division ", div_id, ": ", conditionMessage(sf_obj))
