@@ -32,13 +32,19 @@ Review the code and snapshot diff first. Keep the prior committed snapshot and d
 ```r
 setwd("/home/jeremiah/code/va_schools_dashboard")
 rsconnect::deployApp(
-  appDir = ".",
-  appPrimaryDoc = "app/app.R",
+  appDir = "app",
+  appPrimaryDoc = "app.R",
   account = "jeremiahmbrown",
-  appName = "va_schools_dashboard"
+  appName = "va_schools_dashboard",
+  forceUpdate = TRUE
 )
 ```
 
+Deploy from `app/` so Shiny serves `app/www/dashboard.css` and
+`app/www/dashboard.js`. A root-directory bundle does not serve those files at
+the URLs used by the page. `forceUpdate = TRUE` selects the existing public app
+in a noninteractive release.
+
 The target is `https://jeremiahmbrown.shinyapps.io/va_schools_dashboard/`. Verify the deployment result and load that public URL. Check the same map, a 2026 attendance metric, a historical ACR metric, search, and details there. A successful local run does not prove that the public deployment works.
 
-If the release fails, redeploy the last known good Git commit or restore the prior shinyapps.io deployment, then check the public URL again. Do not relabel an old public snapshot as the new one. `.rscignore` keeps raw downloads, Beads, tests, docs, and local `renv/` out of the app bundle; `renv.lock` is included for package resolution.
+If the release fails, redeploy the last known good Git commit or restore the prior shinyapps.io deployment, then check the public URL again. Do not relabel an old public snapshot as the new one. Deploying `app/` leaves raw downloads, Beads, tests, and docs outside the bundle. `rsconnect` captures the app's installed R dependencies for the server image; the repository root `renv.lock` remains the local development lockfile.
