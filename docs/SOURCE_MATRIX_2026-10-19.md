@@ -45,4 +45,4 @@ uses archived rows only when the whole year is absent from the live response.
 - Keep historical ACR and app-defined overall mean separate from SOL pass rate
   and official SPSF results.
 
-The 2026-10-20 ACR source check, official SOL download steps, and completed manual file handoff are in [ACR_SOL_STATUS_2026-10-20.md](ACR_SOL_STATUS_2026-10-20.md). The old-system 2024–25 accreditation rating workbook needs its underlying performance year checked before it can supply any 2025 ACR value.
+The 2026-10-20 ACR source check, official SOL download steps, and completed manual file handoff are in [ACR_SOL_STATUS_2026-10-20.md](ACR_SOL_STATUS_2026-10-20.md). The 2024–25 accreditation rating workbook was checked and has no numeric ACR field; see the [performance coverage check](PERFORMANCE_COVERAGE_2026-10-20.md).

@@ -1,6 +1,10 @@
+data_year_choices <- function(years) {
+  year_labels <- paste0(years, " · ", years - 1L, "–", substr(years, 3, 4))
+  stats::setNames(years, year_labels)
+}
+
 dashboard_ui <- function(map_widget, available_years, default_year, schools, snapshot) {
-  year_labels <- paste0(available_years, " · ", available_years - 1L, "–", substr(available_years, 3, 4))
-  year_choices <- stats::setNames(available_years, year_labels)
+  year_choices <- data_year_choices(available_years)
 
   fluidPage(
     tags$head(

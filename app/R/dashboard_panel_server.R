@@ -60,7 +60,7 @@ output$map_caption <- renderUI({
   year <- suppressWarnings(as.integer(input$year))
   tags$div(
     tags$strong(def$label_short[[1]]),
-    tags$span(if (is.finite(year)) paste0("Data year ", year, " · select a map feature") else "Select a data year")
+    tags$span(if (length(year) == 1 && is.finite(year)) paste0("Data year ", year, " · select a map feature") else "No reportable year")
   )
 })
 
@@ -99,7 +99,7 @@ selected_metric_value <- reactive({
   entity <- entity_context()
   if (is.null(entity)) return(NULL)
   year <- suppressWarnings(as.integer(input$year))
-  if (!is.finite(year)) return(NULL)
+  if (length(year) != 1 || !is.finite(year)) return(NULL)
   metric_value_for(entity, metric_id_selected(), year)
 })
 
@@ -150,7 +150,7 @@ output$quick_metrics <- renderUI({
   entity <- entity_context()
   if (is.null(entity)) return(NULL)
   year <- suppressWarnings(as.integer(input$year))
-  if (!is.finite(year)) return(NULL)
+  if (length(year) != 1 || !is.finite(year)) return(NULL)
   metric_ids <- c("attendance_chronic_absent_pct", "needs_meal_eligibility_pct",
                   "needs_breakfast_participation_pct", "needs_lunch_participation_pct")
   metric_ids <- setdiff(metric_ids, metric_id_selected())

@@ -43,6 +43,7 @@ source(file.path(app_dir, "R", "percentiles.R"))
 source(file.path(app_dir, "R", "zones.R"))
 source(file.path(app_dir, "R", "dashboard_details.R"))
 source(file.path(app_dir, "R", "dashboard_panel_server.R"))
+source(file.path(app_dir, "R", "metric_availability.R"))
 
 snapshot <- load_snapshot(file.path(app_dir, "data"))
 
@@ -54,11 +55,10 @@ school_subject_perf <- snapshot$school_subject_perf
 division_subject_perf <- snapshot$division_subject_perf
 divisions_sp <- snapshot$divisions_sp
 
-available_years <- sort(unique(school_metrics$year))
+metric_years <- reportable_metric_years(school_metrics, division_metrics)
 default_metric <- "test_sol_annual_overall"
-default_year <- max(school_metrics$year[
-  school_metrics$metric_id == default_metric & is.finite(school_metrics$value)
-], na.rm = TRUE)
+available_years <- sort(unique(metric_years$year[metric_years$metric_id == default_metric]))
+default_year <- max(available_years)
 
 metric_defs_by_id <- metric_defs %>% distinct(metric_id, .keep_all = TRUE)
 
@@ -232,7 +232,10 @@ server <- function(input, output, session) {
     if (!is.null(input$category) && input$category == "test") {
       perf_metric_id()
     } else {
-      input$metric_id
+      metric <- input$metric_id
+      valid <- metric_defs_by_id$metric_id[metric_defs_by_id$category == input$category]
+      if (length(metric) != 1 || !(metric %in% valid)) return(NULL)
+      metric
     }
   })
 
@@ -245,10 +248,20 @@ server <- function(input, output, session) {
   metric_available_years <- reactive({
     metric <- metric_id_selected()
     req(metric)
-    sort(unique(school_metrics$year[
-      school_metrics$metric_id == metric & is.finite(school_metrics$value) &
-        !(school_metrics$suppressed %in% TRUE)
-    ]))
+    sort(unique(metric_years$year[metric_years$metric_id == metric]))
+  })
+
+  observe({
+    years <- metric_available_years()
+    current_year <- isolate(input$year)
+    selected <- if (length(years) == 0) {
+      character(0)
+    } else if (length(current_year) == 1 && suppressWarnings(as.integer(current_year)) %in% years) {
+      current_year
+    } else {
+      max(years)
+    }
+    updateSelectInput(session, "year", choices = data_year_choices(years), selected = selected)
   })
 
   output$metric_availability <- renderUI({
@@ -256,7 +269,7 @@ server <- function(input, output, session) {
     metric <- metric_id_selected()
     row <- metric_defs_by_id %>% filter(metric_id == metric) %>% slice(1)
     if (length(years) == 0) {
-      return(tags$p(class = "meta-note", "No published values for this measure in the snapshot."))
+      return(tags$p(class = "meta-note", "No reportable school or division values for this measure."))
     }
     selected <- suppressWarnings(as.integer(input$year))
     message <- if (length(selected) == 1 && is.finite(selected) && !selected %in% years) {
@@ -273,16 +286,15 @@ server <- function(input, output, session) {
              tags$details(tags$summary("Metric definition"), row$label_long[[1]]))
   })
 
-  # For years after the historical accreditation export, select the annual
-  # SOL measure and preserve the year the user chose.
-  observeEvent(input$year, {
-    year <- suppressWarnings(as.integer(input$year))
-    if (identical(input$category, "test") && length(year) == 1 &&
-        is.finite(year) && year >= 2025 &&
-        !identical(input$perf_metric, "sol")) {
-      updateSelectInput(session, "perf_metric", selected = "sol")
-    }
-  }, ignoreInit = TRUE)
+  observeEvent(input$perf_metric, {
+    family <- switch(input$perf_metric, sol = "test_sol_annual_", acr = "test_acr_", pass = "test_pass_")
+    if (is.null(family)) return()
+    subjects <- c("English (ELA)" = "ela", "Math" = "math", "Science" = "science")
+    choices <- subjects[paste0(family, unname(subjects)) %in% metric_years$metric_id]
+    current <- isolate(input$perf_subject)
+    selected <- if (length(choices) == 0) character(0) else if (length(current) == 1 && current %in% choices) current else unname(choices[[1]])
+    updateSelectInput(session, "perf_subject", choices = choices, selected = selected)
+  }, ignoreInit = FALSE)
 
   perf_metric_ids <- metric_defs_by_id %>%
     filter(category == "test") %>%
@@ -338,9 +350,10 @@ server <- function(input, output, session) {
       ))
     }
 
-    defs <- metric_defs_by_id %>% filter(category == input$category)
+    defs <- metric_defs_by_id %>%
+      filter(category == input$category, metric_id %in% metric_years$metric_id)
     choices <- setNames(defs$metric_id, defs$label_short)
-    selected <- if (default_metric %in% defs$metric_id) default_metric else defs$metric_id[[1]]
+    selected <- if (nrow(defs) == 0) character(0) else defs$metric_id[[1]]
     selectInput("metric_id", "Metric", choices = choices, selected = selected)
   })
 
@@ -504,29 +517,25 @@ server <- function(input, output, session) {
   output$map_legend <- renderUI({
     data <- current_map_data()
     def <- data$metric_def_row
-    values <- c(data$schools_joined$value, data$polygon_vals$value)
-    values <- values[is.finite(values)]
-    if (def$unit[[1]] %in% c("pct", "index")) {
-      limits <- c(0, 100)
-    } else if (length(values) > 0) {
-      limits <- range(values)
-    } else {
-      limits <- c(0, 1)
-    }
-    if (limits[[1]] == limits[[2]]) limits[[2]] <- limits[[1]] + 1
+    limits <- map_scale_limits(data$schools_joined$value,
+                               if ("divisions" %in% input$layers) data$polygon_vals$value else numeric(0))
     colors <- make_ramp(def)[c(1, 90, 170, 256)]
     legend_number <- function(value) {
       if (def$unit[[1]] == "pct") return(sprintf("%.0f%%", value))
       if (def$unit[[1]] == "index") return(sprintf("%.0f", value))
       sprintf("%.1f", value)
     }
+    scale_group <- if ("divisions" %in% input$layers) "division" else "school"
     tags$div(
-      tags$span(class = "legend-caption", "Value scale"),
+      title = paste0("Colors use the middle 90% of ", scale_group,
+                     " values for this measure and year. Values outside that range use the end colors."),
+      tags$span(class = "legend-caption", switch(def$better_direction[[1]],
+        higher_better = "Higher is better", lower_better = "Lower is better", "Value scale")),
       tags$div(class = "legend-ramp",
                style = paste0("background: linear-gradient(90deg, ", paste(colors, collapse = ", "), ");")),
       tags$div(class = "legend-labels",
-               tags$span(paste0("Low ", legend_number(limits[[1]]))),
-               tags$span(paste0("High ", legend_number(limits[[2]]))))
+               tags$span(paste0("≤ ", legend_number(limits[[1]]))),
+               tags$span(paste0("≥ ", legend_number(limits[[2]]))))
     )
   })
 
@@ -714,7 +723,8 @@ server <- function(input, output, session) {
     threshold_scope <- data$threshold_scope
     schools_for_map <- schools_joined %>% filter(is.finite(lat), is.finite(lon))
 
-    domain_values <- c(schools_for_map$value, polygon_vals$value)
+    domain_values <- map_scale_limits(schools_for_map$value,
+                                      if ("divisions" %in% input$layers) polygon_vals$value else numeric(0))
 
     if (has_leaflet) {
       pal <- make_palette(metric_def_row, domain_values)
@@ -748,15 +758,15 @@ server <- function(input, output, session) {
               group = "divisions",
               layerId = ~division_id,
               fillColor = ~pal(value),
-              fillOpacity = 0.28,
-              color = "#2f2f2f",
-              weight = 1.5,
-              opacity = 0.95,
+              fillOpacity = 0.76,
+              color = "#415866",
+              weight = 1.2,
+              opacity = 0.8,
               # Keep polygons behind points and avoid hover text competing with school tooltips.
               label = lapply(div_labels, htmltools::HTML),
               popup = div_labels,
               options = pathOptions(pane = "divisionPolygonPane", bubblingMouseEvents = FALSE),
-              highlightOptions = highlightOptions(weight = 2, color = "#222222", fillOpacity = 0.55, bringToFront = FALSE)
+              highlightOptions = highlightOptions(weight = 2, color = "#153746", fillOpacity = 0.9, bringToFront = FALSE)
             )
         }
       }
@@ -1040,22 +1050,11 @@ server <- function(input, output, session) {
       }
       div_sp@data <- div_sp@data %>% left_join(polygon_vals, by = "division_id")
 
-      domain_values <- c(schools_joined$value, div_sp@data$value)
-      finite <- domain_values[is.finite(domain_values)]
-      if (length(finite) == 0) finite <- c(0, 1)
-      vmin <- min(finite)
-      vmax <- max(finite)
-      if (!is.finite(vmin) || !is.finite(vmax) || vmin == vmax) {
-        vmin <- 0
-        vmax <- 1
-      }
-
-      colors <- switch(
-        metric_def_row$palette[[1]],
-        viridis = grDevices::colorRampPalette(c("#440154", "#3b528b", "#21918c", "#5ec962", "#fde725"))(256),
-        magma = grDevices::colorRampPalette(c("#000004", "#3b0f70", "#8c2981", "#de4968", "#fe9f6d", "#fcfdbf"))(256),
-        grDevices::colorRampPalette(c("#f7fbff", "#08306b"))(256)
-      )
+      limits <- map_scale_limits(schools_joined$value,
+                                 if ("divisions" %in% input$layers) div_sp@data$value else numeric(0))
+      vmin <- limits[[1]]
+      vmax <- limits[[2]]
+      colors <- make_ramp(metric_def_row)
 
       colorize <- function(vals) {
         out <- rep("#9e9e9e", length(vals))
@@ -1067,8 +1066,8 @@ server <- function(input, output, session) {
         out
       }
 
-      div_fill <- grDevices::adjustcolor(colorize(div_sp@data$value), alpha.f = 0.35)
-      plot(div_sp, col = div_fill, border = "#444444", lwd = 1)
+      div_fill <- grDevices::adjustcolor(colorize(div_sp@data$value), alpha.f = 0.76)
+      plot(div_sp, col = div_fill, border = "#415866", lwd = 1)
 
       if ("schools" %in% input$layers) {
         pts_col <- colorize(schools_joined$value)

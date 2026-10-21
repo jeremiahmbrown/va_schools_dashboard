@@ -20,6 +20,6 @@ The app uses a checked snapshot of public data saved in [`app/data/`](app/data/)
 - **Demographics:** The source for student race and ethnicity shares changes in 2025, so comparisons across that year need care.
 - **Attendance zones:** Coverage is partial, and boundaries come from different years. Confirm a current school assignment with the division before making an address decision.
 
-For definitions, coverage, and known limits, see the [methodology](docs/METHODOLOGY.md), [source and year matrix](docs/SOURCE_MATRIX_2026-10-19.md), and [zone coverage audit](docs/ZONES_COVERAGE.md).
+For definitions, coverage, and known limits, see the [methodology](docs/METHODOLOGY.md), [performance coverage](docs/PERFORMANCE_COVERAGE_2026-10-20.md), and [zone coverage audit](docs/ZONES_COVERAGE.md).
 
 Primary sources: [Virginia Department of Education School Quality Profiles](https://schoolquality.virginia.gov/download-data), [VDOE annual SOL results](https://www.doe.virginia.gov/data-policy-funding/data-reports/statistics-reports/sol-test-pass-rates-other-results), [NCES EDGE](https://nces.ed.gov/programs/edge/), [U.S. Census TIGER/Line](https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html), and [NCES School Attendance Boundary Survey](https://nces.ed.gov/surveys/sabs/).

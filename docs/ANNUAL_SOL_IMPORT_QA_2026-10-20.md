@@ -86,9 +86,10 @@ rates. These are derived dashboard values, not official VDOE division results.
 
 ## Remaining limits
 
-- The 2024–25 old-system accreditation rating workbook was not supplied.
-  There is no verified 2025 ACR point. SPSF is a different framework and is
-  not appended to ACR.
+- The 2024–25 old-system accreditation rating workbook was checked later on
+  2026-10-20. It has no numeric ACR field, so there is no verified 2025 ACR
+  point. SPSF is a different framework and is not appended to ACR. See the
+  [performance coverage check](PERFORMANCE_COVERAGE_2026-10-20.md).
 - The 2025–26 manual XLSX files are ignored by Git. The tracked extract and
   source hashes make the current build repeatable, but a new annual release
   requires the original workbooks and a new extraction and QA pass.
