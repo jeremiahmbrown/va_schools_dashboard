@@ -92,7 +92,9 @@ observeEvent(input$clear_selection, {
 }, ignoreInit = TRUE)
 
 observeEvent(list(selected_school_id(), selected_division_id()), {
-  session$sendCustomMessage("dashboard-selection-changed", list())
+  session$sendCustomMessage("dashboard-selection-changed", list(
+    selected = !is.null(selected_school_id()) || !is.null(selected_division_id())
+  ))
 }, ignoreInit = TRUE)
 
 selected_metric_value <- reactive({

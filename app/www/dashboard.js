@@ -29,8 +29,12 @@
     });
 
     if (window.Shiny) {
-      Shiny.addCustomMessageHandler("dashboard-selection-changed", function (_message) {
+      Shiny.addCustomMessageHandler("dashboard-selection-changed", function (message) {
         if (mobileMapQuery.matches) setOpen(false);
+        if (!message.selected) {
+          var popupClose = document.querySelector(".leaflet-popup-close-button");
+          if (popupClose) popupClose.click();
+        }
       });
     }
 

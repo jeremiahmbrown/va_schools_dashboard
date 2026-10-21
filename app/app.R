@@ -733,6 +733,19 @@ server <- function(input, output, session) {
 
     if (has_leaflet) {
       pal <- make_palette(metric_def_row, domain_values)
+      popup_text <- function(names, values, suppressed, kind) {
+        formatted <- vapply(values, fmt_value, character(1),
+                            format = metric_def_row$format[[1]], unit = metric_def_row$unit[[1]])
+        status <- ifelse(is.finite(values), formatted,
+                         ifelse(!is.na(suppressed) & suppressed, "Suppressed", "No data"))
+        sprintf(
+          "<div class='map-selection-popup'><span class='map-selection-kind'>%s</span><strong>%s</strong><span class='map-selection-value'>%s: %s</span></div>",
+          kind,
+          htmltools::htmlEscape(names),
+          htmltools::htmlEscape(metric_def_row$label_short[[1]]),
+          htmltools::htmlEscape(status)
+        )
+      }
       proxy <- leafletProxy("map")
       proxy %>%
         clearGroup("schools") %>%
@@ -748,13 +761,8 @@ server <- function(input, output, session) {
           left_join(polygon_vals, by = "division_id")
         div_sp@data <- div_df
 
-        div_labels <- if (mobile_map) NULL else sprintf(
-          "<strong>%s</strong><br/>%s: %s%s",
-          div_sp@data$display_division_name,
-          metric_def_row$label_short[[1]],
-          vapply(div_sp@data$value, fmt_value, character(1), format = metric_def_row$format[[1]], unit = metric_def_row$unit[[1]]),
-          ifelse(!is.na(div_sp@data$suppressed) & div_sp@data$suppressed, "<br/><em>Suppressed / not reported</em>", "")
-        )
+        div_popups <- popup_text(div_sp@data$display_division_name, div_sp@data$value,
+                                 div_sp@data$suppressed, "Division")
 
         if (nrow(div_sp@data) > 0) {
           proxy %>%
@@ -767,7 +775,7 @@ server <- function(input, output, session) {
               color = "#415866",
               weight = 1.2,
               opacity = 0.8,
-              label = if (mobile_map) NULL else lapply(div_labels, htmltools::HTML),
+              popup = lapply(div_popups, htmltools::HTML),
               options = pathOptions(pane = "divisionPolygonPane", bubblingMouseEvents = FALSE),
               highlightOptions = highlightOptions(weight = 2, color = "#153746", fillOpacity = 0.9, bringToFront = FALSE)
             )
@@ -776,21 +784,8 @@ server <- function(input, output, session) {
 
       if ("schools" %in% input$layers) {
         colors <- ifelse(is.na(schools_for_map$value), "#9e9e9e", pal(schools_for_map$value))
-        school_labels <- if (mobile_map) NULL else {
-          enrollment_labels <- ifelse(
-            is.na(schools_for_map$enrollment_latest),
-            "No data",
-            format(schools_for_map$enrollment_latest, big.mark = ",", scientific = FALSE, trim = TRUE)
-          )
-          sprintf(
-            "<strong>%s</strong><br/>%s<br/>%s: %s<br/>Enrollment: %s",
-            schools_for_map$school_name,
-            schools_for_map$division_name,
-            metric_def_row$label_short[[1]],
-            vapply(schools_for_map$value, fmt_value, character(1), format = metric_def_row$format[[1]], unit = metric_def_row$unit[[1]]),
-            enrollment_labels
-          )
-        }
+        school_popups <- popup_text(schools_for_map$school_name, schools_for_map$value,
+                                    schools_for_map$suppressed, "School")
 
         if (nrow(schools_for_map) > 0) {
           if (mobile_map) {
@@ -805,6 +800,7 @@ server <- function(input, output, session) {
               stroke = FALSE,
               fillColor = "#10283a",
               fillOpacity = 0.001,
+              popup = lapply(school_popups, htmltools::HTML),
               options = pathOptions(pane = "schoolPointPane", bubblingMouseEvents = FALSE)
             )
           }
@@ -821,9 +817,8 @@ server <- function(input, output, session) {
               color = "#222222",
               fillColor = colors,
               fillOpacity = 0.9,
-              label = if (mobile_map) NULL else lapply(school_labels, htmltools::HTML),
-              options = pathOptions(pane = "schoolPointPane", bubblingMouseEvents = FALSE),
-              labelOptions = labelOptions(direction = "top", textsize = "12px")
+              popup = lapply(school_popups, htmltools::HTML),
+              options = pathOptions(pane = "schoolPointPane", bubblingMouseEvents = FALSE)
             )
         }
       }
