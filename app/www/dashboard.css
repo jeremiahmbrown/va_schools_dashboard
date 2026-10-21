@@ -12,7 +12,7 @@ html, body { height: 100%; }
 body { background: var(--canvas); color: var(--ink); font-family: "Segoe UI", Inter, Arial, sans-serif; }
 .container-fluid { height: 100dvh; padding: 0; overflow: hidden; }
 .dashboard-shell { display: flex; flex-direction: column; max-width: 1800px; height: 100%; margin: 0 auto; padding: 0 24px 24px; }
-.dashboard-header { min-height: 74px; display: flex; align-items: center; justify-content: space-between; gap: 20px; border-bottom: 1px solid var(--line); }
+.dashboard-header { min-height: 56px; display: flex; align-items: center; justify-content: space-between; gap: 20px; border-bottom: 1px solid var(--line); }
 .brand { display: flex; align-items: center; gap: 13px; min-width: 0; }
 .brand-mark { display: grid; place-items: center; flex: 0 0 39px; height: 39px; border-radius: 11px; background: var(--ink); color: white; font-size: 16px; font-weight: 800; letter-spacing: -.08em; }
 .brand h1 { margin: 0; font-size: 23px; line-height: 1.05; font-weight: 750; letter-spacing: -.035em; }
@@ -21,7 +21,7 @@ body { background: var(--canvas); color: var(--ink); font-family: "Segoe UI", In
 .header-links a { color: var(--teal-dark); font-weight: 650; }
 .mobile-link-label { display: none; }
 
-.toolbar { display: grid; grid-template-columns: minmax(230px,1.6fr) minmax(145px,.82fr) minmax(180px,1.1fr) minmax(145px,.72fr) 112px; gap: 12px; align-items: end; padding: 16px 0 8px; }
+.toolbar { display: grid; grid-template-columns: minmax(230px,1.6fr) minmax(145px,.82fr) minmax(180px,1.1fr) minmax(145px,.72fr) 112px; gap: 12px; align-items: end; padding: 10px 0 8px; }
 .toolbar-field { min-width: 0; }
 .toolbar .form-group { margin-bottom: 0; }
 .toolbar .control-label { display: block; margin-bottom: 5px; color: var(--muted); font-size: 11px; font-weight: 750; text-transform: uppercase; letter-spacing: .085em; }
@@ -119,10 +119,14 @@ body { background: var(--canvas); color: var(--ink); font-family: "Segoe UI", In
 .metric-table .muted { color: var(--muted); }
 .meta-note, .detail-footnote { margin-top: 12px; color: var(--muted); font-size: 11px; line-height: 1.45; }
 
+@media (min-width: 761px) {
+  .brand h1 { white-space: nowrap; }
+  .brand-subtitle { display: none; }
+}
 @media (max-width: 1050px) {
   .toolbar { grid-template-columns: minmax(220px,1.4fr) minmax(145px,.8fr) minmax(175px,1fr) minmax(120px,.65fr) 92px; gap: 8px; }
   .dashboard-workspace { grid-template-columns: minmax(0,1.3fr) minmax(330px,1fr); }
-  .header-links span { display: none; }
+  .header-links > span { display: none; }
 }
 @media (max-width: 760px) {
   .dashboard-shell { padding: 0 12px; }
