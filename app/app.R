@@ -41,6 +41,9 @@ source(file.path(app_dir, "R", "map_helpers.R"))
 source(file.path(app_dir, "R", "detail_viz.R"))
 source(file.path(app_dir, "R", "percentiles.R"))
 source(file.path(app_dir, "R", "zones.R"))
+source(file.path(app_dir, "R", "dashboard_details.R"))
+source(file.path(app_dir, "R", "dashboard_panel_server.R"))
+source(file.path(app_dir, "R", "metric_availability.R"))
 
 snapshot <- load_snapshot(file.path(app_dir, "data"))
 
@@ -52,11 +55,10 @@ school_subject_perf <- snapshot$school_subject_perf
 division_subject_perf <- snapshot$division_subject_perf
 divisions_sp <- snapshot$divisions_sp
 
-available_years <- sort(unique(school_metrics$year))
+metric_years <- reportable_metric_years(school_metrics, division_metrics)
 default_metric <- "test_sol_annual_overall"
-default_year <- max(school_metrics$year[
-  school_metrics$metric_id == default_metric & is.finite(school_metrics$value)
-], na.rm = TRUE)
+available_years <- sort(unique(metric_years$year[metric_years$metric_id == default_metric]))
+default_year <- max(available_years)
 
 metric_defs_by_id <- metric_defs %>% distinct(metric_id, .keep_all = TRUE)
 
@@ -161,7 +163,7 @@ school_search_choices <- schools %>%
   )
 
 map_widget <- if (has_leaflet) {
-  leafletOutput("map", height = 600)
+  leafletOutput("map", height = "100%")
 } else {
   tagList(
     tags$div(
@@ -169,210 +171,12 @@ map_widget <- if (has_leaflet) {
       tags$strong("Leaflet not installed."),
       " Showing a fallback plot-based map. Install the `leaflet` package for the full interactive basemap."
     ),
-    plotOutput("map_plot", height = 600, click = "map_plot_click")
+    plotOutput("map_plot", height = "100%", click = "map_plot_click")
   )
 }
 
-ui <- fluidPage(
-  tags$head(
-    tags$style(HTML(
-      ".side-controls .form-group { margin-bottom: 10px; }
-       .side-controls .side-section-title { font-size: 15px; font-weight: 700; margin: 14px 0 8px; padding-top: 12px; border-top: 1px solid #d9dee3; }
-       .side-controls .side-section-title:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
-       .side-controls .filter-details { margin: 12px 0; padding: 10px; border: 1px solid #d9dee3; border-radius: 5px; background: #fff; }
-       .side-controls .filter-details summary { cursor: pointer; font-weight: 700; }
-       .side-controls .filter-details .form-group:first-of-type { margin-top: 10px; }
-       .side-controls .control-label { margin-bottom: 3px; }
-       .meta-note { font-size: 12px; color: #444; margin-top: 10px; }
-       .detail-panel { margin: 10px 0 14px 0; padding: 10px 12px; border: 1px solid #e3e3e3; border-radius: 6px; background: #fbfbfb; overflow-x: auto; }
-       .meta-note details { margin-top: 9px; }
-       .meta-note summary { cursor: pointer; font-weight: 700; }
-       .mobile-map-link { display: none; }
-       @media (max-width: 767px) { #map { height: 55vh !important; min-height: 340px; } .side-controls { margin-bottom: 18px; } .mobile-map-link { display: inline-block; margin: 0 0 10px 0; font-weight: 700; } }
-       .detail-panel h4 { margin-top: 0; margin-bottom: 8px; font-size: 16px; }
-       .metric-table { width: 100%; font-size: 13px; }
-       .metric-table th { font-weight: 700; color: #333; padding: 6px 6px; border-bottom: 1px solid #ddd; }
-       .metric-table td { padding: 6px 6px; border-bottom: 1px solid #eee; vertical-align: top; }
-       .metric-table td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
-       .metric-table td.muted { color: #666; }"
-    ))
-  ),
-  titlePanel("Virginia Public Schools Dashboard"),
-  tags$a("Jump to map ↓", href = "#map", class = "mobile-map-link"),
-  sidebarLayout(
-    sidebarPanel(
-      div(
-        class = "side-controls",
-        tags$h4(class = "side-section-title", "Find a place"),
-        selectizeInput(
-          "entity_search",
-          "School, division, or boundary",
-          choices = character(0),
-          selected = character(0),
-          options = list(
-            placeholder = "Search schools, divisions, or boundaries...",
-            # Prevent auto-selecting the first available option on load/refresh.
-            onInitialize = I("function() { this.clear(true); }")
-          )
-        ),
-        tags$h4(class = "side-section-title", "Choose a measure"),
-        selectInput(
-          "year",
-          "Data year",
-          choices = available_years,
-          selected = default_year
-        ),
-        tags$p(class = "meta-note", "2026 means school year 2025–26. ACR and SQP Percent Passing end in 2024; later years use annual SOL results."),
-        selectInput(
-          "category",
-          "Metric category",
-          choices = c("Performance" = "test", "Behavior" = "behavior", "Attendance" = "attendance", "School meals" = "needs", "Demographics" = "demographics"),
-          selected = "test"
-        ),
-        uiOutput("metric_selector"),
-        uiOutput("metric_availability"),
-        tags$h4(class = "side-section-title", "Map layers"),
-        checkboxGroupInput(
-          "layers",
-          "Show",
-          choices = c("Schools (points)" = "schools", "Divisions (choropleth)" = "divisions"),
-          selected = c("schools", "divisions")
-        ),
-        checkboxInput("zones_enabled", "Show attendance zones (when available)", value = FALSE),
-        conditionalPanel(
-          condition = "input.zones_enabled == true",
-          selectInput(
-            "zone_level", "Zone level",
-            choices = c("Elementary", "Middle", "High", "Unclassified (older source)" = "Unknown"), selected = "Elementary"
-          ),
-          tags$p(class = "meta-note", "Select a division for all its zones, or a school for one zone. School levels can overlap. Confirm an address with the division."),
-          uiOutput("zone_selection_action"),
-          uiOutput("zone_source_note")
-        ),
-        tags$details(
-          class = "filter-details",
-          tags$summary("More filters"),
-          selectInput(
-            "school_level",
-            "School level (points)",
-            choices = c("All", sort(unique(stats::na.omit(schools$school_level)))),
-            selected = "All"
-          ),
-          selectInput(
-            "division_filter",
-            "Division filter (school points)",
-            choices = c("All", sort(unique(schools$division_name))),
-            selected = "All"
-          ),
-          checkboxInput("threshold_enabled", "Enable threshold filter", value = FALSE),
-          conditionalPanel(
-            condition = "input.threshold_enabled == true",
-            radioButtons(
-              "threshold_scope",
-              "Threshold applies to",
-              choices = c("Schools and divisions" = "both", "Schools only" = "schools", "Divisions only" = "divisions"),
-              selected = "both"
-            ),
-            sliderInput(
-              "min_perf_threshold",
-              "Minimum performance",
-              min = 0,
-              max = 100,
-              value = 90,
-              step = 0.5
-            ),
-            sliderInput(
-              "max_susp_threshold",
-              "Maximum suspensions per 100",
-              min = 0,
-              max = 50,
-              value = 5,
-              step = 0.1
-            )
-          )
-        ),
-        tags$div(
-          class = "meta-note",
-          tags$details(
-          tags$summary("How performance values are made"),
-          tags$p(
-            "This app keeps three performance measures separate:",
-            tags$br(),
-            tags$strong("Accreditation Combined Rate (ACR)"),
-            "and",
-            tags$strong("School Quality Profiles Percent Passing"),
-            "from the older accreditation export (through 2024); and",
-            tags$strong("Annual SOL Pass Rate"),
-            "from VDOE test-administration school files (2023–2026)."
-          ),
-          tags$p(
-            tags$strong("Overall"),
-            "values are app-defined means across available subjects. Science ACR is blank in the current VDOE export,",
-            "so the ACR mean uses English and Math. These values are not official VDOE ratings or SPSF results."
-          ),
-          tags$p(
-            "Annual SOL division subject rates use reported test counts from matched schools. Older ACR and",
-            "School Quality Profiles Percent Passing division subjects use enrollment weights. Division overall",
-            "values are app-defined means across available subject values."
-          ),
-          tags$p(
-            "ACR provides equal credit for students who passed SOL tests and students who did not pass but met",
-            "growth/progress benchmarks (see the VDOE glossary definition of 'Combined Rate')."
-          )
-          )
-        ),
-        tags$div(
-          class = "meta-note",
-          tags$details(
-          tags$summary("Data sources"),
-          tags$ul(
-            tags$li(tags$a("VDOE School Quality Profiles — Download Data", href = "https://schoolquality.virginia.gov/download-data", target = "_blank")),
-            tags$li(tags$a("VDOE SOL Test Pass Rates and Other Results", href = "https://www.doe.virginia.gov/data-policy-funding/data-reports/statistics-reports/sol-test-pass-rates-other-results", target = "_blank")),
-            tags$li(tags$a("VDOE School Accreditation (Standards of Accreditation)", href = "https://www.doe.virginia.gov/data-policy-funding/data-reports/statistics-reports/accreditation-federal-reports/soa-school-accreditation", target = "_blank")),
-            tags$li(tags$a("VDOE / School Quality Profiles glossary", href = "https://schoolquality.virginia.gov/glossary", target = "_blank")),
-            tags$li(tags$a("NCES EDGE Public School/LEA Geocodes", href = "https://nces.ed.gov/programs/edge/", target = "_blank")),
-            tags$li(tags$a("U.S. Census TIGER/Line School District Boundaries", href = "https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html", target = "_blank"))
-          )
-          )
-        ),
-        tags$div(
-          class = "meta-note",
-          tags$strong("Snapshot date: "),
-          if (!is.null(snapshot$meta$snapshot_date)) snapshot$meta$snapshot_date else "Unknown"
-        ),
-        tags$div(
-          class = "meta-note",
-          tags$a(
-            "GitHub repo",
-            href = "https://github.com/jeremiahmbrown/va_schools_dashboard",
-            target = "_blank"
-          )
-        ),
-        tags$div(
-          class = "meta-note",
-          tags$details(tags$summary("About attendance zones"),
-            "Turn on the zones layer, then select a school or division to load that division's zones.",
-            tags$br(),
-            "Most zones are from NCES SABS 2015–16. Roanoke County and Roanoke City use local public GIS. Boundary dates and completeness vary. Verify an address with the school division.")
-        )
-      ),
-      width = 3
-    ),
-    mainPanel(
-      width = 9,
-      map_widget,
-      tags$hr(),
-      uiOutput("details_header"),
-      uiOutput("behavior_attendance_panel"),
-      fluidRow(
-        column(width = 6, plotOutput("demo_plot", height = 180)),
-        column(width = 6, uiOutput("needs_panel"))
-      ),
-      tags$hr(),
-      plotOutput("trend_plot", height = 375)
-    )
-  )
-)
+source(file.path(app_dir, "R", "dashboard_ui.R"))
+ui <- dashboard_ui(map_widget, available_years, default_year, schools, snapshot)
 
 server <- function(input, output, session) {
   # School points are only shown once the user zooms in past this level.
@@ -405,8 +209,6 @@ server <- function(input, output, session) {
     selected_school_id(NULL)
   }, ignoreInit = TRUE)
 
-  last_map_entity_click_at <- reactiveVal(as.POSIXct(NA_real_, origin = "1970-01-01"))
-
   perf_metric_id <- reactive({
     metric <- if (is.null(input$perf_metric) || !nzchar(input$perf_metric)) "sol" else input$perf_metric
     view <- if (is.null(input$perf_view) || !nzchar(input$perf_view)) "overall" else input$perf_view
@@ -430,17 +232,36 @@ server <- function(input, output, session) {
     if (!is.null(input$category) && input$category == "test") {
       perf_metric_id()
     } else {
-      input$metric_id
+      metric <- input$metric_id
+      valid <- metric_defs_by_id$metric_id[metric_defs_by_id$category == input$category]
+      if (length(metric) != 1 || !(metric %in% valid)) return(NULL)
+      metric
     }
   })
+
+  dashboard_panel_server(
+    input, output, session, selected_school_id, selected_division_id,
+    metric_id_selected, schools, division_name_lookup, divisions_sp,
+    metric_defs_by_id, school_metrics, division_metrics
+  )
 
   metric_available_years <- reactive({
     metric <- metric_id_selected()
     req(metric)
-    sort(unique(school_metrics$year[
-      school_metrics$metric_id == metric & is.finite(school_metrics$value) &
-        !(school_metrics$suppressed %in% TRUE)
-    ]))
+    sort(unique(metric_years$year[metric_years$metric_id == metric]))
+  })
+
+  observe({
+    years <- metric_available_years()
+    current_year <- isolate(input$year)
+    selected <- if (length(years) == 0) {
+      character(0)
+    } else if (length(current_year) == 1 && suppressWarnings(as.integer(current_year)) %in% years) {
+      current_year
+    } else {
+      max(years)
+    }
+    updateSelectInput(session, "year", choices = data_year_choices(years), selected = selected)
   })
 
   output$metric_availability <- renderUI({
@@ -448,7 +269,7 @@ server <- function(input, output, session) {
     metric <- metric_id_selected()
     row <- metric_defs_by_id %>% filter(metric_id == metric) %>% slice(1)
     if (length(years) == 0) {
-      return(tags$p(class = "meta-note", "No published values for this measure in the snapshot."))
+      return(tags$p(class = "meta-note", "No reportable school or division values for this measure."))
     }
     selected <- suppressWarnings(as.integer(input$year))
     message <- if (length(selected) == 1 && is.finite(selected) && !selected %in% years) {
@@ -465,16 +286,15 @@ server <- function(input, output, session) {
              tags$details(tags$summary("Metric definition"), row$label_long[[1]]))
   })
 
-  # For years after the historical accreditation export, select the annual
-  # SOL measure and preserve the year the user chose.
-  observeEvent(input$year, {
-    year <- suppressWarnings(as.integer(input$year))
-    if (identical(input$category, "test") && length(year) == 1 &&
-        is.finite(year) && year >= 2025 &&
-        !identical(input$perf_metric, "sol")) {
-      updateRadioButtons(session, "perf_metric", selected = "sol")
-    }
-  }, ignoreInit = TRUE)
+  observeEvent(input$perf_metric, {
+    family <- switch(input$perf_metric, sol = "test_sol_annual_", acr = "test_acr_", pass = "test_pass_")
+    if (is.null(family)) return()
+    subjects <- c("English (ELA)" = "ela", "Math" = "math", "Science" = "science")
+    choices <- subjects[paste0(family, unname(subjects)) %in% metric_years$metric_id]
+    current <- isolate(input$perf_subject)
+    selected <- if (length(choices) == 0) character(0) else if (length(current) == 1 && current %in% choices) current else unname(choices[[1]])
+    updateSelectInput(session, "perf_subject", choices = choices, selected = selected)
+  }, ignoreInit = FALSE)
 
   perf_metric_ids <- metric_defs_by_id %>%
     filter(category == "test") %>%
@@ -521,36 +341,19 @@ server <- function(input, output, session) {
 
   output$metric_selector <- renderUI({
     if (input$category == "test") {
-      return(tagList(
-        radioButtons(
-          "perf_metric",
-          "Performance metric",
-          choices = c("Annual SOL Pass Rate" = "sol",
-                      "Accreditation Combined Rate (ACR)" = "acr",
-                      "SQP Percent Passing" = "pass"),
-          selected = if (default_year >= 2025) "sol" else "acr"
-        ),
-        radioButtons(
-          "perf_view",
-          "View",
-          choices = c("Overall (mean across subjects)" = "overall", "By subject" = "subject"),
-          selected = "overall"
-        ),
-        conditionalPanel(
-          condition = "input.perf_view == 'subject'",
-          selectInput(
-            "perf_subject",
-            "Subject",
-            choices = c("English (ELA)" = "ela", "Math" = "math", "Science" = "science"),
-            selected = "ela"
-          )
-        )
+      return(selectInput(
+        "perf_metric", "Measure",
+        choices = c("Annual SOL pass rate" = "sol",
+                    "Accreditation Combined Rate (ACR)" = "acr",
+                    "SQP Percent Passing" = "pass"),
+        selected = if (default_year >= 2025) "sol" else "acr"
       ))
     }
 
-    defs <- metric_defs_by_id %>% filter(category == input$category)
+    defs <- metric_defs_by_id %>%
+      filter(category == input$category, metric_id %in% metric_years$metric_id)
     choices <- setNames(defs$metric_id, defs$label_short)
-    selected <- if (default_metric %in% defs$metric_id) default_metric else defs$metric_id[[1]]
+    selected <- if (nrow(defs) == 0) character(0) else defs$metric_id[[1]]
     selectInput("metric_id", "Metric", choices = choices, selected = selected)
   })
 
@@ -711,6 +514,31 @@ server <- function(input, output, session) {
     )
   })
 
+  output$map_legend <- renderUI({
+    data <- current_map_data()
+    def <- data$metric_def_row
+    limits <- map_scale_limits(data$schools_joined$value,
+                               if ("divisions" %in% input$layers) data$polygon_vals$value else numeric(0))
+    colors <- make_ramp(def)[c(1, 90, 170, 256)]
+    legend_number <- function(value) {
+      if (def$unit[[1]] == "pct") return(sprintf("%.0f%%", value))
+      if (def$unit[[1]] == "index") return(sprintf("%.0f", value))
+      sprintf("%.1f", value)
+    }
+    scale_group <- if ("divisions" %in% input$layers) "division" else "school"
+    tags$div(
+      title = paste0("Colors use the middle 90% of ", scale_group,
+                     " values for this measure and year. Values outside that range use the end colors."),
+      tags$span(class = "legend-caption", switch(def$better_direction[[1]],
+        higher_better = "Higher is better", lower_better = "Lower is better", "Value scale")),
+      tags$div(class = "legend-ramp",
+               style = paste0("background: linear-gradient(90deg, ", paste(colors, collapse = ", "), ");")),
+      tags$div(class = "legend-labels",
+               tags$span(paste0("≤ ", legend_number(limits[[1]]))),
+               tags$span(paste0("≥ ", legend_number(limits[[2]]))))
+    )
+  })
+
   if (has_leaflet) {
     # Base map.
     output$map <- renderLeaflet({
@@ -734,8 +562,6 @@ server <- function(input, output, session) {
   observeEvent(input$map_marker_click, {
     marker_id <- input$map_marker_click$id
     if (is.null(marker_id)) return()
-    last_map_entity_click_at(Sys.time())
-
     if (startsWith(marker_id, "school::")) {
       school_id <- sub("^school::", "", marker_id)
       school_row <- schools %>% filter(school_id == !!school_id) %>% slice(1)
@@ -777,7 +603,6 @@ server <- function(input, output, session) {
   observeEvent(input$map_shape_click, {
     polygon_id <- input$map_shape_click$id
     if (is.null(polygon_id) || !nzchar(polygon_id)) return()
-    last_map_entity_click_at(Sys.time())
     mapped <- polygon_division_map %>%
       filter(polygon_division_id == polygon_id) %>%
       slice(1)
@@ -794,17 +619,6 @@ server <- function(input, output, session) {
     }
   })
 
-  # Clicking on the basemap (not a marker/polygon) should clear a school selection,
-  # reverting zones (if enabled) back to the division overview.
-  observeEvent(input$map_click, {
-    # Leaflet sometimes emits a map_click immediately after marker clicks; ignore
-    # clicks within a short window.
-    t_last <- last_map_entity_click_at()
-    if (!is.na(t_last) && as.numeric(difftime(Sys.time(), t_last, units = "secs")) < 0.4) return()
-    if (!is.null(selected_school_id()) && nzchar(selected_school_id())) {
-      selected_school_id(NULL)
-    }
-  }, ignoreInit = TRUE)
   } else {
     observeEvent(input$map_plot_click, {
       click <- input$map_plot_click
@@ -909,13 +723,11 @@ server <- function(input, output, session) {
     threshold_scope <- data$threshold_scope
     schools_for_map <- schools_joined %>% filter(is.finite(lat), is.finite(lon))
 
-    domain_values <- c(schools_for_map$value, polygon_vals$value)
+    domain_values <- map_scale_limits(schools_for_map$value,
+                                      if ("divisions" %in% input$layers) polygon_vals$value else numeric(0))
 
     if (has_leaflet) {
       pal <- make_palette(metric_def_row, domain_values)
-      legend_values <- domain_values[is.finite(domain_values)]
-      if (length(legend_values) == 0) legend_values <- c(0, 1)
-
       proxy <- leafletProxy("map")
       proxy %>%
         clearGroup("schools") %>%
@@ -946,15 +758,15 @@ server <- function(input, output, session) {
               group = "divisions",
               layerId = ~division_id,
               fillColor = ~pal(value),
-              fillOpacity = 0.28,
-              color = "#2f2f2f",
-              weight = 1.5,
-              opacity = 0.95,
+              fillOpacity = 0.76,
+              color = "#415866",
+              weight = 1.2,
+              opacity = 0.8,
               # Keep polygons behind points and avoid hover text competing with school tooltips.
               label = lapply(div_labels, htmltools::HTML),
               popup = div_labels,
               options = pathOptions(pane = "divisionPolygonPane", bubblingMouseEvents = FALSE),
-              highlightOptions = highlightOptions(weight = 2, color = "#222222", fillOpacity = 0.55, bringToFront = FALSE)
+              highlightOptions = highlightOptions(weight = 2, color = "#153746", fillOpacity = 0.9, bringToFront = FALSE)
             )
         }
       }
@@ -1007,33 +819,10 @@ server <- function(input, output, session) {
         }
       }
 
-      proxy %>%
-        addLegend(
-          position = "bottomright",
-          pal = pal,
-          values = legend_values,
-          title = legend_title(metric_def_row),
-          opacity = 1
-        )
     }
   })
 
   if (has_leaflet) {
-    # Clear active selection when user zooms back out to statewide view.
-    observeEvent(input$map_zoom, {
-      zoom <- input$map_zoom
-      if (is.null(zoom)) return()
-
-      if (zoom <= division_rollup_zoom_max) {
-        selected_school_id(NULL)
-        selected_division_id(NULL)
-      } else if (!is.null(selected_school_id()) && nzchar(selected_school_id()) && zoom < 11) {
-        # When zooming out a good bit, revert from single-school mode back to the
-        # division overview (keep the division selection).
-        selected_school_id(NULL)
-      }
-    }, ignoreInit = TRUE)
-
     # Optional attendance zone overlay (renders for the selected division; if a
     # specific school is selected, we filter to that school's zone only).
     zones_zoom_debounced <- reactive(input$map_zoom) %>% debounce(250)
@@ -1261,22 +1050,11 @@ server <- function(input, output, session) {
       }
       div_sp@data <- div_sp@data %>% left_join(polygon_vals, by = "division_id")
 
-      domain_values <- c(schools_joined$value, div_sp@data$value)
-      finite <- domain_values[is.finite(domain_values)]
-      if (length(finite) == 0) finite <- c(0, 1)
-      vmin <- min(finite)
-      vmax <- max(finite)
-      if (!is.finite(vmin) || !is.finite(vmax) || vmin == vmax) {
-        vmin <- 0
-        vmax <- 1
-      }
-
-      colors <- switch(
-        metric_def_row$palette[[1]],
-        viridis = grDevices::colorRampPalette(c("#440154", "#3b528b", "#21918c", "#5ec962", "#fde725"))(256),
-        magma = grDevices::colorRampPalette(c("#000004", "#3b0f70", "#8c2981", "#de4968", "#fe9f6d", "#fcfdbf"))(256),
-        grDevices::colorRampPalette(c("#f7fbff", "#08306b"))(256)
-      )
+      limits <- map_scale_limits(schools_joined$value,
+                                 if ("divisions" %in% input$layers) div_sp@data$value else numeric(0))
+      vmin <- limits[[1]]
+      vmax <- limits[[2]]
+      colors <- make_ramp(metric_def_row)
 
       colorize <- function(vals) {
         out <- rep("#9e9e9e", length(vals))
@@ -1288,8 +1066,8 @@ server <- function(input, output, session) {
         out
       }
 
-      div_fill <- grDevices::adjustcolor(colorize(div_sp@data$value), alpha.f = 0.35)
-      plot(div_sp, col = div_fill, border = "#444444", lwd = 1)
+      div_fill <- grDevices::adjustcolor(colorize(div_sp@data$value), alpha.f = 0.76)
+      plot(div_sp, col = div_fill, border = "#415866", lwd = 1)
 
       if ("schools" %in% input$layers) {
         pts_col <- colorize(schools_joined$value)
@@ -1310,209 +1088,6 @@ server <- function(input, output, session) {
       )
     })
   }
-
-  output$details_header <- renderUI({
-    school_id <- selected_school_id()
-    division_id <- selected_division_id()
-    year <- input$year
-
-    if (!is.null(school_id)) {
-      school_row <- schools %>% filter(school_id == !!school_id) %>% slice(1)
-      return(tags$h4(paste0("School: ", school_row$school_name[[1]], " — ", year)))
-    }
-
-    if (!is.null(division_id)) {
-      div_name <- division_name_lookup %>% filter(division_id == !!division_id) %>% slice(1) %>% pull(division_name)
-      if (length(div_name) == 0) {
-        div_name <- divisions_sp@data %>% filter(division_id == !!division_id) %>% slice(1) %>% pull(division_name)
-      }
-      if (length(div_name) == 0) div_name <- division_id
-      return(tags$h4(paste0("Division: ", div_name[[1]], " — ", year)))
-    }
-
-    tags$h4(paste0("Click a school point or division polygon for details — ", year))
-  })
-
-  output$trend_plot <- renderPlot({
-    req(input$year)
-    school_id <- selected_school_id()
-    division_id <- selected_division_id()
-
-    if (is.null(school_id) && is.null(division_id)) {
-      plot.new()
-      text(0.5, 0.5, "Select a school or division to see a trend.", cex = 1.1)
-      return()
-    }
-
-    metric_key <- if (!is.null(input$perf_metric) &&
-                      input$perf_metric %in% c("sol", "pass")) input$perf_metric else "acr"
-    metric_label <- dplyr::case_when(
-      metric_key == "sol" ~ "Annual SOL Pass Rate",
-      metric_key == "pass" ~ "SQP Percent Passing",
-      TRUE ~ "Accreditation Combined Rate (ACR)"
-    )
-
-    # Stable ordering (and legend order) across years.
-    series_levels <- c("English (ELA)", "Math", "Science", "Overall")
-    series_cols <- c(
-      "English (ELA)" = "#1F77B4",
-      "Math" = "#F58518",
-      "Science" = "#54A24B",
-      "Overall" = "#111111"
-    )
-
-    if (!is.null(school_id)) {
-      school_row <- schools %>% filter(school_id == !!school_id) %>% slice(1)
-      obj_label <- paste0("School: ", school_row$school_name[[1]])
-    } else {
-      div_name <- division_name_lookup %>% filter(division_id == !!division_id) %>% slice(1) %>% pull(division_name)
-      if (length(div_name) == 0) {
-        div_name <- divisions_sp@data %>% filter(division_id == !!division_id) %>% slice(1) %>% pull(division_name)
-      }
-      if (length(div_name) == 0) div_name <- division_id
-      obj_label <- paste0("Division: ", div_name[[1]])
-    }
-
-    if (metric_key == "sol") {
-      metric_rows <- if (!is.null(school_id)) {
-        school_metrics %>% filter(school_id == !!school_id)
-      } else {
-        division_metrics %>% filter(division_id == !!division_id)
-      }
-      df_subj <- metric_rows %>%
-        filter(metric_id %in% c("test_sol_annual_ela", "test_sol_annual_math",
-                                "test_sol_annual_science")) %>%
-        transmute(
-          year = as.integer(year),
-          series_name = dplyr::case_when(
-            metric_id == "test_sol_annual_ela" ~ "English (ELA)",
-            metric_id == "test_sol_annual_math" ~ "Math",
-            TRUE ~ "Science"
-          ),
-          value = value
-        )
-    } else {
-      if (!is.null(school_id)) {
-        if (is.null(school_subject_perf)) {
-          plot.new()
-          text(0.5, 0.5, "Subject-level performance data is not available.", cex = 1.1)
-          return()
-        }
-        historic <- school_subject_perf %>%
-          filter(school_id == !!school_id, subgroup == "All Students")
-      } else {
-        if (is.null(division_subject_perf)) {
-          plot.new()
-          text(0.5, 0.5, "Subject-level performance data is not available.", cex = 1.1)
-          return()
-        }
-        historic <- division_subject_perf %>%
-          filter(division_id == !!division_id, subgroup == "All Students")
-      }
-      df_subj <- historic %>%
-        filter(subject %in% series_levels[series_levels != "Overall"]) %>%
-        mutate(value = if (metric_key == "pass") pass_rate else acr_rate) %>%
-        transmute(year = as.integer(year), series_name = subject, value = value)
-    }
-
-    overall <- df_subj %>%
-      group_by(year) %>%
-      summarise(
-        series_name = "Overall",
-        value = if (all(!is.finite(value))) NA_real_ else mean(value, na.rm = TRUE),
-        .groups = "drop"
-      )
-
-    df_long <- bind_rows(df_subj, overall) %>%
-      mutate(series_name = factor(series_name, levels = series_levels)) %>%
-      arrange(series_name, year)
-
-    if (nrow(df_long) == 0 || all(!is.finite(df_long$value))) {
-      plot.new()
-      text(0.5, 0.5, "No time-series data available for this metric.", cex = 1.1)
-      return()
-    }
-
-    df_overall <- df_long %>%
-      filter(series_name == "Overall", is.finite(value)) %>%
-      mutate(
-        label = sprintf("%.0f", value),
-        label_y = pmin(100, value + 3)
-      )
-
-    ggplot() +
-      geom_line(
-        data = df_long %>% filter(series_name != "Overall"),
-        aes(x = year, y = value, color = series_name, group = series_name),
-        linewidth = 0.9,
-        alpha = 0.9,
-        na.rm = TRUE
-      ) +
-      geom_point(
-        data = df_long %>% filter(series_name != "Overall"),
-        aes(x = year, y = value, color = series_name),
-        size = 1.9,
-        alpha = 0.9,
-        na.rm = TRUE
-      ) +
-      geom_line(
-        data = df_long %>% filter(series_name == "Overall"),
-        aes(x = year, y = value, color = series_name, group = series_name),
-        linewidth = 0.9,
-        alpha = 1,
-        linetype = "dashed",
-        na.rm = TRUE
-      ) +
-      geom_point(
-        data = df_long %>% filter(series_name == "Overall"),
-        aes(x = year, y = value, color = series_name),
-        size = 2.3,
-        alpha = 1,
-        na.rm = TRUE
-      ) +
-      geom_label(
-        data = df_overall,
-        aes(x = year, y = label_y, label = label),
-        inherit.aes = FALSE,
-        color = "#111111",
-        fill = grDevices::adjustcolor("white", alpha.f = 0.75),
-        label.size = 0,
-        size = 3.1,
-        fontface = "bold",
-        na.rm = TRUE
-      ) +
-      scale_color_manual(values = series_cols, drop = FALSE) +
-      scale_x_continuous(breaks = available_years) +
-      scale_y_continuous(
-        limits = c(0, 100),
-        expand = expansion(mult = c(0.05, 0.12)),
-        breaks = c(0, 50, 100),
-        labels = c("0", "50", "100")
-      ) +
-      labs(
-        x = NULL,
-        y = NULL,
-        title = paste0(metric_label, " Trend"),
-        subtitle = obj_label,
-        color = NULL
-      ) +
-      theme_classic(base_size = 12) +
-      theme(
-        axis.text.y = element_text(size = 9, color = "#333333"),
-        axis.ticks.y = element_blank(),
-        axis.line = element_line(color = "#333333", linewidth = 0.6),
-        axis.ticks.x = element_line(color = "#333333", linewidth = 0.6),
-        plot.title = element_text(face = "bold", size = 12),
-        plot.subtitle = element_text(size = 10, color = "#444444", margin = margin(b = 4)),
-        legend.position = "bottom",
-        legend.box = "horizontal",
-        legend.text = element_text(size = 9),
-        legend.key.width = grid::unit(1.3, "lines"),
-        plot.margin = margin(t = 6, r = 8, b = 6, l = 6)
-      ) +
-      guides(color = guide_legend(order = 1, nrow = 1, byrow = TRUE)) +
-      coord_cartesian(clip = "off")
-  })
 
   output$behavior_attendance_panel <- renderUI({
     req(input$year)
