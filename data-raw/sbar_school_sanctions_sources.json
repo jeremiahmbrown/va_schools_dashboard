@@ -1,0 +1,36 @@
+{
+  "source_page": "https://p1pe.doe.virginia.gov/buildatable/sbar",
+  "selection": "Sanction Report; school; all divisions and schools; all sanction types; one CSV per year",
+  "definition": "Number of Sanctions, not Number of Students; OSS and ISS codes; absent code is zero only for a school with another reported sanction row",
+  "source_files": [
+    {
+      "file": "sbar_school_sanctions_2022.csv",
+      "bytes": 837596,
+      "sha256": "a4b9a2f03e2ef97d12eb22aeeb793d688a0b52097cdbd689b2e3773382e32868"
+    },
+    {
+      "file": "sbar_school_sanctions_2023.csv",
+      "bytes": 901932,
+      "sha256": "0554c0bc2769dafb75040ef8c86f926cb4b8eb1e8dea33849adf114c71504ec6"
+    },
+    {
+      "file": "sbar_school_sanctions_2024.csv",
+      "bytes": 871859,
+      "sha256": "a2aca432562d3beb46f532edef0affdf0d94fe0ec7a3332abd789035151f2d22"
+    },
+    {
+      "file": "sbar_school_sanctions_2025.csv",
+      "bytes": 889103,
+      "sha256": "5ba503dca65fce32546cc8f380846d558fcfccec8a7bc5c8bbfff897f53251ed"
+    },
+    {
+      "file": "sbar_school_sanctions_2026.csv",
+      "bytes": 904998,
+      "sha256": "f37617642051eb1c5b31af99facc45f8187e140304471c96db734b8fab954492"
+    }
+  ],
+  "source_rows": 42136,
+  "school_years": 8887,
+  "archive_file": "sbar_school_sanctions.csv.gz",
+  "archive_sha256": "18a1e8f36a9d03c1f12d48257b764399a5e4adb817fbe51e33f9b8ed587599bc"
+}

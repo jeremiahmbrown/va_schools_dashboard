@@ -320,12 +320,12 @@ server <- function(input, output, session) {
   }, once = TRUE)
 
   school_threshold_base <- school_metrics %>%
-    filter(metric_id %in% c(perf_metric_ids, "behavior_susp_per_100")) %>%
+    filter(metric_id %in% c(perf_metric_ids, "behavior_sbar_oss_actions_per_100")) %>%
     select(year, school_id, metric_id, value) %>%
     tidyr::pivot_wider(names_from = metric_id, values_from = value)
 
   division_threshold_base <- division_metrics %>%
-    filter(metric_id %in% c(perf_metric_ids, "behavior_susp_per_100")) %>%
+    filter(metric_id %in% c(perf_metric_ids, "behavior_sbar_oss_actions_per_100")) %>%
     select(year, division_id, metric_id, value) %>%
     tidyr::pivot_wider(names_from = metric_id, values_from = value)
 
@@ -352,6 +352,10 @@ server <- function(input, output, session) {
 
     defs <- metric_defs_by_id %>%
       filter(category == input$category, metric_id %in% metric_years$metric_id)
+    if (identical(input$category, "behavior")) {
+      defs <- defs %>%
+        arrange(desc(metric_id == "behavior_sbar_oss_actions_per_100"))
+    }
     choices <- setNames(defs$metric_id, defs$label_short)
     selected <- if (nrow(defs) == 0) character(0) else defs$metric_id[[1]]
     selectInput("metric_id", "Metric", choices = choices, selected = selected, selectize = FALSE)
@@ -393,9 +397,9 @@ server <- function(input, output, session) {
         filter(year == year_selected) %>%
         filter(
           is.finite(.data[[perf_col]]),
-          is.finite(behavior_susp_per_100),
+          is.finite(behavior_sbar_oss_actions_per_100),
           .data[[perf_col]] >= th$min_perf,
-          behavior_susp_per_100 <= th$max_susp
+          behavior_sbar_oss_actions_per_100 <= th$max_susp
         ) %>%
         pull(school_id)
 
@@ -403,9 +407,9 @@ server <- function(input, output, session) {
         filter(year == year_selected) %>%
         filter(
           is.finite(.data[[perf_col]]),
-          is.finite(behavior_susp_per_100),
+          is.finite(behavior_sbar_oss_actions_per_100),
           .data[[perf_col]] >= th$min_perf,
-          behavior_susp_per_100 <= th$max_susp
+          behavior_sbar_oss_actions_per_100 <= th$max_susp
         ) %>%
         pull(division_id)
 
@@ -1128,6 +1132,8 @@ server <- function(input, output, session) {
 
     metric_order <- c(
       "attendance_chronic_absent_pct",
+      "behavior_sbar_oss_actions_per_100",
+      "behavior_sbar_iss_actions_per_100",
       "behavior_susp_per_100",
       "behavior_susp_short_per_100",
       "behavior_susp_long_per_100",

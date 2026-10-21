@@ -103,7 +103,7 @@ dashboard_ui <- function(map_widget, available_years, default_year, schools, sna
               condition = "input.threshold_enabled == true",
               radioButtons("threshold_scope", "Apply to", choices = c("Schools and divisions" = "both", "Schools only" = "schools", "Divisions only" = "divisions"), selected = "both"),
               sliderInput("min_perf_threshold", "Minimum performance", min = 0, max = 100, value = 90, step = 0.5),
-              sliderInput("max_susp_threshold", "Maximum suspensions per 100", min = 0, max = 50, value = 5, step = 0.1)
+              sliderInput("max_susp_threshold", "Maximum out-of-school actions per 100 (SBAR)", min = 0, max = 50, value = 5, step = 0.1)
             ),
             tags$hr(),
             tags$details(
