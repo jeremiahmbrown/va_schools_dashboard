@@ -346,7 +346,7 @@ server <- function(input, output, session) {
         choices = c("Annual SOL pass rate" = "sol",
                     "Accreditation Combined Rate (ACR)" = "acr",
                     "SQP Percent Passing" = "pass"),
-        selected = if (default_year >= 2025) "sol" else "acr"
+        selected = if (default_year >= 2025) "sol" else "acr", selectize = FALSE
       ))
     }
 
@@ -354,7 +354,7 @@ server <- function(input, output, session) {
       filter(category == input$category, metric_id %in% metric_years$metric_id)
     choices <- setNames(defs$metric_id, defs$label_short)
     selected <- if (nrow(defs) == 0) character(0) else defs$metric_id[[1]]
-    selectInput("metric_id", "Metric", choices = choices, selected = selected)
+    selectInput("metric_id", "Metric", choices = choices, selected = selected, selectize = FALSE)
   })
 
   current_map_data <- reactive({

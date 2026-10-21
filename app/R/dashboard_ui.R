@@ -55,11 +55,11 @@ dashboard_ui <- function(map_widget, available_years, default_year, schools, sna
           selectInput(
             "category", "Category",
             choices = c("Performance" = "test", "Behavior" = "behavior", "Attendance" = "attendance", "School meals" = "needs", "Demographics" = "demographics"),
-            selected = "test"
+            selected = "test", selectize = FALSE
           )
         ),
         tags$div(class = "toolbar-field measure-field", uiOutput("metric_selector")),
-        tags$div(class = "toolbar-field year-field", selectInput("year", "Data year", choices = year_choices, selected = default_year)),
+        tags$div(class = "toolbar-field year-field", selectInput("year", "Data year", choices = year_choices, selected = default_year, selectize = FALSE)),
         tags$details(
           class = "filter-menu",
           tags$summary("Filters", `aria-label` = "Open filters and map layers"),
@@ -79,7 +79,7 @@ dashboard_ui <- function(map_widget, available_years, default_year, schools, sna
             checkboxInput("zones_enabled", "Show attendance zones", value = FALSE),
             conditionalPanel(
               condition = "input.zones_enabled == true",
-              selectInput("zone_level", "Zone level", choices = c("Elementary", "Middle", "High", "Unclassified (older source)" = "Unknown"), selected = "Elementary"),
+              selectInput("zone_level", "Zone level", choices = c("Elementary", "Middle", "High", "Unclassified (older source)" = "Unknown"), selected = "Elementary", selectize = FALSE),
               tags$p(class = "help-note", "Select a division for all its zones, or a school for one zone. Confirm an address with the division."),
               uiOutput("zone_selection_action"),
               uiOutput("zone_source_note")
@@ -91,13 +91,13 @@ dashboard_ui <- function(map_widget, available_years, default_year, schools, sna
               radioButtons("perf_view", "Show", choices = c("Overall mean" = "overall", "By subject" = "subject"), selected = "overall", inline = TRUE),
               conditionalPanel(
                 condition = "input.perf_view == 'subject'",
-                selectInput("perf_subject", "Subject", choices = c("English (ELA)" = "ela", "Math" = "math", "Science" = "science"), selected = "ela")
+                selectInput("perf_subject", "Subject", choices = c("English (ELA)" = "ela", "Math" = "math", "Science" = "science"), selected = "ela", selectize = FALSE)
               )
             ),
             tags$hr(),
             tags$h2("School and division filters"),
-            selectInput("school_level", "School level (points)", choices = c("All", sort(unique(stats::na.omit(schools$school_level)))), selected = "All"),
-            selectInput("division_filter", "Division filter (school points)", choices = c("All", sort(unique(schools$division_name))), selected = "All"),
+            selectInput("school_level", "School level (points)", choices = c("All", sort(unique(stats::na.omit(schools$school_level)))), selected = "All", selectize = FALSE),
+            selectInput("division_filter", "Division filter (school points)", choices = c("All", sort(unique(schools$division_name))), selected = "All", selectize = FALSE),
             checkboxInput("threshold_enabled", "Enable threshold filter", value = FALSE),
             conditionalPanel(
               condition = "input.threshold_enabled == true",
