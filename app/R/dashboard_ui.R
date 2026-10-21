@@ -141,7 +141,7 @@ dashboard_ui <- function(map_widget, available_years, default_year, schools, sna
               id = "detail_tab", type = "tabs",
               tabPanel("Profile", value = "profile", uiOutput("selection_summary"), uiOutput("welcome_overview"), uiOutput("quick_metrics"), uiOutput("profile_trend")),
               tabPanel(
-                "All measures", value = "measures",
+                "Detailed measures", value = "measures",
                 uiOutput("behavior_attendance_panel"),
                 uiOutput("needs_panel"),
                 uiOutput("demographics_panel")

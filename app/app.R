@@ -569,7 +569,25 @@ server <- function(input, output, session) {
         addTiles(
           "https://services.arcgisonline.com/arcgis/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}"
         ) %>%
-        setView(lng = -78.7, lat = 37.5, zoom = 7)
+        setView(lng = -78.7, lat = 37.5, zoom = 7) %>%
+        htmlwidgets::onRender("function(el, x) {
+          var map = this;
+          if (!map || typeof map.on !== 'function') return;
+          var popupOpen = false;
+          map.on('popupopen', function() {
+            popupOpen = true;
+            map.eachLayer(function(layer) {
+              if (typeof layer.closeTooltip === 'function') layer.closeTooltip();
+            });
+          });
+          map.on('popupclose', function() { popupOpen = false; });
+          map.on('tooltipopen', function(event) {
+            if (popupOpen && event.tooltip && event.tooltip._source &&
+                typeof event.tooltip._source.closeTooltip === 'function') {
+              event.tooltip._source.closeTooltip();
+            }
+          });
+        }")
     })
 
     # Update selection based on map clicks.
@@ -818,7 +836,10 @@ server <- function(input, output, session) {
               fillColor = colors,
               fillOpacity = 0.9,
               popup = lapply(school_popups, htmltools::HTML),
-              options = pathOptions(pane = "schoolPointPane", bubblingMouseEvents = FALSE)
+              label = if (mobile_map) NULL else lapply(school_popups, htmltools::HTML),
+              options = pathOptions(pane = "schoolPointPane", bubblingMouseEvents = FALSE),
+              labelOptions = labelOptions(direction = "top", textsize = "11px", sticky = FALSE,
+                                          className = "school-hover-label")
             )
         }
       }
