@@ -122,10 +122,33 @@ output$selection_summary <- renderUI({
   def <- metric_def_selected()
   result <- selected_metric_value()
   req(result)
+  if (entity$kind == "school") {
+    enrollment <- schools$enrollment_latest[schools$school_id == entity$id]
+    enrollment <- if (length(enrollment) == 1 && is.finite(enrollment)) enrollment else NA_integer_
+    enrollment_label <- "Total enrollment"
+    enrollment_caption <- "Latest reported count"
+  } else {
+    division_schools <- schools[schools$division_id == entity$id &
+                                  is.finite(schools$enrollment_latest), , drop = FALSE]
+    enrollment <- if (nrow(division_schools)) sum(division_schools$enrollment_latest) else NA_integer_
+    enrollment_label <- "Mapped-school enrollment"
+    enrollment_caption <- "Sum of latest school counts"
+  }
+  enrollment_display <- if (is.finite(enrollment)) format(enrollment, big.mark = ",", trim = TRUE) else "—"
   tags$div(class = "metric-hero",
-    tags$strong(class = "metric-value", display_metric_value(def$metric_id[[1]], result$value)),
-    tags$span(class = "metric-label", def$label_short[[1]]),
-    tags$span(class = "metric-state", paste0(input$year, " · ", result$status))
+    tags$div(class = "metric-hero-grid",
+      tags$div(class = "metric-hero-item",
+        tags$span(class = "metric-label", enrollment_label),
+        tags$strong(class = "metric-value", enrollment_display),
+        tags$span(class = "metric-context", enrollment_caption)
+      ),
+      tags$div(class = "metric-hero-item metric-hero-selected",
+        tags$span(class = "metric-label", def$label_short[[1]]),
+        tags$strong(class = "metric-value", display_metric_value(def$metric_id[[1]], result$value)),
+        tags$span(class = "metric-state", paste0(input$year, " · ", result$status))
+      )
+    ),
+    tags$p(class = "metric-hero-note", "Enrollment gives context. A rate may use a different denominator or year.")
   )
 })
 
