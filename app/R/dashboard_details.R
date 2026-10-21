@@ -1,4 +1,4 @@
-plot_metric_trend <- function(df, metric_label, entity_label, compact = FALSE, unit = NULL) {
+plot_metric_trend <- function(df, metric_label, entity_label, compact = FALSE, unit = NULL, value_format = "num_1") {
   if (is.null(df) || nrow(df) == 0 || !any(is.finite(df$value))) {
     plot.new()
     text(0.5, 0.5, "No reportable trend for this measure.", col = "#617686", cex = if (compact) 0.9 else 1)
@@ -13,6 +13,13 @@ plot_metric_trend <- function(df, metric_label, entity_label, compact = FALSE, u
     return(invisible(NULL))
   }
 
+  df$point_label <- vapply(df$value, fmt_value, character(1), format = value_format, unit = NULL)
+  df$label_vjust <- if (!is.null(unit) && unit %in% c("pct", "index")) {
+    ifelse(df$value >= 90, 1.7, -0.8)
+  } else {
+    rep(-0.8, nrow(df))
+  }
+
   # A missing year breaks the line; it must not imply a continuous series.
   df$segment <- cumsum(c(0L, as.integer(diff(df$year) > 1L)))
   segment_sizes <- table(df$segment)
@@ -21,6 +28,9 @@ plot_metric_trend <- function(df, metric_label, entity_label, compact = FALSE, u
   p <- ggplot2::ggplot(df, ggplot2::aes(x = year, y = value)) +
     ggplot2::geom_line(data = line_df, ggplot2::aes(group = segment), linewidth = 1, color = "#287f91", na.rm = TRUE) +
     ggplot2::geom_point(size = if (compact) 2.5 else 3, color = "#287f91", na.rm = TRUE) +
+    ggplot2::geom_text(ggplot2::aes(label = point_label, vjust = label_vjust),
+                       size = if (compact) 3 else 3.5, fontface = "bold", color = "#10283a",
+                       show.legend = FALSE, na.rm = TRUE) +
     ggplot2::scale_x_continuous(breaks = sort(unique(df$year))) +
     ggplot2::labs(x = NULL, y = NULL, title = if (compact) NULL else metric_label, subtitle = if (compact) NULL else entity_label) +
     ggplot2::theme_minimal(base_size = if (compact) 9 else 11) +
@@ -36,6 +46,8 @@ plot_metric_trend <- function(df, metric_label, entity_label, compact = FALSE, u
   if (!is.null(unit) && unit %in% c("pct", "index")) {
     axis_labels <- if (unit == "pct") function(x) paste0(x, "%") else ggplot2::waiver()
     p <- p + ggplot2::scale_y_continuous(limits = c(0, 100), breaks = c(0, 50, 100), labels = axis_labels)
+  } else {
+    p <- p + ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = c(0.08, 0.2)))
   }
   if (compact) p <- p + ggplot2::theme(axis.title = ggplot2::element_blank())
   p

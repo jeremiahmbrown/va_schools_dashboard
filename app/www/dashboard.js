@@ -6,6 +6,17 @@
     var closeFilters = document.getElementById("filter-close");
     if (!stage || !toggle) return;
 
+    var mobileMapQuery = window.matchMedia("(max-width: 760px)");
+    function reportMapLayout() {
+      if (window.Shiny && typeof Shiny.setInputValue === "function") {
+        Shiny.setInputValue("dashboard_mobile_map", mobileMapQuery.matches, { priority: "event" });
+      }
+    }
+    document.addEventListener("shiny:connected", reportMapLayout);
+    if (mobileMapQuery.addEventListener) mobileMapQuery.addEventListener("change", reportMapLayout);
+    else mobileMapQuery.addListener(reportMapLayout);
+    reportMapLayout();
+
     function setOpen(open) {
       stage.classList.toggle("is-open", open);
       toggle.setAttribute("aria-expanded", String(open));
@@ -18,7 +29,7 @@
 
     if (window.Shiny) {
       Shiny.addCustomMessageHandler("dashboard-selection-changed", function (_message) {
-        if (window.matchMedia("(max-width: 760px)").matches) setOpen(false);
+        if (mobileMapQuery.matches) setOpen(false);
       });
     }
 
