@@ -61,6 +61,12 @@ dashboard_ui <- function(map_widget, available_years, default_year, schools, sna
           tags$summary("Filters", `aria-label` = "Open filters and map layers"),
           tags$div(
             class = "filter-content",
+            tags$div(
+              class = "filter-content-header",
+              tags$h2("Filters"),
+              tags$button(type = "button", class = "filter-close", id = "filter-close",
+                          `aria-label` = "Close filters and return to map", "Close filters")
+            ),
             tags$h2("Map layers"),
             checkboxGroupInput(
               "layers", "Show", choices = c("Schools (points)" = "schools", "Divisions (choropleth)" = "divisions"),

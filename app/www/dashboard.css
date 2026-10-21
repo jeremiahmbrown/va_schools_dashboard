@@ -33,9 +33,13 @@ body { background: var(--canvas); color: var(--ink); font-family: "Segoe UI", In
 .filter-menu > summary { display: grid; place-items: center; height: 42px; border-radius: 9px; background: var(--ink); color: white; font-size: 14px; font-weight: 700; list-style: none; cursor: pointer; }
 .filter-menu > summary::-webkit-details-marker { display: none; }
 .filter-menu > summary:hover { background: #1c4256; }
-.filter-menu > summary:focus-visible, .sheet-toggle:focus-visible, .clear-selection:focus-visible { outline: 3px solid #7ec6d3; outline-offset: 2px; }
-.filter-content { position: absolute; top: 50px; right: 0; width: min(390px, calc(100vw - 30px)); max-height: min(74vh, 680px); overflow: auto; padding: 20px; border: 1px solid var(--line); border-radius: 14px; background: white; box-shadow: 0 14px 38px #10283a23; }
+.filter-menu > summary:focus-visible, .filter-close:focus-visible, .sheet-toggle:focus-visible, .clear-selection:focus-visible { outline: 3px solid #7ec6d3; outline-offset: 2px; }
+.filter-content { position: absolute; top: 50px; right: 0; width: min(390px, calc(100vw - 30px)); max-height: min(74vh, 680px); overflow: auto; padding: 0 20px 20px; border: 1px solid var(--line); border-radius: 14px; background: white; box-shadow: 0 14px 38px #10283a23; }
+.filter-content-header { position: sticky; z-index: 1; top: 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 -20px 18px; padding: 14px 20px; border-bottom: 1px solid var(--line); border-radius: 13px 13px 0 0; background: white; }
+.filter-close { min-height: 36px; padding: 7px 11px; border: 1px solid var(--line); border-radius: 8px; background: var(--canvas); color: var(--ink); font-size: 12px; font-weight: 700; cursor: pointer; }
+.filter-close:hover { border-color: var(--teal); background: var(--soft); }
 .filter-content h2 { margin: 0 0 12px; font-size: 15px; font-weight: 750; }
+.filter-content-header h2 { margin: 0; }
 .filter-content hr { margin: 17px 0; border-color: var(--line); }
 .filter-content .form-group { margin-bottom: 13px; }
 .filter-content .help-note, .filter-help { color: var(--muted); font-size: 12px; line-height: 1.45; }
