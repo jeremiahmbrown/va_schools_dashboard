@@ -136,12 +136,11 @@ dashboard_ui <- function(map_widget, available_years, default_year, schools, sna
             tabsetPanel(
               id = "detail_tab", type = "tabs",
               tabPanel("Profile", value = "profile", uiOutput("selection_summary"), uiOutput("welcome_overview"), uiOutput("quick_metrics"), uiOutput("profile_trend")),
-              tabPanel("Trend", value = "trend", plotOutput("trend_plot", height = 300)),
               tabPanel(
                 "All measures", value = "measures",
                 uiOutput("behavior_attendance_panel"),
                 uiOutput("needs_panel"),
-                tags$div(class = "composition-chart", plotOutput("demo_plot", height = 210))
+                uiOutput("demographics_panel")
               )
             ),
             tags$p(class = "detail-footnote", "Values use the selected data year unless a panel states another year. Missing and suppressed values are not zero.")

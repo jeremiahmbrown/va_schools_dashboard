@@ -183,7 +183,7 @@ output$profile_trend <- renderUI({
   if (is.null(entity_context())) return(NULL)
   tags$div(class = "trend-preview",
     tags$h3("Trend over available years"),
-    plotOutput("trend_preview", height = 170)
+    plotOutput("trend_preview", height = 190)
   )
 })
 
@@ -191,17 +191,7 @@ output$trend_preview <- renderPlot({
   entity <- entity_context()
   req(entity)
   def <- metric_def_selected()
-  plot_metric_trend(selected_trend_data(), def$label_short[[1]], entity$name, compact = TRUE, unit = def$unit[[1]])
-})
-
-output$trend_plot <- renderPlot({
-  entity <- entity_context()
-  if (is.null(entity)) {
-    plot.new()
-    text(0.5, 0.5, "Select a school or division to see a trend.", col = "#617686")
-    return(invisible(NULL))
-  }
-  def <- metric_def_selected()
-  plot_metric_trend(selected_trend_data(), def$label_short[[1]], entity$name, unit = def$unit[[1]])
+  plot_metric_trend(selected_trend_data(), def$label_short[[1]], entity$name,
+                    compact = TRUE, unit = def$unit[[1]], value_format = def$format[[1]])
 })
 }

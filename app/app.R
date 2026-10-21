@@ -540,6 +540,20 @@ server <- function(input, output, session) {
   })
 
   if (has_leaflet) {
+    focus_division_from_map <- function(polygon_id) {
+      # At school-level zoom, a division tap must not pull the map away from nearby schools.
+      current_zoom <- suppressWarnings(as.numeric(input$map_zoom))
+      if (length(current_zoom) == 1 && is.finite(current_zoom) &&
+          current_zoom > division_rollup_zoom_max) return(invisible(NULL))
+
+      div_sp <- divisions_sp[divisions_sp@data$division_id == polygon_id, ]
+      if (length(div_sp) == 1) {
+        bb <- sp::bbox(div_sp)
+        leafletProxy("map") %>%
+          fitBounds(lng1 = bb[1, 1], lat1 = bb[2, 1], lng2 = bb[1, 2], lat2 = bb[2, 2])
+      }
+    }
+
     # Base map.
     output$map <- renderLeaflet({
       leaflet(options = leafletOptions(minZoom = 6, preferCanvas = TRUE)) %>%
@@ -562,8 +576,8 @@ server <- function(input, output, session) {
   observeEvent(input$map_marker_click, {
     marker_id <- input$map_marker_click$id
     if (is.null(marker_id)) return()
-    if (startsWith(marker_id, "school::")) {
-      school_id <- sub("^school::", "", marker_id)
+    if (startsWith(marker_id, "school::") || startsWith(marker_id, "school-tap::")) {
+      school_id <- sub("^school(-tap)?::", "", marker_id)
       school_row <- schools %>% filter(school_id == !!school_id) %>% slice(1)
       division_id <- if (nrow(school_row) == 1) school_row$division_id[[1]] else NULL
 
@@ -591,12 +605,7 @@ server <- function(input, output, session) {
       selected_division_id(division_id)
       selected_school_id(NULL)
 
-      div_sp <- divisions_sp[divisions_sp@data$division_id == polygon_id, ]
-      if (length(div_sp) == 1) {
-        bb <- sp::bbox(div_sp)
-        leafletProxy("map") %>%
-          fitBounds(lng1 = bb[1, 1], lat1 = bb[2, 1], lng2 = bb[1, 2], lat2 = bb[2, 2])
-      }
+      focus_division_from_map(polygon_id)
     }
   })
 
@@ -611,12 +620,7 @@ server <- function(input, output, session) {
     selected_division_id(division_id)
     selected_school_id(NULL)
 
-    div_sp <- divisions_sp[divisions_sp@data$division_id == polygon_id, ]
-    if (length(div_sp) == 1) {
-      bb <- sp::bbox(div_sp)
-      leafletProxy("map") %>%
-        fitBounds(lng1 = bb[1, 1], lat1 = bb[2, 1], lng2 = bb[1, 2], lat2 = bb[2, 2])
-    }
+    focus_division_from_map(polygon_id)
   })
 
   } else {
@@ -715,6 +719,7 @@ server <- function(input, output, session) {
   # Main map updater.
   observe({
     data <- current_map_data()
+    mobile_map <- isTRUE(input$dashboard_mobile_map)
     metric_def_row <- data$metric_def_row
     schools_joined <- data$schools_joined
     div_vals <- data$div_vals
@@ -743,7 +748,7 @@ server <- function(input, output, session) {
           left_join(polygon_vals, by = "division_id")
         div_sp@data <- div_df
 
-        div_labels <- sprintf(
+        div_labels <- if (mobile_map) NULL else sprintf(
           "<strong>%s</strong><br/>%s: %s%s",
           div_sp@data$display_division_name,
           metric_def_row$label_short[[1]],
@@ -762,9 +767,7 @@ server <- function(input, output, session) {
               color = "#415866",
               weight = 1.2,
               opacity = 0.8,
-              # Keep polygons behind points and avoid hover text competing with school tooltips.
-              label = lapply(div_labels, htmltools::HTML),
-              popup = div_labels,
+              label = if (mobile_map) NULL else lapply(div_labels, htmltools::HTML),
               options = pathOptions(pane = "divisionPolygonPane", bubblingMouseEvents = FALSE),
               highlightOptions = highlightOptions(weight = 2, color = "#153746", fillOpacity = 0.9, bringToFront = FALSE)
             )
@@ -772,32 +775,39 @@ server <- function(input, output, session) {
       }
 
       if ("schools" %in% input$layers) {
-        enrollment_labels <- ifelse(
-          is.na(schools_for_map$enrollment_latest),
-          "No data",
-          format(schools_for_map$enrollment_latest, big.mark = ",", scientific = FALSE, trim = TRUE)
-        )
-
-        popups <- sprintf(
-          "<strong>%s</strong><br/>%s<br/>%s: %s<br/>Enrollment (latest): %s",
-          schools_for_map$school_name,
-          schools_for_map$division_name,
-          metric_def_row$label_short[[1]],
-          vapply(schools_for_map$value, fmt_value, character(1), format = metric_def_row$format[[1]], unit = metric_def_row$unit[[1]]),
-          enrollment_labels
-        )
-
         colors <- ifelse(is.na(schools_for_map$value), "#9e9e9e", pal(schools_for_map$value))
-        school_labels <- sprintf(
-          "<strong>%s</strong><br/>%s<br/>%s: %s<br/>Enrollment: %s",
-          schools_for_map$school_name,
-          schools_for_map$division_name,
-          metric_def_row$label_short[[1]],
-          vapply(schools_for_map$value, fmt_value, character(1), format = metric_def_row$format[[1]], unit = metric_def_row$unit[[1]]),
-          enrollment_labels
-        )
+        school_labels <- if (mobile_map) NULL else {
+          enrollment_labels <- ifelse(
+            is.na(schools_for_map$enrollment_latest),
+            "No data",
+            format(schools_for_map$enrollment_latest, big.mark = ",", scientific = FALSE, trim = TRUE)
+          )
+          sprintf(
+            "<strong>%s</strong><br/>%s<br/>%s: %s<br/>Enrollment: %s",
+            schools_for_map$school_name,
+            schools_for_map$division_name,
+            metric_def_row$label_short[[1]],
+            vapply(schools_for_map$value, fmt_value, character(1), format = metric_def_row$format[[1]], unit = metric_def_row$unit[[1]]),
+            enrollment_labels
+          )
+        }
 
         if (nrow(schools_for_map) > 0) {
+          if (mobile_map) {
+            # Transparent circles make nearby school points easier to tap above division polygons.
+            proxy %>% addCircleMarkers(
+              data = schools_for_map,
+              group = "schools",
+              layerId = ~paste0("school-tap::", school_id),
+              lng = ~lon,
+              lat = ~lat,
+              radius = 16,
+              stroke = FALSE,
+              fillColor = "#10283a",
+              fillOpacity = 0.001,
+              options = pathOptions(pane = "schoolPointPane", bubblingMouseEvents = FALSE)
+            )
+          }
           proxy %>%
             addCircleMarkers(
               data = schools_for_map,
@@ -805,14 +815,13 @@ server <- function(input, output, session) {
               layerId = ~paste0("school::", school_id),
               lng = ~lon,
               lat = ~lat,
-              radius = 5,
+              radius = if (mobile_map) 6.5 else 5,
               stroke = TRUE,
-              weight = 1,
+              weight = if (mobile_map) 1.3 else 1,
               color = "#222222",
               fillColor = colors,
               fillOpacity = 0.9,
-              label = lapply(school_labels, htmltools::HTML),
-              popup = popups,
+              label = if (mobile_map) NULL else lapply(school_labels, htmltools::HTML),
               options = pathOptions(pane = "schoolPointPane", bubblingMouseEvents = FALSE),
               labelOptions = labelOptions(direction = "top", textsize = "12px")
             )
@@ -1190,38 +1199,57 @@ server <- function(input, output, session) {
       ),
       tags$div(
         class = "meta-note",
-        "Higher percentiles mean better performance or lower absence/behavior rates. For meals and demographics, they show position only. An em dash means data is missing, suppressed, or unavailable for that year."
+        "Higher percentiles mean better performance or lower absence/behavior rates. For meals, they show position only. An em dash means data is missing, suppressed, or unavailable for that year."
       )
     )
   })
 
-  output$demo_plot <- renderPlot({
+  output$demographics_panel <- renderUI({
     req(input$year)
     year <- as.integer(input$year)
-
-    demo_metric_ids <- metric_defs_by_id %>%
-      filter(category == "demographics") %>%
-      pull(metric_id)
-
     school_id <- selected_school_id()
     division_id <- selected_division_id()
-
-    df <- NULL
-    if (!is.null(school_id)) {
-      df <- school_metrics %>%
-        filter(year == !!year, school_id == !!school_id, metric_id %in% demo_metric_ids) %>%
-        left_join(metric_defs_by_id %>% select(metric_id, label_short), by = "metric_id") %>%
-        transmute(label = label_short, pct = value)
-    } else if (!is.null(division_id)) {
-      df <- division_metrics %>%
-        filter(year == !!year, division_id == !!division_id, metric_id %in% demo_metric_ids) %>%
-        left_join(metric_defs_by_id %>% select(metric_id, label_short), by = "metric_id") %>%
-        transmute(label = label_short, pct = value)
-    } else {
-      df <- data.frame(label = character(0), pct = numeric(0))
+    if (is.null(school_id) && is.null(division_id)) {
+      return(tags$div(class = "detail-panel",
+                      tags$h4("Student demographics"),
+                      tags$div(class = "muted", "Select a school or division to see student demographics.")))
     }
 
-    make_race_stacked_bar(df, title = "Student composition", top_n = 7)
+    demo_order <- c("demo_white_pct", "demo_black_pct", "demo_hispanic_pct",
+                    "demo_asian_pct", "demo_two_plus_pct", "demo_american_indian_pct",
+                    "demo_native_hawaiian_pct")
+    defs <- metric_defs_by_id %>%
+      filter(category == "demographics") %>%
+      select(metric_id, label_short, format, unit) %>%
+      mutate(sort_order = match(metric_id, demo_order)) %>%
+      arrange(sort_order, label_short) %>%
+      select(-sort_order)
+    demo_metric_ids <- as.character(defs$metric_id)
+
+    if (!is.null(school_id)) {
+      vals <- school_metrics %>%
+        filter(year == !!year, school_id == !!school_id, metric_id %in% demo_metric_ids) %>%
+        select(metric_id, value, suppressed)
+    } else {
+      vals <- division_metrics %>%
+        filter(year == !!year, division_id == !!division_id, metric_id %in% demo_metric_ids) %>%
+        select(metric_id, value, suppressed)
+    }
+
+    df <- defs %>% left_join(vals, by = "metric_id")
+    tags$div(class = "detail-panel",
+      tags$h4("Student demographics"),
+      tags$table(class = "metric-table",
+        tags$thead(tags$tr(tags$th("Metric"), tags$th(class = "num", paste0("Value (", year, ")")))),
+        tags$tbody(lapply(seq_len(nrow(df)), function(i) {
+          value <- df$value[[i]]
+          reported <- is.finite(value) && !isTRUE(df$suppressed[[i]])
+          tags$tr(tags$td(df$label_short[[i]]),
+                  tags$td(class = "num", if (reported) fmt_value(value, df$format[[i]], df$unit[[i]]) else "\u2014"))
+        }))
+      ),
+      tags$p(class = "meta-note", "These are reported student shares, not a rating. A dash means data is missing, suppressed, or unavailable for this year.")
+    )
   })
 
   output$needs_panel <- renderUI({
