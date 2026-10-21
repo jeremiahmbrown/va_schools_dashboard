@@ -12,7 +12,8 @@
         Shiny.setInputValue("dashboard_mobile_map", mobileMapQuery.matches, { priority: "event" });
       }
     }
-    document.addEventListener("shiny:connected", reportMapLayout);
+    if (window.jQuery) window.jQuery(document).on("shiny:connected", reportMapLayout);
+    else document.addEventListener("shiny:connected", reportMapLayout);
     if (mobileMapQuery.addEventListener) mobileMapQuery.addEventListener("change", reportMapLayout);
     else mobileMapQuery.addListener(reportMapLayout);
     reportMapLayout();

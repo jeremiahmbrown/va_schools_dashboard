@@ -5,12 +5,16 @@ data_year_choices <- function(years) {
 
 dashboard_ui <- function(map_widget, available_years, default_year, schools, snapshot) {
   year_choices <- data_year_choices(available_years)
+  asset_url <- function(filename) {
+    hash <- unname(tools::md5sum(file.path(app_dir, "www", filename)))
+    paste0(filename, "?v=", hash)
+  }
 
   fluidPage(
     tags$head(
       tags$meta(name = "viewport", content = "width=device-width, initial-scale=1"),
-      tags$link(rel = "stylesheet", type = "text/css", href = "dashboard.css"),
-      tags$script(src = "dashboard.js")
+      tags$link(rel = "stylesheet", type = "text/css", href = asset_url("dashboard.css")),
+      tags$script(src = asset_url("dashboard.js"))
     ),
     tags$div(
       class = "dashboard-shell",
