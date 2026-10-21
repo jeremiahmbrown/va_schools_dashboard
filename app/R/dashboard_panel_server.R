@@ -185,7 +185,7 @@ output$quick_metrics <- renderUI({
   year <- suppressWarnings(as.integer(input$year))
   if (length(year) != 1 || !is.finite(year)) return(NULL)
   metric_ids <- c("attendance_chronic_absent_pct", "needs_meal_eligibility_pct",
-                  "behavior_susp_per_100")
+                  "behavior_sbar_oss_actions_per_100")
   metric_ids <- metric_ids[metric_ids %in% metric_defs_by_id$metric_id]
   if (length(metric_ids) == 0) return(NULL)
 

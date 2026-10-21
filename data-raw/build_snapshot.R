@@ -1244,8 +1244,13 @@ membership_race_archive <- file.path('data-raw', 'fall_membership_race_school.cs
 membership_race <- build_membership_race_metrics(membership_race_archive,
                                                  schools_out, years_keep, norm_key)
 school_metrics_out <- dplyr::bind_rows(school_metrics_out, membership_race$metrics)
+source('data-raw/load_sbar_sanctions.R')
+sbar_archive <- file.path('data-raw', 'sbar_school_sanctions.csv.gz')
+sbar <- build_sbar_sanction_metrics(sbar_archive, schools_out, enroll_keep,
+                                    matched, years_keep, norm_key)
+school_metrics_out <- dplyr::bind_rows(school_metrics_out, sbar$metrics)
 if (anyDuplicated(school_metrics_out[c('school_id', 'year', 'metric_id')])) {
-  stop('Duplicate school metric keys after annual SOL import.')
+  stop('Duplicate school metric keys after supplemental imports.')
 }
 
 # Division aggregation.
@@ -1516,6 +1521,8 @@ metric_defs_out <- data.frame(
     "behavior_susp_incidents_long_per_100",
     "behavior_expulsions_per_100",
     "behavior_expulsion_incidents_per_100",
+    "behavior_sbar_oss_actions_per_100",
+    "behavior_sbar_iss_actions_per_100",
     "attendance_chronic_absent_pct",
     "needs_meal_eligibility_pct",
     "needs_breakfast_participation_pct",
@@ -1530,7 +1537,7 @@ metric_defs_out <- data.frame(
   ),
   category = c(
     rep("test", 12),
-    rep("behavior", 8),
+    rep("behavior", 10),
     "attendance",
     rep("needs", 3),
     rep("demographics", 7)
@@ -1556,6 +1563,8 @@ metric_defs_out <- data.frame(
     "Long-term incidents per 100",
     "Expulsions per 100",
     "Expellable incidents per 100",
+    "Out-of-school actions per 100 (SBAR)",
+    "In-school actions per 100 (SBAR)",
     "Chronic absenteeism",
     "Meal eligibility",
     "Breakfast participation",
@@ -1589,6 +1598,8 @@ metric_defs_out <- data.frame(
     "Long-term suspendable incidents per 100 students (computed using VDOE long-term incident counts and enrollment totals).",
     "Expulsions per 100 students (computed using VDOE expulsion counts and enrollment totals).",
     "Expellable incidents per 100 students (computed using VDOE expellable incident counts and enrollment totals).",
+    "Out-of-school suspension sanction actions per 100 enrolled students, from VDOE SBAR school sanctions. This counts actions, not distinct students. It is separate from the older School Quality Profiles short- and long-term suspension series. A school with other reported sanctions but no OSS row has zero OSS actions.",
+    "In-school suspension sanction actions per 100 enrolled students, from VDOE SBAR school sanctions. This counts actions, not distinct students. It is separate from the older School Quality Profiles suspension series. A school with other reported sanctions but no ISS row has zero ISS actions.",
     "Chronic absenteeism rate (% of students missing 10%+ of school days), All Students (VDOE School Quality Profiles download).",
     "School nutrition meal eligibility (%), All Students (VDOE School Quality Profiles download).",
     "Breakfast participation among eligible students (%), All Students (VDOE School Quality Profiles download).",
@@ -1604,14 +1615,14 @@ metric_defs_out <- data.frame(
   unit = c(
     rep("index", 8),
     rep("pct", 4),
-    rep("per_100", 8),
+    rep("per_100", 10),
     "pct",
     rep("pct", 3),
     rep("pct", 7)
   ),
   better_direction = c(
     rep("higher_better", 12),
-    rep("lower_better", 8),
+    rep("lower_better", 10),
     "lower_better",
     rep("neutral", 3),
     rep("neutral", 7)
@@ -1619,14 +1630,14 @@ metric_defs_out <- data.frame(
   format = c(
     rep("num_1", 8),
     rep("pct_1", 4),
-    rep("num_1", 8),
+    rep("num_1", 10),
     "pct_1",
     rep("pct_1", 3),
     rep("pct_1", 7)
   ),
   palette = c(
     rep("viridis", 12),
-    rep("magma", 8),
+    rep("magma", 10),
     "magma",
     rep("viridis", 3),
     rep("viridis", 7)
@@ -1667,11 +1678,13 @@ snapshot_meta <- list(
   snapshot_date = as.character(Sys.Date()),
   year_min = min(years_keep),
   year_max = max(years_keep),
-  transform_version = 8,
+  transform_version = 9,
   annual_sol_match = list(source_schools = annual_sol$source_schools,
                           matched_schools = annual_sol$matched_schools,
                           unmatched_schools = nrow(annual_sol$unmatched)),
   membership_race_match = membership_race$coverage,
+  sbar_match = sbar$coverage,
+  sbar_missing_enrollment_school_years = nrow(sbar$missing_denominator),
   nces_match = list(total = nrow(matched), matched = sum(!is.na(matched$school_id)),
                     unmatched = matched %>% filter(is.na(school_id)) %>%
                       select(division_name, school_name)),
@@ -1680,16 +1693,18 @@ snapshot_meta <- list(
     vdoe_fr_breakfast_path, vdoe_fr_lunch_path, vdoe_acc_eng_path,
     vdoe_acc_math_path, vdoe_acc_sci_path, nces_sch_zip_path,
     nces_lea_zip_path, tiger_zip_path, annual_sol_archive,
-    membership_race_archive,
+    membership_race_archive, sbar_archive,
     file.path("data-raw", "annual_sol_sources.json"),
     file.path("data-raw", "fall_membership_race_sources.json"),
+    file.path("data-raw", "sbar_school_sanctions_sources.json"),
     vapply(c("enrollment", "absenteeism", "fr_eligibility", "fr_breakfast", "fr_lunch"),
            history_path, character(1))), source_file_info),
-  notes = "Built from VDOE School Quality Profiles downloads, annual SOL School Subject-Area workbooks, and 2025–26 Fall Membership race counts, plus NCES EDGE geocodes and TIGER/Line boundaries. Enrollment uses the reported school total, checked against grade counts. Historical ACR/SQP Percent Passing and annual SOL test-administration rates are separate measures.",
+  notes = "Built from VDOE School Quality Profiles downloads, annual SOL School Subject-Area workbooks, Fall Membership race counts, and school-level SBAR sanction actions, plus NCES EDGE geocodes and TIGER/Line boundaries. Enrollment uses the reported school total, checked against grade counts. Legacy SQP suspension rates and SBAR action rates are separate measures. Historical ACR/SQP Percent Passing and annual SOL test-administration rates are separate measures.",
   sources = list(
     list(id = "vdoe_schoolquality_download_data", url = vdoe_url),
     list(id = "vdoe_sol_school_subject_annual", url = "https://www.doe.virginia.gov/data-policy-funding/data-reports/statistics-reports/sol-test-pass-rates-other-results"),
     list(id = "vdoe_fall_membership_race_school", url = "https://www.doe.virginia.gov/data-policy-funding/data-reports/statistics-reports/enrollment-demographics"),
+    list(id = "vdoe_sbar_school_sanctions", url = "https://p1pe.doe.virginia.gov/buildatable/sbar"),
     list(id = "nces_edge_public_school_geocodes", url = nces_sch_zip_url),
     list(id = "nces_edge_public_lea_geocodes", url = nces_lea_zip_url),
     list(id = "census_tiger_unsd_va", url = tiger_zip_url)
