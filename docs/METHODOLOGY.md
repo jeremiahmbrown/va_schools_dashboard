@@ -6,6 +6,8 @@ For school-year exports, `2026` means 2025–26. Historical accreditation export
 
 The current source response has a rolling three-year window for enrollment, absence, and meal measures. Five compressed public inputs in `data-raw/historical/` retain the 2022–23 rows from the original repo. The builder uses those rows only if the whole year is absent from the current response; current data win an overlap.
 
+The Profile panel shows each school's latest reported total enrollment from the School Quality Profiles enrollment export. A division's displayed enrollment is the sum of those latest counts for schools matched to this map, not an official division total. These counts can be from a different year than the selected measure. They give scale but are not necessarily the denominator of a percentage or rate; annual SOL pass rates, for example, use tested students.
+
 ## Performance
 
 The accreditation export provides school-year and subject values for All Students. Its `Accreditation Combined Rate` credits passing and qualifying growth or progress. Its `Percent Passing` is labeled School Quality Profiles Percent Passing. It differs from VDOE annual test-administration pass rates and stays in a separate series. The app-defined `Overall` value is the arithmetic mean of available subject values for that school or division and year. It is not an official VDOE rating. Science ACR is blank for every available year in this export; the ACR mean therefore uses English and Math. Science Percent Passing values can contribute to the older SQP mean.
