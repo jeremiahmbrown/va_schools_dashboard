@@ -58,9 +58,16 @@ display_metric_value <- function(metric_id, value) {
 output$map_caption <- renderUI({
   def <- metric_def_selected()
   year <- suppressWarnings(as.integer(input$year))
+  entity <- entity_context()
+  caption <- if (length(year) == 1 && is.finite(year)) {
+    paste0("Data year ", year, " · ",
+           if (is.null(entity)) "select a map feature" else entity$name)
+  } else {
+    "No reportable year"
+  }
   tags$div(
     tags$strong(def$label_short[[1]]),
-    tags$span(if (length(year) == 1 && is.finite(year)) paste0("Data year ", year, " · select a map feature") else "No reportable year")
+    tags$span(caption)
   )
 })
 
@@ -86,6 +93,7 @@ output$clear_selection_control <- renderUI({
 })
 
 observeEvent(input$clear_selection, {
+  session$sendCustomMessage("dashboard-close-popup", list())
   selected_school_id(NULL)
   selected_division_id(NULL)
   updateSelectizeInput(session, "entity_search", selected = character(0))
