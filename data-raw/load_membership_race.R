@@ -1,6 +1,11 @@
 # Build dashboard race shares from the checked Fall Membership count extract.
 build_membership_race_metrics <- function(archive, schools_out, years_keep,
-                                          norm_key) {
+                                          norm_key,
+                                          expected_years = 2025:2026,
+                                          source_id = 'vdoe_fall_membership_race_school',
+                                          min_match = 0.95,
+                                          enroll_keep = NULL,
+                                          matched = NULL) {
   if (!file.exists(archive)) stop('Missing Fall Membership race extract: ', archive)
   raw <- read.csv(gzfile(archive), stringsAsFactors = FALSE,
                   na.strings = c('', 'NA'),
@@ -10,7 +15,7 @@ build_membership_race_metrics <- function(archive, schools_out, years_keep,
                 'school_name', 'metric_id', 'count', 'denominator',
                 'suppressed', 'source_file')
   if (!identical(names(raw), expected) ||
-      !identical(sort(unique(raw$year)), 2025:2026) ||
+      !identical(sort(unique(raw$year)), expected_years) ||
       anyDuplicated(raw[c('year', 'division_code', 'school_code', 'metric_id')])) {
     stop('Invalid Fall Membership race extract schema, years, or keys.')
   }
@@ -49,17 +54,36 @@ build_membership_race_metrics <- function(archive, schools_out, years_keep,
       coverage$source_schools[[i]],
       100 * coverage$matched_schools[[i]] / coverage$source_schools[[i]]))
   }
-  if (any(coverage$matched_schools / coverage$source_schools < 0.95)) {
-    stop('Fall Membership race school match is below the 95% build gate.')
+  if (any(coverage$matched_schools / coverage$source_schools < min_match)) {
+    stop('Fall Membership race school match is below the build gate.')
   }
-  metrics <- joined %>%
-    dplyr::filter(!is.na(school_id), year %in% years_keep) %>%
+  eligible <- joined %>%
+    dplyr::filter(!is.na(school_id), year %in% years_keep)
+  if (!is.null(enroll_keep) && !is.null(matched)) {
+    # The 2022–23 gender file omits Other. Require the race sum to agree with
+    # the separately checked SQP school total before using that year's shares.
+    sqp_totals <- enroll_keep %>%
+      dplyr::left_join(matched %>%
+        dplyr::select(division_name, school_name, school_id),
+        by = c('division_name', 'school_name')) %>%
+      dplyr::filter(year == 2023, !is.na(school_id)) %>%
+      dplyr::select(school_id, year, sqp_enrollment = enrollment)
+    if (anyDuplicated(sqp_totals[c('school_id', 'year')])) {
+      stop('Duplicate SQP enrollment in historical race check.')
+    }
+    eligible <- eligible %>%
+      dplyr::left_join(sqp_totals, by = c('school_id', 'year')) %>%
+      dplyr::filter(year != 2023 |
+        (is.finite(sqp_enrollment) & denominator == sqp_enrollment)) %>%
+      dplyr::select(-sqp_enrollment)
+  }
+  metrics <- eligible %>%
     dplyr::transmute(school_id, year, metric_id,
       value = ifelse(!suppressed, 100 * count / denominator, NA_real_),
       unit = 'pct', suppressed,
       numerator = ifelse(!suppressed, as.numeric(count), NA_real_),
       denominator = ifelse(!suppressed, as.numeric(denominator), NA_real_),
-      source = 'vdoe_fall_membership_race_school')
+      source = source_id)
   if (anyDuplicated(metrics[c('school_id', 'year', 'metric_id')])) {
     stop('Duplicate Fall Membership dashboard metric keys.')
   }

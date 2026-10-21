@@ -1,5 +1,10 @@
 # Fall Membership race and enrollment QA — 2026-10-20
 
+This record describes the 2024–25 and 2025–26 import as it stood on 20
+October. The 2022–24 historical race import added on 21 October supersedes
+the older SQP-based demographic method; see
+[historical Fall Membership QA](HISTORICAL_MEMBERSHIP_QA_2026-10-21.md).
+
 ## Files and grain
 
 The user supplied three public CSVs from the [VDOE Fall Membership Build-A-Table](https://www.doe.virginia.gov/data-policy-funding/data-reports/statistics-reports/enrollment-demographics). The originals stay in ignored `data-raw/input/manual/`. Their names and SHA-256 hashes are in `data-raw/fall_membership_race_sources.json`.

@@ -10,6 +10,7 @@
 - `app/data/schools.csv` (dimension table)
 - `app/data/divisions_polygons.json` (division polygons as lon/lat rings; converted to `sp` at runtime)
 - `app/data/school_metrics.csv` (fact table, long)
+- `app/data/enrollment_by_year.csv` (mapped school, year, and reported enrollment for the Profile)
 - `app/data/division_metrics.csv` (fact table, long; pre-aggregated)
 - `app/data/school_subject_perf.csv` (historical accreditation-export ACR and Percent Passing only; annual SOL uses the long metric tables)
 - `app/data/division_subject_perf.csv` (subject-level performance rollups)
@@ -23,7 +24,7 @@
 - `division_id`, `division_name`
 - `lat`, `lon`
 - `school_level` (Elementary/Middle/High/Other)
-- `enrollment` (by year lives in metrics; include latest here optionally for convenience)
+- `enrollment_latest` (latest reported count; the Profile uses the year-specific table)
 - `open_status` (optional)
 
 ### `divisions` (one row per division)
@@ -40,6 +41,11 @@
 - `numerator` (numeric, optional)
 - `denominator` (numeric, optional)
 - `source` (short string; optional)
+
+### `enrollment_by_year` (one row per mapped school and year)
+- `school_id`, `year`, `enrollment`
+- 2022 uses the checked Fall Membership school total. Later years use the reported SQP school total.
+- The Profile shows the selected year's count. Division enrollment sums mapped schools with a count for that year.
 
 ### `division_metrics` (pre-aggregated long fact table)
 - `division_id`
@@ -78,4 +84,6 @@ These tables include:
 
 Annual SOL school metrics use `test_sol_annual_ela`, `test_sol_annual_math`, `test_sol_annual_science`, and `test_sol_annual_overall` in `school_metrics.csv`. The division table uses the same IDs. School subject rates store VDOE test numerators and denominators; the overall measure is an app-defined mean across available subjects and has no single test denominator. The source Excel files stay in ignored `data-raw/input/manual/`; `data-raw/annual_sol_school.csv.gz` is the tracked, checked extract used by the builder. `data-raw/annual_sol_sources.json` records the original workbook hashes.
 
-The seven `demo_*_pct` metrics use VDOE Fall Membership race counts in 2025 and 2026. Their school `numerator` is a reported race count and `denominator` is the checked school total from the same source. Explicit blank counts are suppressed. The original CSVs stay in ignored `data-raw/input/manual/`; the builder reads the tracked `data-raw/fall_membership_race_school.csv.gz` and its source-hash manifest. Earlier 2023–24 demographic metrics use normalized School Quality Profiles subgroup percentages, with their own `source` value.
+The seven `demo_*_pct` metrics use VDOE Fall Membership race counts in 2022–2026. Their school `numerator` is a reported race count and `denominator` is the checked school total from the same source. Explicit blank counts are suppressed. The original CSVs stay in ignored `data-raw/input/manual/`; the builder reads the tracked `data-raw/fall_membership_historical_race_school.csv.gz` for 2022–24 and `data-raw/fall_membership_race_school.csv.gz` for 2025–26, with source-hash manifests. The 2022 SBAR rates also use `data-raw/fall_membership_2022_enrollment.csv.gz` as the school enrollment denominator. The 2023 gender export omits `Other`, so the historical race loader requires its race total to match separate SQP enrollment for that year.
+
+The `behavior_sbar_oss_actions_per_100` and `behavior_sbar_iss_actions_per_100` rows store sanction actions as `numerator` and checked same-year enrollment as `denominator`. Their tracked source is `data-raw/sbar_school_sanctions.csv.gz`; 2022 uses Fall Membership enrollment, while 2023–26 use SQP enrollment. These action measures are separate from the earlier student-count suspension measures.

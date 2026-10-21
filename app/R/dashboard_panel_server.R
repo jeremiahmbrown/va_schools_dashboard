@@ -2,7 +2,7 @@
 dashboard_panel_server <- function(
   input, output, session, selected_school_id, selected_division_id,
   metric_id_selected, schools, division_name_lookup, divisions_sp,
-  metric_defs_by_id, school_metrics, division_metrics
+  metric_defs_by_id, school_metrics, division_metrics, enrollment_by_year
 ) {
 
 entity_context <- reactive({
@@ -122,17 +122,23 @@ output$selection_summary <- renderUI({
   def <- metric_def_selected()
   result <- selected_metric_value()
   req(result)
+  selected_year <- suppressWarnings(as.integer(input$year))
   if (entity$kind == "school") {
-    enrollment <- schools$enrollment_latest[schools$school_id == entity$id]
+    enrollment <- enrollment_by_year$enrollment[
+      enrollment_by_year$school_id == entity$id &
+        enrollment_by_year$year == selected_year]
     enrollment <- if (length(enrollment) == 1 && is.finite(enrollment)) enrollment else NA_integer_
     enrollment_label <- "Total enrollment"
-    enrollment_caption <- "Latest reported count"
+    enrollment_caption <- paste0(selected_year, " reported count")
   } else {
-    division_schools <- schools[schools$division_id == entity$id &
-                                  is.finite(schools$enrollment_latest), , drop = FALSE]
-    enrollment <- if (nrow(division_schools)) sum(division_schools$enrollment_latest) else NA_integer_
+    division_ids <- schools$school_id[schools$division_id == entity$id]
+    division_schools <- enrollment_by_year[
+      enrollment_by_year$school_id %in% division_ids &
+        enrollment_by_year$year == selected_year &
+        is.finite(enrollment_by_year$enrollment), , drop = FALSE]
+    enrollment <- if (nrow(division_schools)) sum(division_schools$enrollment) else NA_integer_
     enrollment_label <- "Mapped-school enrollment"
-    enrollment_caption <- "Sum of latest school counts"
+    enrollment_caption <- paste0("Sum of ", selected_year, " school counts")
   }
   enrollment_display <- if (is.finite(enrollment)) format(enrollment, big.mark = ",", trim = TRUE) else "—"
   tags$div(class = "metric-hero",
@@ -148,7 +154,7 @@ output$selection_summary <- renderUI({
         tags$span(class = "metric-state", paste0(input$year, " · ", result$status))
       )
     ),
-    tags$p(class = "metric-hero-note", "Enrollment gives context. A rate may use a different denominator or year.")
+    tags$p(class = "metric-hero-note", "Enrollment is for the selected year. A rate may use a different denominator.")
   )
 })
 

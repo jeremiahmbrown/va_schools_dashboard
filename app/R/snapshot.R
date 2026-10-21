@@ -10,6 +10,7 @@
 #   - `app/data/schools.csv`
 #   - `app/data/metric_defs.csv`
 #   - `app/data/school_metrics.csv`
+#   - `app/data/enrollment_by_year.csv`
 #   - `app/data/division_metrics.csv`
 #   - `app/data/divisions_polygons.json`
 #
@@ -28,6 +29,7 @@ load_snapshot <- function(data_dir = "data") {
   schools_path <- file.path(data_dir, "schools.csv")
   metric_defs_path <- file.path(data_dir, "metric_defs.csv")
   school_metrics_path <- file.path(data_dir, "school_metrics.csv")
+  enrollment_by_year_path <- file.path(data_dir, "enrollment_by_year.csv")
   division_metrics_path <- file.path(data_dir, "division_metrics.csv")
   school_subject_perf_path <- file.path(data_dir, "school_subject_perf.csv")
   division_subject_perf_path <- file.path(data_dir, "division_subject_perf.csv")
@@ -80,6 +82,12 @@ load_snapshot <- function(data_dir = "data") {
       denominator = "numeric",
       source = "character"
     )
+  )
+
+  enrollment_by_year <- read.csv(
+    enrollment_by_year_path,
+    stringsAsFactors = FALSE,
+    colClasses = c(school_id = "character", year = "integer", enrollment = "integer")
   )
 
   division_metrics <- read.csv(
@@ -147,6 +155,7 @@ load_snapshot <- function(data_dir = "data") {
     schools = schools,
     metric_defs = metric_defs,
     school_metrics = school_metrics,
+    enrollment_by_year = enrollment_by_year,
     division_metrics = division_metrics,
     school_subject_perf = school_subject_perf,
     division_subject_perf = division_subject_perf,
