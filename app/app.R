@@ -176,7 +176,7 @@ map_widget <- if (has_leaflet) {
 }
 
 source(file.path(app_dir, "R", "dashboard_ui.R"))
-ui <- dashboard_ui(map_widget, available_years, default_year, schools, snapshot)
+ui <- dashboard_ui(map_widget, available_years, default_year, schools, snapshot, app_dir)
 
 server <- function(input, output, session) {
   # School points are only shown once the user zooms in past this level.

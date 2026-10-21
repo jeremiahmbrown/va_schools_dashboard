@@ -3,7 +3,7 @@ data_year_choices <- function(years) {
   stats::setNames(years, year_labels)
 }
 
-dashboard_ui <- function(map_widget, available_years, default_year, schools, snapshot) {
+dashboard_ui <- function(map_widget, available_years, default_year, schools, snapshot, app_dir) {
   year_choices <- data_year_choices(available_years)
   asset_url <- function(filename) {
     hash <- unname(tools::md5sum(file.path(app_dir, "www", filename)))
