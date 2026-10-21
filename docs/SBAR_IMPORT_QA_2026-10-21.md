@@ -14,7 +14,9 @@ rebuild without a fresh download.
 The export has distinct columns for `Number of Sanctions` and `Number of
 Students`. The new dashboard measures use **Number of Sanctions**. We sum the
 rows with sanction code `OSS` or `ISS` per school and year, then divide by the
-same-year checked School Quality Profiles enrollment and multiply by 100.
+same-year checked enrollment and multiply by 100. The 2021–22 denominator is
+the separate Fall Membership school total; later years use the checked School
+Quality Profiles enrollment.
 The resulting unit is **actions per 100 enrolled students**, not a percentage
 of students receiving a sanction. It can exceed 100. We do not add the
 `Number of Students` values across OSS rows because one student may occur in
@@ -35,14 +37,15 @@ not greater than actions.
 
 | Ending year | Source schools | Matched map schools | Reportable schools with same-year enrollment | Reportable divisions |
 | --- | ---: | ---: | ---: | ---: |
-| 2022 | 1,737 | 1,673 | 0 | 0 |
+| 2022 | 1,737 | 1,673 | 1,673 | 128 |
 | 2023 | 1,781 | 1,723 | 1,723 | 130 |
 | 2024 | 1,777 | 1,733 | 1,722 | 129 |
 | 2025 | 1,793 | 1,769 | 1,754 | 130 |
 | 2026 | 1,799 | 1,776 | 1,761 | 130 |
 
-The 2022 source has actions but this snapshot has no checked 2021–22 school
-enrollment. The 2024 export has no Buchanan County school rows. In other
+The 2022 rate was added after the independent Fall Membership race and gender
+totals agreed for all 1,862 source schools. The 2024 export has no Buchanan
+County school rows. In other
 years, some SBAR schools do not match the fixed map or lack a same-year
 enrollment. A division value uses `100 × sum(actions) / sum(enrollment)` over
 its matched, reportable schools. It is a dashboard aggregate, not an official
@@ -58,9 +61,13 @@ suppression are not filled with SBAR action counts.
 `Rscript --vanilla data-raw/extract_sbar_sanctions.R` validated and recorded
 the source CSVs. `Rscript --vanilla data-raw/build_snapshot.R` matched schools,
 joined denominators, and rebuilt the frozen snapshot. `tests/check_snapshot.R`
-checked source labels, positive denominators, Accawmacke's 2026 value, and
+checked source labels, positive denominators, Accawmacke's 2022 and 2026 values, and
 the recomputed 2026 division values. The other repository checks for year
 availability, source validation, and map zones passed. A local Shiny run
 showed the new measure and 2026 year in the Behavior controls; the 2026
 Accawmacke Profile showed 483 enrollment and 10.1 actions per 100. The
 older suspension measure offered only 2023 and 2024.
+After adding year-specific Profile enrollment, a local Shiny check showed
+Accawmacke's 2022 enrollment as 408 beside its 5.9 out-of-school actions
+per 100. The Demographics category also offered 2022 and displayed a
+reportable value for that school.

@@ -50,6 +50,7 @@ snapshot <- load_snapshot(file.path(app_dir, "data"))
 schools <- snapshot$schools
 metric_defs <- snapshot$metric_defs
 school_metrics <- snapshot$school_metrics
+enrollment_by_year <- snapshot$enrollment_by_year
 division_metrics <- snapshot$division_metrics
 school_subject_perf <- snapshot$school_subject_perf
 division_subject_perf <- snapshot$division_subject_perf
@@ -242,7 +243,7 @@ server <- function(input, output, session) {
   dashboard_panel_server(
     input, output, session, selected_school_id, selected_division_id,
     metric_id_selected, schools, division_name_lookup, divisions_sp,
-    metric_defs_by_id, school_metrics, division_metrics
+    metric_defs_by_id, school_metrics, division_metrics, enrollment_by_year
   )
 
   metric_available_years <- reactive({

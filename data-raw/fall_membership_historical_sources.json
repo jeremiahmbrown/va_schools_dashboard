@@ -1,0 +1,31 @@
+{
+  "source_page": "https://p1pe.doe.virginia.gov/buildatable/fallmembership",
+  "selection": "School-level Fall Membership race and gender totals, 2021–22 through 2023–24; all divisions and schools",
+  "source_files": [
+    {
+      "file": "fall_membership_multiyear_race.csv",
+      "bytes": 3827799,
+      "sha256": "d6aa9207adf104644a53f59bca5f0891e477680ce1befda741b4146ed44d7c23"
+    },
+    {
+      "file": "fall_membership__multiyear_gender_grade.csv",
+      "bytes": 1148928,
+      "sha256": "cbe6de3fd0f86aeaddc6ad56844fdf49962e5fe53a68425c315272c8d239ed55"
+    },
+    {
+      "file": "fall_membership_2022_race.csv",
+      "bytes": 1272676,
+      "sha256": "bb48e3b7c74f4c93b494106b2c81dd6ae962646866953c267a5c7e13a00b7d54"
+    },
+    {
+      "file": "fall_membership_2022_gender_grade.csv",
+      "bytes": 387587,
+      "sha256": "c04c3b3b4b0d0d2810766b16eefe0ff6a63bbfbcace332751d1a1b6585b63142"
+    }
+  ],
+  "school_years": 5600,
+  "gender_missing_other_2023_school_years": 327,
+  "blank_race_counts": 26,
+  "race_archive_sha256": "486a8fc5b9442b307ca435b213d26adcfe0980cb513855501b4d332385b0d5ef",
+  "enrollment_archive_sha256": "6c91aa4c7b157faf284cb77185f4a59e159718758e2d871458b979457756bbc5"
+}

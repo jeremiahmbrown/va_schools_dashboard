@@ -1,7 +1,8 @@
 # Build a separate SBAR action-rate series. The legacy SQP short/long-term
 # suspension and incident measures keep their original definitions and years.
 build_sbar_sanction_metrics <- function(archive, schools_out, enroll_keep,
-                                        matched, years_keep, norm_key) {
+                                        matched, years_keep, norm_key,
+                                        historical_enrollment_archive = NULL) {
   if (!file.exists(archive)) stop('Missing checked SBAR archive: ', archive)
   raw <- read.csv(gzfile(archive), stringsAsFactors = FALSE,
                   colClasses = c(division_code = 'character',
@@ -54,6 +55,25 @@ build_sbar_sanction_metrics <- function(archive, schools_out, enroll_keep,
   }
   with_denominator <- joined %>%
     dplyr::left_join(enrollment, by = c('school_id', 'year'))
+  if (!is.null(historical_enrollment_archive)) {
+    historical <- read.csv(gzfile(historical_enrollment_archive),
+      stringsAsFactors = FALSE,
+      colClasses = c(division_code = 'character', school_code = 'character'))
+    if (!identical(names(historical),
+                   c('year', 'division_code', 'school_code', 'enrollment')) ||
+        !identical(unique(historical$year), 2022L) ||
+        anyDuplicated(historical[c('year', 'division_code', 'school_code')]) ||
+        any(!is.finite(historical$enrollment) | historical$enrollment <= 0)) {
+      stop('Invalid checked 2021–22 Fall Membership school totals.')
+    }
+    with_denominator <- with_denominator %>%
+      dplyr::left_join(historical %>%
+        dplyr::rename(historical_enrollment = enrollment),
+        by = c('year', 'division_code', 'school_code')) %>%
+      dplyr::mutate(enrollment = dplyr::coalesce(enrollment,
+                                                historical_enrollment)) %>%
+      dplyr::select(-historical_enrollment)
+  }
   metrics <- with_denominator %>%
     dplyr::filter(!is.na(school_id), year %in% years_keep,
                   is.finite(enrollment), enrollment > 0) %>%

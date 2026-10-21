@@ -8,12 +8,18 @@ stopifnot(isTRUE(all.equal(percentile_scores(c(10, 20, NA), rep("higher_better",
 
 schools <- read.csv("app/data/schools.csv", colClasses = c(school_id = "character", division_id = "character"))
 school <- read.csv("app/data/school_metrics.csv", colClasses = c(school_id = "character"))
+enrollment_by_year <- read.csv("app/data/enrollment_by_year.csv",
+                               colClasses = c(school_id = "character"))
 division <- read.csv("app/data/division_metrics.csv", colClasses = c(division_id = "character"))
 defs <- read.csv("app/data/metric_defs.csv")
 
 stopifnot(nrow(school) > 100000, nrow(schools) > 1700)
 stopifnot(!anyDuplicated(schools$school_id))
 stopifnot(!anyDuplicated(school[c("school_id", "year", "metric_id")]))
+stopifnot(!anyDuplicated(enrollment_by_year[c("school_id", "year")]))
+stopifnot(all(enrollment_by_year$school_id %in% schools$school_id),
+          all(is.finite(enrollment_by_year$enrollment) &
+                enrollment_by_year$enrollment > 0))
 stopifnot(!anyDuplicated(division[c("division_id", "year", "metric_id")]))
 stopifnot(all(school$school_id %in% schools$school_id))
 stopifnot(all(school$metric_id %in% defs$metric_id))
@@ -38,6 +44,12 @@ stopifnot(any(school$year == 2026 & school$metric_id == "test_sol_annual_overall
               is.finite(school$value)))
 race_ids <- defs$metric_id[defs$category == 'demographics']
 stopifnot(length(race_ids) == 7)
+for (target_year in 2022:2024) {
+  historical_race <- subset(school, year == target_year & metric_id %in% race_ids)
+  stopifnot(nrow(historical_race) > 12000,
+            all(historical_race$source == 'vdoe_fall_membership_race_school_historical'),
+            sum(is.finite(historical_race$value)) > 12000)
+}
 for (target_year in 2025:2026) {
   recent_race <- subset(school, year == target_year & metric_id %in% race_ids)
   stopifnot(nrow(recent_race) > 12000,
@@ -54,17 +66,25 @@ stopifnot(!any(school$year > 2024 &
                   startsWith(school$metric_id, "behavior_exp"))))
 sbar_ids <- c('behavior_sbar_oss_actions_per_100',
               'behavior_sbar_iss_actions_per_100')
-stopifnot(!any(school$year == 2022 & school$metric_id %in% sbar_ids))
 stopifnot(defs$format[match('test_sol_annual_overall', defs$metric_id)] == 'pct_1',
           defs$format[match('behavior_susp_per_100', defs$metric_id)] == 'num_1',
           defs$format[match(sbar_ids[[1]], defs$metric_id)] == 'num_1')
-for (target_year in 2023:2026) {
+for (target_year in 2022:2026) {
   sbar_rows <- subset(school, year == target_year & metric_id %in% sbar_ids)
-  stopifnot(nrow(sbar_rows) > 3400,
+  stopifnot(nrow(sbar_rows) > 3300,
             all(sbar_rows$source == 'vdoe_sbar_school_sanctions+vdoe_enrollment'),
             all(is.finite(sbar_rows$value)),
             all(sbar_rows$numerator >= 0 & sbar_rows$denominator > 0))
 }
+accawmacke_sbar_2022 <- subset(school, school_id == accawmacke$school_id &
+  year == 2022 & metric_id == 'behavior_sbar_oss_actions_per_100')
+stopifnot(nrow(accawmacke_sbar_2022) == 1,
+          accawmacke_sbar_2022$numerator == 24,
+          accawmacke_sbar_2022$denominator == 408,
+          abs(accawmacke_sbar_2022$value - 100 * 24 / 408) < 1e-8)
+stopifnot(enrollment_by_year$enrollment[
+  enrollment_by_year$school_id == accawmacke$school_id &
+    enrollment_by_year$year == 2022] == 408)
 accawmacke_sbar <- subset(school, school_id == accawmacke$school_id &
                             year == 2026 &
                             metric_id == 'behavior_sbar_oss_actions_per_100')

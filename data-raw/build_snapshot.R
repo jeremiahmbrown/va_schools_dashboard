@@ -1243,11 +1243,42 @@ source('data-raw/load_membership_race.R')
 membership_race_archive <- file.path('data-raw', 'fall_membership_race_school.csv.gz')
 membership_race <- build_membership_race_metrics(membership_race_archive,
                                                  schools_out, years_keep, norm_key)
-school_metrics_out <- dplyr::bind_rows(school_metrics_out, membership_race$metrics)
+historical_race_archive <- file.path('data-raw', 'fall_membership_historical_race_school.csv.gz')
+historical_enrollment_archive <- file.path('data-raw', 'fall_membership_2022_enrollment.csv.gz')
+historical_race <- build_membership_race_metrics(
+  historical_race_archive, schools_out, years_keep, norm_key,
+  expected_years = 2022:2024,
+  source_id = 'vdoe_fall_membership_race_school_historical',
+  min_match = 0.94,
+  enroll_keep = enroll_keep, matched = matched)
+historical_enrollment_by_year <- historical_race$metrics %>%
+  dplyr::filter(year == 2022, is.finite(denominator), denominator > 0) %>%
+  dplyr::distinct(school_id, year, enrollment = denominator)
+enrollment_by_year <- enroll_keep %>%
+  dplyr::left_join(matched %>%
+    dplyr::select(division_name, school_name, school_id),
+    by = c('division_name', 'school_name')) %>%
+  dplyr::filter(!is.na(school_id), year %in% years_keep,
+                is.finite(enrollment), enrollment > 0,
+                school_id %in% schools_out$school_id) %>%
+  dplyr::select(school_id, year, enrollment) %>%
+  dplyr::bind_rows(historical_enrollment_by_year) %>%
+  dplyr::arrange(school_id, year)
+if (anyDuplicated(enrollment_by_year[c('school_id', 'year')])) {
+  stop('Duplicate mapped school-year enrollment in profile extract.')
+}
+# Replace the sparse SQP subgroup approximation in 2023–24 with the checked
+# Fall Membership source. Missing historical schools remain missing.
+school_metrics_out <- school_metrics_out %>%
+  dplyr::filter(!(year %in% 2023:2024 & startsWith(metric_id, 'demo_')))
+school_metrics_out <- dplyr::bind_rows(school_metrics_out,
+                                      historical_race$metrics,
+                                      membership_race$metrics)
 source('data-raw/load_sbar_sanctions.R')
 sbar_archive <- file.path('data-raw', 'sbar_school_sanctions.csv.gz')
 sbar <- build_sbar_sanction_metrics(sbar_archive, schools_out, enroll_keep,
-                                    matched, years_keep, norm_key)
+                                    matched, years_keep, norm_key,
+                                    historical_enrollment_archive)
 school_metrics_out <- dplyr::bind_rows(school_metrics_out, sbar$metrics)
 if (anyDuplicated(school_metrics_out[c('school_id', 'year', 'metric_id')])) {
   stop('Duplicate school metric keys after supplemental imports.')
@@ -1604,13 +1635,13 @@ metric_defs_out <- data.frame(
     "School nutrition meal eligibility (%), All Students (VDOE School Quality Profiles download).",
     "Breakfast participation among eligible students (%), All Students (VDOE School Quality Profiles download).",
     "Lunch participation among eligible students (%), All Students (VDOE School Quality Profiles download).",
-    "% of enrolled students who are American Indian or Alaska Native. 2025–26: VDOE Fall Membership counts; 2023–24: normalized SQP subgroup percentages.",
-    "% of enrolled students who are Black or African American. Source changes from SQP subgroup percentages to Fall Membership counts in 2025.",
-    "% of enrolled students who are Hispanic/Latino. Source changes from SQP subgroup percentages to Fall Membership counts in 2025.",
-    "% of enrolled students who are White. Source changes from SQP subgroup percentages to Fall Membership counts in 2025.",
-    "% of enrolled students who are Asian. Source changes from SQP subgroup percentages to Fall Membership counts in 2025.",
-    "% of enrolled students who are Native Hawaiian or Other Pacific Islander. Source changes from SQP subgroup percentages to Fall Membership counts in 2025.",
-    "% of enrolled students who are Two or more races. Source changes from SQP subgroup percentages to Fall Membership counts in 2025."
+    "% of enrolled students who are American Indian or Alaska Native. VDOE Fall Membership race counts divided by a checked same-source school total, 2022–26.",
+    "% of enrolled students who are Black or African American. VDOE Fall Membership race counts, 2022–26.",
+    "% of enrolled students who are Hispanic/Latino. VDOE Fall Membership race counts, 2022–26.",
+    "% of enrolled students who are White. VDOE Fall Membership race counts, 2022–26.",
+    "% of enrolled students who are Asian. VDOE Fall Membership race counts, 2022–26.",
+    "% of enrolled students who are Native Hawaiian or Other Pacific Islander. VDOE Fall Membership race counts, 2022–26.",
+    "% of enrolled students who are Two or more races. VDOE Fall Membership race counts, 2022–26."
   ),
   unit = c(
     rep("index", 8),
@@ -1678,11 +1709,12 @@ snapshot_meta <- list(
   snapshot_date = as.character(Sys.Date()),
   year_min = min(years_keep),
   year_max = max(years_keep),
-  transform_version = 9,
+  transform_version = 11,
   annual_sol_match = list(source_schools = annual_sol$source_schools,
                           matched_schools = annual_sol$matched_schools,
                           unmatched_schools = nrow(annual_sol$unmatched)),
-  membership_race_match = membership_race$coverage,
+  membership_race_match = dplyr::bind_rows(historical_race$coverage,
+                                          membership_race$coverage),
   sbar_match = sbar$coverage,
   sbar_missing_enrollment_school_years = nrow(sbar$missing_denominator),
   nces_match = list(total = nrow(matched), matched = sum(!is.na(matched$school_id)),
@@ -1693,13 +1725,15 @@ snapshot_meta <- list(
     vdoe_fr_breakfast_path, vdoe_fr_lunch_path, vdoe_acc_eng_path,
     vdoe_acc_math_path, vdoe_acc_sci_path, nces_sch_zip_path,
     nces_lea_zip_path, tiger_zip_path, annual_sol_archive,
-    membership_race_archive, sbar_archive,
+    membership_race_archive, historical_race_archive,
+    historical_enrollment_archive, sbar_archive,
     file.path("data-raw", "annual_sol_sources.json"),
     file.path("data-raw", "fall_membership_race_sources.json"),
+    file.path("data-raw", "fall_membership_historical_sources.json"),
     file.path("data-raw", "sbar_school_sanctions_sources.json"),
     vapply(c("enrollment", "absenteeism", "fr_eligibility", "fr_breakfast", "fr_lunch"),
            history_path, character(1))), source_file_info),
-  notes = "Built from VDOE School Quality Profiles downloads, annual SOL School Subject-Area workbooks, Fall Membership race counts, and school-level SBAR sanction actions, plus NCES EDGE geocodes and TIGER/Line boundaries. Enrollment uses the reported school total, checked against grade counts. Legacy SQP suspension rates and SBAR action rates are separate measures. Historical ACR/SQP Percent Passing and annual SOL test-administration rates are separate measures.",
+  notes = "Built from VDOE School Quality Profiles downloads, annual SOL School Subject-Area workbooks, 2022–26 Fall Membership race counts, and school-level SBAR sanction actions, plus NCES EDGE geocodes and TIGER/Line boundaries. The 2022 SBAR denominator uses checked Fall Membership school totals; later years use checked SQP enrollment. The 2023 race shares exclude schools whose race sum differs from separately reported SQP enrollment because that year's gender export omits Other. Legacy SQP suspension rates and SBAR action rates are separate measures. Historical ACR/SQP Percent Passing and annual SOL test-administration rates are separate measures.",
   sources = list(
     list(id = "vdoe_schoolquality_download_data", url = vdoe_url),
     list(id = "vdoe_sol_school_subject_annual", url = "https://www.doe.virginia.gov/data-policy-funding/data-reports/statistics-reports/sol-test-pass-rates-other-results"),
@@ -1715,6 +1749,7 @@ jsonlite::write_json(snapshot_meta, file.path(snapshot_stage, "snapshot_meta.jso
 write_csv_atomic(metric_defs_out, file.path(snapshot_stage, "metric_defs.csv"))
 write_csv_atomic(schools_out, file.path(snapshot_stage, "schools.csv"))
 write_csv_atomic(school_metrics_out, file.path(snapshot_stage, "school_metrics.csv"))
+write_csv_atomic(enrollment_by_year, file.path(snapshot_stage, "enrollment_by_year.csv"))
 write_csv_atomic(division_metrics_out, file.path(snapshot_stage, "division_metrics.csv"))
 write_csv_atomic(school_subject_perf_out, file.path(snapshot_stage, "school_subject_perf.csv"))
 write_csv_atomic(division_subject_perf_out, file.path(snapshot_stage, "division_subject_perf.csv"))
