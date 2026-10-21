@@ -541,11 +541,6 @@ server <- function(input, output, session) {
 
   if (has_leaflet) {
     focus_division_from_map <- function(polygon_id) {
-      # At school-level zoom, a division tap must not pull the map away from nearby schools.
-      current_zoom <- suppressWarnings(as.numeric(input$map_zoom))
-      if (length(current_zoom) == 1 && is.finite(current_zoom) &&
-          current_zoom > division_rollup_zoom_max) return(invisible(NULL))
-
       div_sp <- divisions_sp[divisions_sp@data$division_id == polygon_id, ]
       if (length(div_sp) == 1) {
         bb <- sp::bbox(div_sp)
@@ -560,32 +555,30 @@ server <- function(input, output, session) {
         addMapPane(name = "divisionPolygonPane", zIndex = 380) %>%
         addMapPane(name = "zonePolygonPane", zIndex = 410) %>%
         addMapPane(name = "schoolPointPane", zIndex = 440) %>%
-        # Light Gray Canvas keeps roads faint and location names sparse.
-        # Use Esri's raster base and reference tiles, with source attribution.
+        # Light Gray Canvas keeps roads faint without place labels outside Virginia.
         addTiles(
           "https://services.arcgisonline.com/arcgis/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
           attribution = "Tiles &copy; Esri, HERE, Garmin, &copy; OpenStreetMap contributors, and the GIS user community"
-        ) %>%
-        addTiles(
-          "https://services.arcgisonline.com/arcgis/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}"
         ) %>%
         setView(lng = -78.7, lat = 37.5, zoom = 7) %>%
         htmlwidgets::onRender("function(el, x) {
           var map = this;
           if (!map || typeof map.on !== 'function') return;
-          var popupOpen = false;
+          var hoverReady = true;
+          el.addEventListener('pointermove', function() { hoverReady = true; }, { passive: true });
+          if (window.Shiny) {
+            Shiny.addCustomMessageHandler('dashboard-close-popup', function(message) {
+              map.closePopup();
+            });
+          }
           map.on('popupopen', function() {
-            popupOpen = true;
+            hoverReady = false;
             map.eachLayer(function(layer) {
               if (typeof layer.closeTooltip === 'function') layer.closeTooltip();
             });
           });
-          map.on('popupclose', function() { popupOpen = false; });
           map.on('tooltipopen', function(event) {
-            if (popupOpen && event.tooltip && event.tooltip._source &&
-                typeof event.tooltip._source.closeTooltip === 'function') {
-              event.tooltip._source.closeTooltip();
-            }
+            if (!hoverReady && event.tooltip) map.closeTooltip(event.tooltip);
           });
         }")
     })
@@ -676,6 +669,7 @@ server <- function(input, output, session) {
 
     val <- input$entity_search
     if (is.null(val) || !nzchar(val)) return()
+    if (has_leaflet) session$sendCustomMessage("dashboard-close-popup", list())
 
     if (startsWith(val, "school::")) {
       school_id <- sub("^school::", "", val)
@@ -794,7 +788,10 @@ server <- function(input, output, session) {
               weight = 1.2,
               opacity = 0.8,
               popup = lapply(div_popups, htmltools::HTML),
+              label = if (mobile_map) NULL else lapply(div_popups, htmltools::HTML),
               options = pathOptions(pane = "divisionPolygonPane", bubblingMouseEvents = FALSE),
+              labelOptions = labelOptions(direction = "top", textsize = "11px", sticky = TRUE,
+                                          className = "map-hover-label"),
               highlightOptions = highlightOptions(weight = 2, color = "#153746", fillOpacity = 0.9, bringToFront = FALSE)
             )
         }
@@ -839,7 +836,7 @@ server <- function(input, output, session) {
               label = if (mobile_map) NULL else lapply(school_popups, htmltools::HTML),
               options = pathOptions(pane = "schoolPointPane", bubblingMouseEvents = FALSE),
               labelOptions = labelOptions(direction = "top", textsize = "11px", sticky = FALSE,
-                                          className = "school-hover-label")
+                                          className = "map-hover-label")
             )
         }
       }

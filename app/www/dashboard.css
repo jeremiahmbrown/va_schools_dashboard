@@ -61,10 +61,11 @@ body { background: var(--canvas); color: var(--ink); font-family: "Segoe UI", In
 .map-selection-popup strong { display: block; font-size: 12px; font-weight: 750; overflow-wrap: anywhere; }
 .map-selection-popup .map-selection-value { display: block; margin-top: 4px; color: var(--muted); font-size: 11px; overflow-wrap: anywhere; }
 .map-stage .leaflet-popup-close-button { top: 4px; right: 4px; }
-.map-stage .school-hover-label { max-width: 205px; padding: 7px 9px; border: 1px solid var(--line); border-radius: 9px; box-shadow: 0 4px 14px #10283a24; }
-.map-caption { position: absolute; z-index: 500; top: 17px; left: 17px; max-width: min(300px,calc(100% - 100px)); padding: 10px 13px; border-radius: 10px; background: #fffffff2; box-shadow: 0 3px 18px #10283a16; pointer-events: none; }
+.map-stage .map-hover-label { width: max-content; max-width: min(260px,calc(100vw - 48px)); padding: 7px 9px; border: 1px solid var(--line); border-radius: 9px; box-shadow: 0 4px 14px #10283a24; white-space: normal; overflow-wrap: anywhere; }
+.map-stage .map-hover-label .map-selection-popup { white-space: normal; }
+.map-caption { position: absolute; z-index: 500; top: 17px; left: 17px; max-width: min(340px,calc(100% - 100px)); padding: 10px 13px; border-radius: 10px; background: #fffffff2; box-shadow: 0 3px 18px #10283a16; pointer-events: none; }
 .map-caption strong { display: block; font-size: 13px; line-height: 1.25; }
-.map-caption span { display: block; margin-top: 3px; color: var(--muted); font-size: 11px; }
+.map-caption span { display: block; margin-top: 3px; color: var(--muted); font-size: 11px; overflow-wrap: anywhere; }
 .map-legend { position: absolute; z-index: 500; right: 14px; bottom: 14px; width: 188px; padding: 9px 11px; border-radius: 10px; background: #fffffff2; box-shadow: 0 3px 18px #10283a16; pointer-events: none; }
 .map-legend .legend-caption { display: block; margin-bottom: 6px; color: var(--muted); font-size: 10px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }
 .map-legend .legend-ramp { height: 9px; border-radius: 6px; }
@@ -80,6 +81,7 @@ body { background: var(--canvas); color: var(--ink); font-family: "Segoe UI", In
 .sheet-handle, .mobile-peek, .sheet-toggle { display: none; }
 .detail-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
 .detail-heading .shiny-html-output { min-width: 0; }
+.detail-heading .shiny-html-output:last-child { flex: 0 0 auto; }
 .detail-heading .eyebrow { display: block; margin-bottom: 9px; color: var(--teal-dark); font-size: 11px; font-weight: 750; letter-spacing: .11em; text-transform: uppercase; }
 .detail-heading h2 { margin: 0; font-size: clamp(20px,1.7vw,28px); line-height: 1.1; font-weight: 750; letter-spacing: -.04em; overflow-wrap: anywhere; }
 .detail-heading .entity-subtitle { display: block; margin-top: 8px; color: var(--muted); font-size: 12px; }
