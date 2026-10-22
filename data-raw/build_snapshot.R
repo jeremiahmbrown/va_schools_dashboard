@@ -1239,6 +1239,14 @@ annual_sol_archive <- file.path('data-raw', 'annual_sol_school.csv.gz')
 annual_sol <- build_annual_sol_metrics(annual_sol_archive, schools_out,
                                        years_keep, norm_key)
 school_metrics_out <- dplyr::bind_rows(school_metrics_out, annual_sol$metrics)
+source('data-raw/load_annual_sol_2022.R')
+annual_sol_2022_school_archive <- file.path('data-raw', 'annual_sol_2022_school.csv.gz')
+annual_sol_2022_division_archive <- file.path('data-raw', 'annual_sol_2022_division.csv.gz')
+annual_sol_2022 <- build_annual_sol_2022_metrics(
+  annual_sol_2022_school_archive, annual_sol_2022_division_archive,
+  schools_out, years_keep, norm_key)
+school_metrics_out <- dplyr::bind_rows(school_metrics_out,
+                                      annual_sol_2022$school_metrics)
 source('data-raw/load_membership_race.R')
 membership_race_archive <- file.path('data-raw', 'fall_membership_race_school.csv.gz')
 membership_race <- build_membership_race_metrics(membership_race_archive,
@@ -1338,6 +1346,13 @@ division_metrics_base <- school_metrics_out %>%
     },
     .groups = "drop"
   )
+# The 2021–22 workbooks contain reported school and division rates but no
+# tested-student counts. Use VDOE's division rates instead of an unweighted
+# mean of mapped school rates for that year.
+division_metrics_base <- division_metrics_base %>%
+  dplyr::filter(!(year == 2022 & metric_id %in% c(
+    'test_sol_annual_ela', 'test_sol_annual_math', 'test_sol_annual_science'))) %>%
+  dplyr::bind_rows(annual_sol_2022$division_metrics)
 
 # For division-level "overall" performance, we intentionally compute the mean
 # across the *division subject-level* values (not a direct enrollment-weighted
@@ -1617,10 +1632,10 @@ metric_defs_out <- data.frame(
     "School Quality Profiles Percent Passing for English (ELA), All Students (accreditation export; available through 2024). Its figures differ from VDOE annual test-administration pass rates.",
     "School Quality Profiles Percent Passing for Math, All Students (accreditation export; available through 2024). Its figures differ from VDOE annual test-administration pass rates.",
     "School Quality Profiles Percent Passing for Science, All Students (accreditation export; available through 2024). Its figures differ from VDOE annual test-administration pass rates.",
-    "Annual SOL Pass Rate — Overall: app-defined simple mean of available English Reading, Mathematics, and Science school rates for All Students. Source: VDOE School Subject-Area test-administration workbooks. A division overall value is the mean of its three subject rates.",
-    "Annual SOL Pass Rate for English Reading, All Students, from VDOE School Subject-Area test-administration workbooks; school numerators and denominators are reported by VDOE.",
-    "Annual SOL Pass Rate for Mathematics, All Students, from VDOE School Subject-Area test-administration workbooks; school numerators and denominators are reported by VDOE.",
-    "Annual SOL Pass Rate for Science, All Students, from VDOE School Subject-Area test-administration workbooks; school numerators and denominators are reported by VDOE.",
+    "Annual SOL Pass Rate — Overall: app-defined simple mean of available English Reading, Mathematics, and Science rates for All Students. A division overall value is the mean of division subject rates. VDOE reports 2022 school and division rates; 2023–26 division subject rates are derived from matched school test counts.",
+    "Annual SOL Pass Rate for English Reading, All Students, from VDOE School Subject-Area workbooks. The 2022 files report school and division rates without test counts; 2023–26 school files include counts.",
+    "Annual SOL Pass Rate for Mathematics, All Students, from VDOE School Subject-Area workbooks. The 2022 files report school and division rates without test counts; 2023–26 school files include counts.",
+    "Annual SOL Pass Rate for Science, All Students, from VDOE School Subject-Area workbooks. The 2022 files report school and division rates without test counts; 2023–26 school files include counts.",
     "Suspensions per 100 students (short + long term; computed using VDOE counts and enrollment totals)",
     "Short-term suspensions per 100 students (computed using VDOE short-term suspension counts and enrollment totals).",
     "Long-term suspensions per 100 students (computed using VDOE long-term suspension counts and enrollment totals).",
@@ -1709,10 +1724,15 @@ snapshot_meta <- list(
   snapshot_date = as.character(Sys.Date()),
   year_min = min(years_keep),
   year_max = max(years_keep),
-  transform_version = 11,
+  transform_version = 12,
   annual_sol_match = list(source_schools = annual_sol$source_schools,
                           matched_schools = annual_sol$matched_schools,
                           unmatched_schools = nrow(annual_sol$unmatched)),
+  annual_sol_2022_match = list(
+    source_schools = annual_sol_2022$school_source_count,
+    matched_schools = annual_sol_2022$school_matched_count,
+    source_divisions = annual_sol_2022$division_source_count,
+    matched_divisions = annual_sol_2022$division_matched_count),
   membership_race_match = dplyr::bind_rows(historical_race$coverage,
                                           membership_race$coverage),
   sbar_match = sbar$coverage,
@@ -1725,15 +1745,17 @@ snapshot_meta <- list(
     vdoe_fr_breakfast_path, vdoe_fr_lunch_path, vdoe_acc_eng_path,
     vdoe_acc_math_path, vdoe_acc_sci_path, nces_sch_zip_path,
     nces_lea_zip_path, tiger_zip_path, annual_sol_archive,
+    annual_sol_2022_school_archive, annual_sol_2022_division_archive,
     membership_race_archive, historical_race_archive,
     historical_enrollment_archive, sbar_archive,
     file.path("data-raw", "annual_sol_sources.json"),
+    file.path("data-raw", "annual_sol_2022_sources.json"),
     file.path("data-raw", "fall_membership_race_sources.json"),
     file.path("data-raw", "fall_membership_historical_sources.json"),
     file.path("data-raw", "sbar_school_sanctions_sources.json"),
     vapply(c("enrollment", "absenteeism", "fr_eligibility", "fr_breakfast", "fr_lunch"),
            history_path, character(1))), source_file_info),
-  notes = "Built from VDOE School Quality Profiles downloads, annual SOL School Subject-Area workbooks, 2022–26 Fall Membership race counts, and school-level SBAR sanction actions, plus NCES EDGE geocodes and TIGER/Line boundaries. The 2022 SBAR denominator uses checked Fall Membership school totals; later years use checked SQP enrollment. The 2023 race shares exclude schools whose race sum differs from separately reported SQP enrollment because that year's gender export omits Other. Legacy SQP suspension rates and SBAR action rates are separate measures. Historical ACR/SQP Percent Passing and annual SOL test-administration rates are separate measures.",
+  notes = "Built from VDOE School Quality Profiles downloads, annual SOL School Subject-Area workbooks, 2022–26 Fall Membership race counts, and school-level SBAR sanction actions, plus NCES EDGE geocodes and TIGER/Line boundaries. The 2022 annual SOL files report school and division subject rates without test counts; later division subject rates use matched school test counts. The 2022 SBAR denominator uses checked Fall Membership school totals; later years use checked SQP enrollment. The 2023 race shares exclude schools whose race sum differs from separately reported SQP enrollment because that year's gender export omits Other. Legacy SQP suspension rates and SBAR action rates are separate measures. Historical ACR/SQP Percent Passing and annual SOL test-administration rates are separate measures.",
   sources = list(
     list(id = "vdoe_schoolquality_download_data", url = vdoe_url),
     list(id = "vdoe_sol_school_subject_annual", url = "https://www.doe.virginia.gov/data-policy-funding/data-reports/statistics-reports/sol-test-pass-rates-other-results"),

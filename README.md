@@ -15,9 +15,9 @@ An interactive R Shiny and Leaflet dashboard for exploring public data about Vir
 The app uses a checked snapshot of public data saved in [`app/data/`](app/data/). It does not download live records when a visitor opens the dashboard.
 
 - **Years:** The control shows the ending year of a school year. For example, 2026 means 2025–26.
-- **Performance:** Annual Standards of Learning (SOL) pass rates for 2023–2026 are separate from the historical Accreditation Combined Rate (ACR) and School Quality Profiles Percent Passing series. “Overall” values are means calculated by this app across available subjects. They are **not official Virginia Department of Education ratings**.
+- **Performance:** Annual Standards of Learning (SOL) pass rates for 2022–2026 are separate from the historical Accreditation Combined Rate (ACR) and School Quality Profiles Percent Passing series. “Overall” values are means calculated by this app across available subjects. They are **not official Virginia Department of Education ratings**.
 - **Missing values:** A dash means a value is missing, suppressed, or unavailable for that year. It does not mean zero.
-- **Demographics:** The source for student race and ethnicity shares changes in 2025, so comparisons across that year need care.
+- **Demographics:** Student race and ethnicity shares use Virginia Fall Membership counts for 2022–2026. Source checks leave some school values missing.
 - **Attendance zones:** Coverage is partial, and boundaries come from different years. Confirm a current school assignment with the division before making an address decision.
 
 For definitions, coverage, and known limits, see the [methodology](docs/METHODOLOGY.md), [performance coverage](docs/PERFORMANCE_COVERAGE_2026-10-20.md), and [zone coverage audit](docs/ZONES_COVERAGE.md).

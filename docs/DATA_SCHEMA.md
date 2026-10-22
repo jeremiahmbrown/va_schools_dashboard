@@ -55,7 +55,7 @@
 - `suppressed` (bool; TRUE if effectively not reportable)
 - `n_included` (int)
 - `n_suppressed` (int)
-- `agg_method` (string: `total_rate`, `weighted_mean`, or `mean_subjects` in the current build)
+- `agg_method` (string: includes `total_rate`, `weighted_mean`, `mean_subjects`, and `reported_division_rate`)
 
 ### `metric_defs` (catalog)
 - `metric_id`
@@ -82,7 +82,7 @@ These tables include:
 - `acr_rate` (Accreditation Combined Rate; 0–100)
 - `pass_rate` (historical School Quality Profiles Percent Passing; 0–100)
 
-Annual SOL school metrics use `test_sol_annual_ela`, `test_sol_annual_math`, `test_sol_annual_science`, and `test_sol_annual_overall` in `school_metrics.csv`. The division table uses the same IDs. School subject rates store VDOE test numerators and denominators; the overall measure is an app-defined mean across available subjects and has no single test denominator. The source Excel files stay in ignored `data-raw/input/manual/`; `data-raw/annual_sol_school.csv.gz` is the tracked, checked extract used by the builder. `data-raw/annual_sol_sources.json` records the original workbook hashes.
+Annual SOL school metrics use `test_sol_annual_ela`, `test_sol_annual_math`, `test_sol_annual_science`, and `test_sol_annual_overall` in `school_metrics.csv`. The division table uses the same IDs. For 2022, the school and division workbooks report subject rates without test counts; the checked extracts are `data-raw/annual_sol_2022_school.csv.gz` and `data-raw/annual_sol_2022_division.csv.gz`. The 2022 division subject rows use `agg_method = reported_division_rate`. For 2023–26, school subject rates store VDOE test numerators and denominators in `data-raw/annual_sol_school.csv.gz`, and division subjects are calculated from matched school counts. Every `Overall` value is an app-defined mean across available subjects and has no single test denominator. The source Excel files stay in ignored `data-raw/input/manual/`; source hashes are recorded in `data-raw/annual_sol_2022_sources.json` and `data-raw/annual_sol_sources.json`.
 
 The seven `demo_*_pct` metrics use VDOE Fall Membership race counts in 2022–2026. Their school `numerator` is a reported race count and `denominator` is the checked school total from the same source. Explicit blank counts are suppressed. The original CSVs stay in ignored `data-raw/input/manual/`; the builder reads the tracked `data-raw/fall_membership_historical_race_school.csv.gz` for 2022–24 and `data-raw/fall_membership_race_school.csv.gz` for 2025–26, with source-hash manifests. The 2022 SBAR rates also use `data-raw/fall_membership_2022_enrollment.csv.gz` as the school enrollment denominator. The 2023 gender export omits `Other`, so the historical race loader requires its race total to match separate SQP enrollment for that year.
 

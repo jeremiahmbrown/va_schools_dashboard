@@ -1,5 +1,9 @@
 # Annual SOL school subject import: QA record
 
+This record covers the 2022–23 through 2025–26 school workbooks. The later
+2021–22 School and Division Subject-Area import is checked separately in
+[2022 annual SOL QA](ANNUAL_SOL_2022_QA_2026-10-22.md).
+
 Checked 2026-10-20 in Ubuntu on `improve-data-refresh-and-ui`. This import
 keeps the existing R Shiny app and frozen `app/data/` snapshot. This was a
 pre-release QA checkpoint; the public app was released later that day. See the
