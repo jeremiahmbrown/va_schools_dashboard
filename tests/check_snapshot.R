@@ -61,6 +61,36 @@ stopifnot(!any(school$year <= 2024 &
 accawmacke <- subset(schools, school_name == 'Accawmacke Elementary' &
                        division_name == 'Accomack County Public Schools')
 stopifnot(nrow(accawmacke) == 1, accawmacke$enrollment_latest == 483)
+sol_2022_ids <- c('test_sol_annual_ela', 'test_sol_annual_math',
+                  'test_sol_annual_science', 'test_sol_annual_overall')
+sol_2022_school <- subset(school, year == 2022 & metric_id %in% sol_2022_ids)
+stopifnot(sum(is.finite(sol_2022_school$value)) > 6800,
+          all(!is.finite(sol_2022_school$numerator)),
+          all(!is.finite(sol_2022_school$denominator)))
+sample_sol <- subset(sol_2022_school, school_id == accawmacke$school_id)
+stopifnot(nrow(sample_sol) == 4,
+          sample_sol$value[match(sol_2022_ids, sample_sol$metric_id)][1:3] ==
+            c(67, 66, 72),
+          abs(sample_sol$value[sample_sol$metric_id == 'test_sol_annual_overall'] -
+                mean(c(67, 66, 72))) < 1e-8)
+accomack_division <- unique(accawmacke$division_id)
+sol_2022_division <- subset(division,
+  year == 2022 & division_id == accomack_division &
+    metric_id %in% sol_2022_ids)
+stopifnot(nrow(sol_2022_division) == 4,
+          sol_2022_division$value[match(sol_2022_ids,
+                                      sol_2022_division$metric_id)][1:3] ==
+            c(67, 63, 61),
+          all(sol_2022_division$agg_method[
+            sol_2022_division$metric_id != 'test_sol_annual_overall'] ==
+              'reported_division_rate'),
+          abs(sol_2022_division$value[
+            sol_2022_division$metric_id == 'test_sol_annual_overall'] -
+              mean(c(67, 63, 61))) < 1e-8)
+stopifnot(!any(division$year == 2022 &
+  division$division_id == schools$division_id[
+    match('Alleghany Highlands Public Schools', schools$division_name)] &
+  division$metric_id %in% sol_2022_ids))
 stopifnot(!any(school$year > 2024 &
                  (startsWith(school$metric_id, "behavior_susp") |
                   startsWith(school$metric_id, "behavior_exp"))))

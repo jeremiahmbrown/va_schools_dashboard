@@ -8,6 +8,7 @@ provide a last-updated date in the CSV. Retrieval date is not publication date.
 | Dashboard measure | Export request | Years in current response | Grain and fields | Decision |
 | --- | --- | --- | --- | --- |
 | English, math, science Accreditation Combined Rate and SQP Percent Passing | `type=accreditation`, `indicators[]=1`, `3`, `5` | 2022, 2023, 2024 | School, year, subject, subgroup, level; `Accreditation Combined Rate`, `Percent Passing` | Historical only. Do not extend to 2025 or 2026 from this endpoint. Science ACR is missing in every available year in the stored snapshot. |
+| Annual SOL pass rates | [VDOE SOL results](https://www.doe.virginia.gov/data-policy-funding/data-reports/statistics-reports/sol-test-pass-rates-other-results), School Subject-Area and 2021–22 Division Subject-Area workbooks | 2021–22 through 2025–26 | All Students, English Reading, Mathematics, Science; 2021–22 pass rates only, later school files also include tested-student counts | Use VDOE-reported school and division subject rates for 2021–22. For later years, derive division subjects from reported counts of matched schools. Keep Annual SOL separate from ACR and SQP Percent Passing. See [2022 QA](ANNUAL_SOL_2022_QA_2026-10-22.md) and [later-year QA](ANNUAL_SOL_IMPORT_QA_2026-10-20.md). |
 | Chronic absence | `type=learningClimate`, `indicators[]=absenteeism` | 2023–24, 2024–25, 2025–26 | School, year, subgroup; `Percent above 10`, counts above and below 10 | Candidate through 2025–26, subject to complete-year and suppression checks. |
 | Fall membership enrollment | `type=enrollment`, `indicators[]=fallMembership` | 2023–24, 2024–25, 2025–26 | School, year, one total row plus grade rows; `Count` | Use the reported school total once, after checking it equals the grade sum. |
 | Fall membership race/ethnicity and 2021–22 enrollment | [VDOE Fall Membership Build-A-Table](https://p1pe.doe.virginia.gov/buildatable/fallmembership), manual public CSVs | 2021–22 through 2025–26 | School, year, race or gender; full-time, part-time, total counts | Use checked school race shares for all five years. School-by-gender rows give an independent total in 2022, 2024, 2025, and 2026; grade rows are not required. The 2022–23 gender export omits `Other`, so use race totals only where separate SQP enrollment matches. The 2021–22 total is also the SBAR rate denominator. Keep explicit blank counts missing. See [historical QA](HISTORICAL_MEMBERSHIP_QA_2026-10-21.md) and [recent QA](FALL_MEMBERSHIP_RACE_QA_2026-10-20.md). |
@@ -16,9 +17,13 @@ provide a last-updated date in the CSV. Retrieval date is not publication date.
 | In-school and out-of-school sanction actions | [SBAR Sanction Report](https://p1pe.doe.virginia.gov/buildatable/sbar), School level, all divisions, schools, and sanction types; one CSV per year | 2021–22 through 2025–26 | School, year, sanction code; `Number of Sanctions` and `Number of Students` | Separate action-rate series. Sum `ISS` or `OSS` actions and divide by checked same-year enrollment; 2021–22 uses Fall Membership, later years SQP enrollment. Never combine this series with the older student-count suspension series. See [coverage audit](DATA_COVERAGE_AUDIT_2026-10-21.md). |
 
 The [VDOE SOL results page](https://www.doe.virginia.gov/data-policy-funding/data-reports/statistics-reports/sol-test-pass-rates-other-results)
-lists 2025–26 subject and test files at school, division, and state levels,
-with numerators and denominators. These are a separate source and definition
-from the School Quality Profiles accreditation export. Direct XLS requests returned HTTP 403 to this environment. The user supplied the 2024–25 and 2025–26 school workbooks manually on 2026-10-20. Their All Students English Reading, Mathematics, and Science rows now supply a separate 2023–2026 Annual SOL Pass Rate series after schema, count, suppression, and match checks. See [annual SOL QA](ANNUAL_SOL_IMPORT_QA_2026-10-20.md).
+lists subject and test files at school, division, and state levels. The
+2021–22 School and Division Subject-Area files report rates only; the later
+school files include numerators and denominators. These results are separate
+from the School Quality Profiles accreditation export. The user supplied the
+2021–22 school and division files on 2026-10-22 and the later school files on
+2026-10-20. Their checked All Students English Reading, Mathematics, and
+Science rows supply the 2022–2026 Annual SOL Pass Rate series.
 
 The [VDOE SPSF overview](https://www.doe.virginia.gov/state-board-data-funding/accreditation-accountability/school-performance-and-support-framework/spsf-overview)
 and [2024–25 SPSF release](https://www.doe.virginia.gov/teaching-learning-assessment/road-to-readiness-school-performance-and-support-framework-resource-hub/2024-25-spsf-accountability-data-release)

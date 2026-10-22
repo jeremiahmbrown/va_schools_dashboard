@@ -6,14 +6,18 @@ value remains blank in the dashboard. Annual SOL pass rate, School Quality
 Profiles (SQP) Percent Passing, and Accreditation Combined Rate (ACR) are
 different measures.
 
+Updated 2026-10-22: the supplied 2021–22 School and Division Subject-Area
+workbooks now add a 2022 Annual SOL point. See the
+[2022 import check](ANNUAL_SOL_2022_QA_2026-10-22.md).
+
 ## What the dashboard can show
 
 | Measure | Reportable years | School coverage in latest year | Division coverage in latest year |
 | --- | --- | ---: | ---: |
-| Annual SOL pass rate, overall | 2023–2026 | 1,769 of 1,774 mapped rows in 2026 | 130 of 130 in 2026 |
-| Annual SOL pass rate, English | 2023–2026 | 1,769 of 1,774 in 2026 | 130 of 130 in 2026 |
-| Annual SOL pass rate, math | 2023–2026 | 1,769 of 1,774 in 2026 | 130 of 130 in 2026 |
-| Annual SOL pass rate, science | 2023–2026 | 1,731 of 1,739 in 2026 | 130 of 130 in 2026 |
+| Annual SOL pass rate, overall | 2022–2026 | 1,769 of 1,774 mapped rows in 2026 | 130 of 130 in 2026 |
+| Annual SOL pass rate, English | 2022–2026 | 1,769 of 1,774 in 2026 | 130 of 130 in 2026 |
+| Annual SOL pass rate, math | 2022–2026 | 1,769 of 1,774 in 2026 | 130 of 130 in 2026 |
+| Annual SOL pass rate, science | 2022–2026 | 1,731 of 1,739 in 2026 | 130 of 130 in 2026 |
 | ACR, overall app mean, English, math | 2022–2024 | English: 1,781 of 1,783 in 2024; math: 1,782 of 1,783 | 130 of 130 in 2024 |
 | SQP Percent Passing, overall, English, math, science | 2022–2024 | Science: 1,734 of 1,741 in 2024 | 130 of 130 in 2024 |
 | ACR, science | None | The SQP export has no numeric Science ACR | None |
@@ -21,8 +25,8 @@ different measures.
 The denominators above are rows mapped into the frozen school snapshot, not
 all operating schools in Virginia. A source may omit a school, a value may be
 suppressed, or a school may be absent from the 2024–25 NCES map geocodes. The
-annual SOL import matched 1,777 of 1,821 distinct source school codes across
-its four-year union. The remaining 44 codes cannot safely be given map points
+2023–26 annual SOL import matched 1,777 of 1,821 distinct source school codes
+across its four-year union. The remaining 44 codes cannot safely be given map points
 without an updated school crosswalk or geocode source. The 2026 subject rows
 that *are* mapped have 5 suppressed/unavailable English values, 5 math values,
 and 8 science values. These are not zeros.
@@ -51,17 +55,17 @@ rating or level cannot be used as a missing ACR percentage. No additional
 numeric ACR values passed the source check, so the frozen metric values did
 not change.
 
-## Manual file that could add a year
+## 2022 Annual SOL source
 
-The official [2021–22 School Subject-Area workbook](https://www.doe.virginia.gov/home/showpublisheddocument/32602/638047216292570000)
-is listed under **2021–2022 Test Administration** on the
-[VDOE SOL results page](https://www.doe.virginia.gov/data-policy-funding/data-reports/statistics-reports/sol-test-pass-rates-other-results).
-Direct file requests from this environment returned HTTP 403, and the browser
-click did not save a local copy. If a 2022 annual SOL point is wanted, download
-that workbook manually and place it in `data-raw/input/manual/`. Its columns,
-suppression rules, and comparability with 2023–2026 must be checked before an
-import. The current 2023–2026 annual SOL source files have already been
-imported; they are not needed again for this release.
+The user supplied the official [2021–22 School and Division Subject-Area workbooks](https://www.doe.virginia.gov/data-policy-funding/data-reports/statistics-reports/sol-test-pass-rates-other-results).
+The school and division files report rates without test counts. Their checked
+values add 2022 annual SOL rates for 1,736 mapped schools and 129 mapped
+divisions. The 2022 division subjects come directly from VDOE's division
+workbook; later division subjects are calculated from school test counts.
+Suppressed values remain missing. The raw workbooks stay in the ignored manual
+input folder; tracked extracts and hashes make the build repeatable from the
+checked inputs. The [2022 import check](ANNUAL_SOL_2022_QA_2026-10-22.md)
+records the method and coverage.
 
 There is no known manual file that can fill numeric Science ACR or extend the
 same ACR definition to 2025–26. VDOE's newer School Performance and Support

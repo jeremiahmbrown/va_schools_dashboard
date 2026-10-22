@@ -1,5 +1,7 @@
 # Data coverage audit — 21 October 2026
 
+Updated 22 October 2026 after adding 2021–22 annual SOL rates.
+
 This audit counts reportable values in the frozen dashboard snapshot, by
 measure and school year. `2026` means 2025–26. The map has 1,810 matched
 schools and 130 divisions. A count below 1,810 can mean that the source lacks
@@ -23,12 +25,15 @@ the full table at the end of this document.
    Multiple OSS rows for one school can include the same student. Buchanan
    County has no school rows in the 2023–24 SBAR
    export, so its 2024 division rate is missing.
-2. **Performance:** Annual SOL pass rates cover 2022–23 through 2025–26.
-   A 2021–22 school workbook found in Downloads has pass rates but lacks the
-   tested-student numerators and denominators available in the newer files;
-   its 2022 school and division import needs separate method checks. ACR and
-   SQP Percent Passing cover 2021–22 through
-   2023–24 only. Science ACR has zero reportable values in all three years;
+2. **Performance:** Annual SOL pass rates now cover 2021–22 through 2025–26.
+   The 2021–22 school and division workbooks report rates but lack the
+   tested-student counts found in newer school files. The 2022 map uses the
+   reported VDOE division subject rates. Later division subject rates are
+   derived from matched school test counts. The 2022 annual overall covers
+   1,736 schools and 129 divisions. Alleghany Highlands has no matching 2022
+   division row; older division rates are not combined without test counts.
+   ACR and SQP Percent Passing
+   cover 2021–22 through 2023–24 only. Science ACR has zero reportable values;
    the SQP source field is blank. Current accreditation levels and SPSF scores
    cannot be treated as those missing ACR percentages.
 3. **Attendance and meals:** Chronic absence, meal eligibility, breakfast
@@ -45,22 +50,14 @@ the full table at the end of this document.
    blank race counts remain suppressed. For example, Native Hawaiian coverage
    rose from 792 to more than 1,700 mapped schools in 2023 after this change.
 
-## Manual files that would add coverage
+## Remaining source gaps
 
-Save files in `data-raw/input/manual/` and keep the original file names when
-possible. These files are ignored by Git. The checked extracts and source
-hashes are tracked. Do not edit a blank or suppressed source cell.
-
-| Priority | Source and exact selection | Save as | What it could add |
-| --- | --- | --- | --- |
-| 1 | The [VDOE SOL results page](https://www.doe.virginia.gov/data-policy-funding/data-reports/statistics-reports/sol-test-pass-rates-other-results) lists **2021–2022 Test Administration → Division Subject-Area (XLS)**. Download that division workbook if a verified 2022 division pass-rate map is wanted. The school workbook already found in Downloads has only pass rates, so it cannot support the newer tested-student weighted division calculation by itself. | Keep the original download name | A separate, clearly sourced 2022 division annual SOL value after schema and definition checks. |
-
-The five SBAR CSVs and the Fall Membership school race and gender exports are
-already checked and imported; no further Fall Membership download is needed.
-The user-supplied 2021–22 school-level file in Downloads has been inspected,
-but its rate-only schema needs a separate method decision before release. A
-file named `2020-2021-school-subject-area.xlsx` in the older WSL input folder
-is for a different school year and was not substituted for 2021–22.
+The supplied 2021–22 School and Division Subject-Area workbooks are in the
+ignored manual input folder. Checked extracts and their source hashes are
+tracked. No more SOL or Fall Membership file is needed for the years shown.
+The 2021–22 chronic absence and meal measures still lack a checked comparable
+source. The older student-count suspension series ends in 2023–24; the SBAR
+action-rate series is a separate measure and does not fill those cells.
 
 ## Full snapshot coverage
 
@@ -78,10 +75,10 @@ reportable value exists. These are map counts, not official state totals.
 | SQP Percent Passing — English (ELA) | 1767/130 | 1777/130 | 1781/130 | — | — |
 | SQP Percent Passing — Math | 1765/130 | 1777/130 | 1782/130 | — | — |
 | SQP Percent Passing — Science | 1721/130 | 1729/130 | 1734/130 | — | — |
-| Annual SOL Pass Rate — Overall | — | 1764/130 | 1766/130 | 1771/130 | 1769/130 |
-| Annual SOL Pass Rate — English (ELA) | — | 1762/130 | 1765/130 | 1770/130 | 1769/130 |
-| Annual SOL Pass Rate — Math | — | 1764/130 | 1766/130 | 1771/130 | 1769/130 |
-| Annual SOL Pass Rate — Science | — | 1722/130 | 1723/130 | 1725/130 | 1731/130 |
+| Annual SOL Pass Rate — Overall | 1736/129 | 1764/130 | 1766/130 | 1771/130 | 1769/130 |
+| Annual SOL Pass Rate — English (ELA) | 1735/129 | 1762/130 | 1765/130 | 1770/130 | 1769/130 |
+| Annual SOL Pass Rate — Math | 1736/129 | 1764/130 | 1766/130 | 1771/130 | 1769/130 |
+| Annual SOL Pass Rate — Science | 1696/129 | 1722/130 | 1723/130 | 1725/130 | 1731/130 |
 | Suspensions per 100 | — | 470/88 | 515/97 | — | — |
 | Short-term suspensions per 100 | — | 1646/128 | 1669/127 | — | — |
 | Long-term suspensions per 100 | — | 470/88 | 516/97 | — | — |

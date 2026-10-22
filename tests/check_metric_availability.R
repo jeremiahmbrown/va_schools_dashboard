@@ -6,7 +6,7 @@ divisions <- read.csv('app/data/division_metrics.csv')
 available <- reportable_metric_years(schools, divisions)
 years_for <- function(metric) sort(available$year[available$metric_id == metric])
 
-stopifnot(identical(years_for('test_sol_annual_overall'), 2023:2026))
+stopifnot(identical(years_for('test_sol_annual_overall'), 2022:2026))
 stopifnot(identical(years_for('test_overall_perf_index'), 2022:2024))
 stopifnot(length(years_for('test_acr_science')) == 0L)
 stopifnot(identical(years_for('attendance_chronic_absent_pct'), 2023:2026))

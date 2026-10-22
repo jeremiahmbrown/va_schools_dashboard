@@ -437,6 +437,13 @@ server <- function(input, output, session) {
         agg_method = "enrollment_weighted_fallback",
         .groups = "drop"
       )
+    # The 2021–22 SOL division file reports rates directly. Do not replace a
+    # missing official division rate with a mean of school percentages.
+    if (year_selected == 2022 &&
+        startsWith(metric_id_selected(), "test_sol_annual_")) {
+      div_vals_fallback <- div_vals_fallback %>%
+        mutate(value = NA_real_, suppressed = TRUE)
+    }
 
     # Prefer precomputed division metrics; if missing/suppressed at source,
     # backfill from school-level values when available.

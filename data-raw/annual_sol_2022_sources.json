@@ -1,0 +1,22 @@
+{
+  "source_page": "https://www.doe.virginia.gov/data-policy-funding/data-reports/statistics-reports/sol-test-pass-rates-other-results",
+  "selection": "2021–22 School and Division Subject-Area; All Students; English: Reading, Mathematics, Science; reported pass rates only",
+  "source_files": [
+    {
+      "file": "school-by-subject-2022.xlsx",
+      "bytes": 4416824,
+      "sha256": "dba4208f7ec2f0ac0d12f3d5a878e34fbeee09e226b4fdfb0b4c195292e4ae4b"
+    },
+    {
+      "file": "division-by-subject-2022.xlsx",
+      "bytes": 296509,
+      "sha256": "89b07dd99509ba2d0039ac75b8944c5f7ac0c8a8b72a6e468db13d08d6c9c3dd"
+    }
+  ],
+  "school_rows": 5350,
+  "school_reportable": 5337,
+  "division_rows": 402,
+  "division_reportable": 399,
+  "school_archive_sha256": "a39a8e07b8c692661a8c8dc6b6e47db83b9fd91084d87d038313ea5121382da1",
+  "division_archive_sha256": "3ea26ec591cb5afe38a43a0acc81ab80466758accd9461d3a93d70c8f85a65ef"
+}

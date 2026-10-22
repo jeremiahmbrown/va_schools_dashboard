@@ -1,12 +1,18 @@
 {
-  "snapshot_date": "2026-10-21",
+  "snapshot_date": "2026-10-22",
   "year_min": 2022,
   "year_max": 2026,
-  "transform_version": 11,
+  "transform_version": 12,
   "annual_sol_match": {
     "source_schools": 1821,
     "matched_schools": 1777,
     "unmatched_schools": 47
+  },
+  "annual_sol_2022_match": {
+    "source_schools": 1800,
+    "matched_schools": 1736,
+    "source_divisions": 134,
+    "matched_divisions": 129
   },
   "membership_race_match": [
     {
@@ -233,48 +239,66 @@
       "cache_modified_at": "2026-10-20 21:50:34 UTC"
     },
     "16": {
+      "file": "annual_sol_2022_school.csv.gz",
+      "sha256": "a39a8e07b8c692661a8c8dc6b6e47db83b9fd91084d87d038313ea5121382da1",
+      "bytes": 45519,
+      "cache_modified_at": "2026-10-22 12:18:44 UTC"
+    },
+    "17": {
+      "file": "annual_sol_2022_division.csv.gz",
+      "sha256": "3ea26ec591cb5afe38a43a0acc81ab80466758accd9461d3a93d70c8f85a65ef",
+      "bytes": 3262,
+      "cache_modified_at": "2026-10-22 12:18:44 UTC"
+    },
+    "18": {
       "file": "fall_membership_race_school.csv.gz",
       "sha256": "5502946a5f0981ae02422b0440b9b291587e67cea19cd3b7efa2636d8e85b03b",
       "bytes": 187254,
       "cache_modified_at": "2026-10-20 21:50:34 UTC"
     },
-    "17": {
+    "19": {
       "file": "fall_membership_historical_race_school.csv.gz",
       "sha256": "486a8fc5b9442b307ca435b213d26adcfe0980cb513855501b4d332385b0d5ef",
       "bytes": 284519,
-      "cache_modified_at": "2026-10-21 17:51:35 UTC"
+      "cache_modified_at": "2026-10-21 21:50:06 UTC"
     },
-    "18": {
+    "20": {
       "file": "fall_membership_2022_enrollment.csv.gz",
       "sha256": "6c91aa4c7b157faf284cb77185f4a59e159718758e2d871458b979457756bbc5",
       "bytes": 9282,
-      "cache_modified_at": "2026-10-21 17:51:35 UTC"
+      "cache_modified_at": "2026-10-21 21:50:06 UTC"
     },
-    "19": {
+    "21": {
       "file": "sbar_school_sanctions.csv.gz",
       "sha256": "18a1e8f36a9d03c1f12d48257b764399a5e4adb817fbe51e33f9b8ed587599bc",
       "bytes": 179001,
       "cache_modified_at": "2026-10-21 16:55:30 UTC"
     },
-    "20": {
+    "22": {
       "file": "annual_sol_sources.json",
       "sha256": "0aa08409993daeb5c0081bf3355199040ea9bc4b17d1faf612969e723f6220f4",
       "bytes": 954,
       "cache_modified_at": "2026-10-20 21:50:34 UTC"
     },
-    "21": {
+    "23": {
+      "file": "annual_sol_2022_sources.json",
+      "sha256": "12c32f658b91c74929994acba612dd11dc499f3b2726848616c9f37e6cf01dde",
+      "bytes": 932,
+      "cache_modified_at": "2026-10-22 12:18:44 UTC"
+    },
+    "24": {
       "file": "fall_membership_race_sources.json",
       "sha256": "425155a65494611fb706edb4583a10fdd01e0cc62d14fc6b1b14669064c2ad49",
       "bytes": 1100,
       "cache_modified_at": "2026-10-20 21:50:34 UTC"
     },
-    "22": {
+    "25": {
       "file": "fall_membership_historical_sources.json",
-      "sha256": "db42fb954265c2a3f5c18ba269b209af9d7188ea8a44c7e63d99bf8dbeb407a0",
-      "bytes": 1216,
-      "cache_modified_at": "2026-10-21 17:51:35 UTC"
+      "sha256": "29666bd8bdea28113870a82596b3c9de10522d3ed453bfc012fd61250f97fb0f",
+      "bytes": 1247,
+      "cache_modified_at": "2026-10-21 21:50:06 UTC"
     },
-    "23": {
+    "26": {
       "file": "sbar_school_sanctions_sources.json",
       "sha256": "54049bf93c54a024a634cee35e0d720bf61dc425cc69be8ee64d9a628041cb2d",
       "bytes": 1414,
@@ -311,7 +335,7 @@
       "cache_modified_at": "2026-10-20 21:50:34 UTC"
     }
   },
-  "notes": "Built from VDOE School Quality Profiles downloads, annual SOL School Subject-Area workbooks, 2022–26 Fall Membership race counts, and school-level SBAR sanction actions, plus NCES EDGE geocodes and TIGER/Line boundaries. The 2022 SBAR denominator uses checked Fall Membership school totals; later years use checked SQP enrollment. The 2023 race shares exclude schools whose race sum differs from separately reported SQP enrollment because that year's gender export omits Other. Legacy SQP suspension rates and SBAR action rates are separate measures. Historical ACR/SQP Percent Passing and annual SOL test-administration rates are separate measures.",
+  "notes": "Built from VDOE School Quality Profiles downloads, annual SOL School Subject-Area workbooks, 2022–26 Fall Membership race counts, and school-level SBAR sanction actions, plus NCES EDGE geocodes and TIGER/Line boundaries. The 2022 annual SOL files report school and division subject rates without test counts; later division subject rates use matched school test counts. The 2022 SBAR denominator uses checked Fall Membership school totals; later years use checked SQP enrollment. The 2023 race shares exclude schools whose race sum differs from separately reported SQP enrollment because that year's gender export omits Other. Legacy SQP suspension rates and SBAR action rates are separate measures. Historical ACR/SQP Percent Passing and annual SOL test-administration rates are separate measures.",
   "sources": [
     {
       "id": "vdoe_schoolquality_download_data",
