@@ -109,7 +109,7 @@ dashboard_ui <- function(map_widget, available_years, default_year, schools, sna
             tags$details(
               class = "filter-help",
               tags$summary("About these measures"),
-              tags$p("Annual SOL pass rates (2023–2026) are separate from historical Accreditation Combined Rate and School Quality Profiles Percent Passing (through 2024)."),
+              tags$p("Annual SOL pass rates (2022–2026) are separate from historical Accreditation Combined Rate and School Quality Profiles Percent Passing (through 2024)."),
               tags$p("Overall values are app-defined means across available subjects. They are not official VDOE ratings. Science ACR is blank in the current export, so the ACR mean uses English and Math."),
               tags$p("A dash means a value is missing, suppressed, or unavailable for the selected year. Attendance-zone dates and coverage vary; confirm current address rules with the division.")
             )
