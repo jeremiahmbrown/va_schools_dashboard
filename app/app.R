@@ -986,7 +986,11 @@ server <- function(input, output, session) {
       if (!isTRUE(input$zones_enabled)) return()
       if (is.null(pend$zone_path) || !file.exists(pend$zone_path)) return()
 
-      zones_geojson <- read_zone_geojson(pend$zone_path)
+      level_cache_path <- if (identical(pend$zone_mode, "division")) {
+        pick_zone_level_cache(file.path(app_dir, "data"), pend$division_id,
+                              pend$zone_level, pend$zone_path)
+      } else NULL
+      zones_geojson <- read_zone_geojson(if (is.null(level_cache_path)) pend$zone_path else level_cache_path)
       if (is.null(zones_geojson) || !nzchar(zones_geojson)) {
         zones_pending(NULL)
         return()
@@ -1010,7 +1014,9 @@ server <- function(input, output, session) {
           return()
         }
       } else {
-        filtered <- filter_zone_geojson_by_level(zones_geojson, pend$zone_level)
+        filtered <- if (is.null(level_cache_path)) {
+          filter_zone_geojson_by_level(zones_geojson, pend$zone_level)
+        } else zones_geojson
         if (is.null(filtered) || !nzchar(filtered)) {
           key <- paste0("nozones_level::", pend$division_id, "::", pend$zone_level)
           if (!identical(zones_warned_key(), key)) {

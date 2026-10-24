@@ -55,4 +55,27 @@ stopifnot(all(sf::st_is_valid(city_sf)))
 bb <- sf::st_bbox(city_sf)
 stopifnot(bb[["xmin"]] > -81, bb[["xmax"]] < -79, bb[["ymin"]] > 36.5, bb[["ymax"]] < 38)
 
-cat("County and City zone level, school match, and geometry checks passed.\n")
+# A level cache must contain exactly the checked source features and must be
+# ignored if the combined source file changes.
+for (division_id in c("5103300", "5103330")) {
+  combined_path <- pick_zone_file("app/data", division_id)
+  combined <- jsonlite::fromJSON(read_zone_geojson(combined_path), simplifyVector = FALSE)$features
+  for (level in c("Elementary", "Middle", "High")) {
+    cache_path <- pick_zone_level_cache("app/data", division_id, level, combined_path)
+    stopifnot(!is.null(cache_path))
+    cached <- jsonlite::fromJSON(read_zone_geojson(cache_path), simplifyVector = FALSE)$features
+    expected <- Filter(function(f) identical(f$properties$level, level), combined)
+    stopifnot(identical(cached, expected))
+  }
+  changed_source <- tempfile(fileext = ".json")
+  writeLines("changed source", changed_source)
+  stopifnot(is.null(pick_zone_level_cache("app/data", division_id, "Elementary", changed_source)))
+  unlink(changed_source)
+  crlf_source <- tempfile(fileext = ".json")
+  source_bytes <- readBin(combined_path, what = "raw", n = file.info(combined_path)$size)
+  writeBin(charToRaw(gsub("\n", "\r\n", rawToChar(source_bytes), fixed = TRUE)), crlf_source)
+  stopifnot(!is.null(pick_zone_level_cache("app/data", division_id, "Elementary", crlf_source)))
+  unlink(crlf_source)
+}
+
+cat("County and City zone level, school match, geometry, and cache checks passed.\n")

@@ -10,6 +10,9 @@ bundled with the Shiny app under `app/data/`.
   - `build_zone_sources.R` seeds a registry of top divisions by enrollment.
   - `build_zones_sabs.R` / `build_zones_division_sources.R` can generate optional
     zone polygons under `app/data/zones/` when boundary data is available.
+  - After rebuilding the Roanoke City or County zone files, run
+    `python3 data-raw/build_zone_level_cache.py` to update their checked level
+    files. A stale cache is ignored by the app.
 
 ## Intended Inputs (Future)
 Place authoritative raw downloads under `data-raw/input/`, for example:

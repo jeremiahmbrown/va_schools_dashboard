@@ -30,6 +30,28 @@ read_zone_geojson <- function(path) {
   paste(readLines(path, warn = FALSE), collapse = "\n")
 }
 
+zone_source_md5 <- function(path) {
+  bytes <- readBin(path, what = "raw", n = file.info(path)$size)
+  if (length(bytes) > 1L) {
+    crlf <- which(bytes[-length(bytes)] == as.raw(13L) & bytes[-1L] == as.raw(10L))
+    if (length(crlf)) bytes <- bytes[-crlf]
+  }
+  digest::digest(bytes, algo = "md5", serialize = FALSE)
+}
+
+pick_zone_level_cache <- function(data_dir, division_id, level, source_path) {
+  if (is.null(source_path) || !file.exists(source_path) ||
+      is.null(level) || !level %in% c("Elementary", "Middle", "High")) return(NULL)
+  cache_dir <- file.path(data_dir, "zones", "level_cache", division_id)
+  level_path <- file.path(cache_dir, paste0(level, ".json"))
+  hash_path <- file.path(cache_dir, "source.md5")
+  if (!file.exists(level_path) || !file.exists(hash_path)) return(NULL)
+  recorded_hash <- trimws(readLines(hash_path, n = 1L, warn = FALSE))
+  if (length(recorded_hash) != 1L ||
+      !identical(recorded_hash, zone_source_md5(source_path))) return(NULL)
+  level_path
+}
+
 filter_zone_geojson_by_school_id <- function(geojson_text, school_id) {
   # Keep only features for the selected app school_id. Returns GeoJSON text.
   # If no features match, returns NULL.

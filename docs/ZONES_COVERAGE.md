@@ -46,9 +46,27 @@ From the repository root in WSL:
 ```bash
 python3 data-raw/build_roanoke_county_zones.py
 python3 data-raw/build_roanoke_city_zones.py
+python3 data-raw/build_zone_level_cache.py
 python3 data-raw/audit_zones.py
 Rscript --vanilla tests/check_zones.R
 ```
+
+The level-cache build splits the two checked Roanoke division files into
+ready-to-render Elementary, Middle, and High files. The app uses a level file
+only while its recorded MD5 matches the combined division file. The hash
+normalizes Windows and Linux line endings. If a source changes without a cache
+rebuild, the app safely uses the original filter path.
+Run the cache build after either Roanoke source build and before deployment.
+
+### Level-switch timing check, 2026-10-24
+
+On the local Ubuntu app, the old R filter took about 1.7–2.3 seconds for a
+Roanoke City level and 3.5–3.6 seconds for a County level. Reading a prepared
+level file took 0.004–0.005 seconds. In a 1280 × 800 headless Edge check on
+this machine, change-to-overlay time fell from 1.8–2.0 to 0.04–0.06 seconds
+for City and from 3.2–3.4 to 0.04–0.06 seconds for County. Each level replaced
+the prior overlay with the expected feature count: City 17/5/2 and County
+20/20/20. These are local measurements, not a network latency guarantee.
 
 The county service was reachable through `Published_Geodata/Schools/MapServer` on the audit date. A separate `AGOL_OpenData/OpenData_Community` service advertised similar layers, but its query returned a service-not-started error. Do not use its metadata as proof that data can be downloaded.
 
