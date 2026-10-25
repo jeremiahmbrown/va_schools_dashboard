@@ -15,6 +15,8 @@ with this Phase 1 layer and is not evidence that the boundaries are from 2009.
 The current GeoJSON features were projected to EPSG:26917 for an area check.
 Preston Park (OBJECTID 13) and Round Hill (OBJECTID 16) still overlap by about
 35,380 square metres. The layer is not a corrected source for that overlap.
+The saved [raw GeoJSON and Python calculation](ROANOKE_OVERLAP_METHOD_2026-10-25.md)
+reproduce an intersection area of 35,379.983 square metres.
 The [middle](https://gis03.roanokeva.gov/arcgis/rest/services/Public/Schools_Middle/FeatureServer/1)
 and [high](https://gis03.roanokeva.gov/arcgis/rest/services/Public/Schools_High/FeatureServer/1)
 services still say “Publication Year: 2009” and provide no current data-edit
@@ -39,3 +41,5 @@ school-division confirmation of the affected address ranges is still needed
 before a boundary repair. Also obtain a dated source for the middle and high
 layers before claiming their effective years. Bead va_schools_dashboard-9ht
 remains open. No email or other contact was sent.
+An unsent [request to City GIS](ROANOKE_GIS_REQUEST_DRAFT_2026-10-25.md)
+is ready for later review.
