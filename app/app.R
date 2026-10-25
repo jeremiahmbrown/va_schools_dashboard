@@ -128,13 +128,24 @@ build_polygon_division_map <- function(schools_df, divisions_spdf) {
       n_points = as.integer(n_points)
     )
 
+  direct <- schools_df %>%
+    distinct(division_id, division_name) %>%
+    transmute(polygon_division_id = division_id,
+              direct_division_name = division_name)
+
   base %>%
     left_join(dominant, by = "polygon_division_id") %>%
+    left_join(direct, by = "polygon_division_id") %>%
     mutate(
-      mapped_division_id = dplyr::coalesce(mapped_division_id, polygon_division_id),
-      mapped_division_name = dplyr::coalesce(mapped_division_name, polygon_division_name),
+      mapped_division_id = if_else(!is.na(direct_division_name),
+                                   polygon_division_id,
+                                   dplyr::coalesce(mapped_division_id, polygon_division_id)),
+      mapped_division_name = dplyr::coalesce(direct_division_name,
+                                             mapped_division_name,
+                                             polygon_division_name),
       n_points = dplyr::coalesce(n_points, 0L)
-    )
+    ) %>%
+    select(-direct_division_name)
 }
 
 polygon_division_map <- build_polygon_division_map(schools, divisions_sp)

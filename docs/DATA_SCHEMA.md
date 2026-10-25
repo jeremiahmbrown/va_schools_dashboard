@@ -8,7 +8,7 @@
 ## Files (Recommended)
 - `app/data/snapshot_meta.json`
 - `app/data/schools.csv` (dimension table)
-- `app/data/divisions_polygons.json` (division polygons as lon/lat rings; converted to `sp` at runtime)
+- `app/data/divisions_polygons.json` (division polygons as lon/lat outer `rings` and interior `holes`; converted to `sp` at runtime)
 - `app/data/school_metrics.csv` (fact table, long)
 - `app/data/enrollment_by_year.csv` (mapped school, year, and reported enrollment for the Profile)
 - `app/data/division_metrics.csv` (fact table, long; pre-aggregated)

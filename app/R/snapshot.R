@@ -174,16 +174,20 @@ divisions_polygons_json_to_sp <- function(json_path) {
     division_id <- division$division_id
     division_name <- division$division_name
 
-    # Support multipart divisions by loading all outer rings as one `Polygons`.
-    ring_objs <- lapply(division$rings, function(ring) {
+    # Keep interior rings so independent cities do not inherit county values.
+    make_ring <- function(ring, hole = FALSE) {
       coords <- do.call(rbind, lapply(ring, function(pt) c(pt[[1]], pt[[2]])))
       if (nrow(coords) < 3) return(NULL)
       # Ensure closed ring for sp::Polygon.
       if (nrow(coords) >= 3 && (coords[1, 1] != coords[nrow(coords), 1] || coords[1, 2] != coords[nrow(coords), 2])) {
         coords <- rbind(coords, coords[1, , drop = FALSE])
       }
-      sp::Polygon(coords)
-    })
+      sp::Polygon(coords, hole = hole)
+    }
+    ring_objs <- c(
+      lapply(division$rings, make_ring),
+      lapply(division$holes, make_ring, hole = TRUE)
+    )
     ring_objs <- Filter(Negate(is.null), ring_objs)
     if (length(ring_objs) == 0) next
 

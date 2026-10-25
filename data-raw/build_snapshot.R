@@ -1519,30 +1519,68 @@ geo <- jsonlite::fromJSON(tiger_geojson, simplifyVector = FALSE)
 features <- geo$features
 if (length(features) == 0) stop("No features found in TIGER GeoJSON.")
 
+geometry_rings <- function(geom) {
+  coords <- geom$coordinates
+  polygons <- if (identical(geom$type, "Polygon")) {
+    list(coords)
+  } else if (identical(geom$type, "MultiPolygon")) {
+    coords
+  } else {
+    return(NULL)
+  }
+  list(
+    rings = lapply(polygons, function(poly) poly[[1]]),
+    holes = unlist(lapply(polygons, function(poly) poly[-1]), recursive = FALSE)
+  )
+}
+
 division_polys_out <- lapply(features, function(f) {
   props <- f$properties
-  geom <- f$geometry
-
-  coords <- geom$coordinates
-  # Handle Polygon or MultiPolygon by keeping all outer rings so multipart
-  # districts (common in NOVA) are fully represented in the map.
-  if (identical(geom$type, "Polygon")) {
-    rings <- list(coords[[1]])
-  } else if (identical(geom$type, "MultiPolygon")) {
-    rings <- lapply(coords, function(poly) poly[[1]])
-  } else {
-    rings <- NULL
-  }
-  if (is.null(rings) || length(rings) == 0) return(NULL)
+  shape <- geometry_rings(f$geometry)
+  if (is.null(shape) || length(shape$rings) == 0) return(NULL)
 
   list(
     division_id = as.character(props$GEOID),
     division_name = as.character(props$NAME),
-    rings = rings
+    rings = shape$rings,
+    holes = shape$holes
   )
 })
 
 division_polys_out <- Filter(Negate(is.null), division_polys_out)
+
+# Lexington City is an elementary district, absent from the unified layer.
+# Preserve polygon holes so the Rockbridge County outline does not fill the city.
+elsd_zip_url <- "https://www2.census.gov/geo/tiger/TIGER2024/ELSD/tl_2024_51_elsd.zip"
+elsd_zip_path <- download_cached("tl_2024_51_elsd.zip", function(dest) {
+  curl_get_download(dest, elsd_zip_url)
+})
+elsd_dir <- file.path(input_dir, "tiger_elsd_2024_va")
+if (!dir.exists(elsd_dir)) dir.create(elsd_dir, recursive = TRUE)
+utils::unzip(elsd_zip_path, exdir = elsd_dir)
+elsd_geojson <- file.path(input_dir, sprintf("tl_2024_51_elsd_p%d.geojson", tiger_coord_precision))
+if (!file.exists(elsd_geojson) || file.info(elsd_geojson)$size == 0) {
+  system2("ogr2ogr", args = c(
+    "-f", "GeoJSON",
+    "-lco", paste0("COORDINATE_PRECISION=", tiger_coord_precision),
+    "-select", "GEOID,NAME",
+    elsd_geojson,
+    file.path(elsd_dir, "tl_2024_51_elsd.shp")
+  ))
+}
+elsd <- jsonlite::fromJSON(elsd_geojson, simplifyVector = FALSE)$features
+lexington <- Filter(function(f) identical(as.character(f$properties$GEOID), "5102220"), elsd)
+if (length(lexington) != 1 || any(vapply(division_polys_out, function(p) p$division_id == "5102220", logical(1)))) {
+  stop("Expected one Lexington City elementary polygon and no unified duplicate.")
+}
+lexington_shape <- geometry_rings(lexington[[1]]$geometry)
+if (is.null(lexington_shape) || length(lexington_shape$rings) == 0) stop("Lexington polygon has no outer ring.")
+division_polys_out[[length(division_polys_out) + 1L]] <- list(
+  division_id = "5102220",
+  division_name = as.character(lexington[[1]]$properties$NAME),
+  rings = lexington_shape$rings,
+  holes = lexington_shape$holes
+)
 
 # Metric definitions (the app reads this to populate UI labels).
 metric_defs_out <- data.frame(
