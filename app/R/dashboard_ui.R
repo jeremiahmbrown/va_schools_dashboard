@@ -7,7 +7,7 @@ dashboard_ui <- function(map_widget, available_years, default_year, schools, sna
   year_choices <- data_year_choices(available_years)
   asset_url <- function(filename) {
     hash <- unname(tools::md5sum(file.path(app_dir, "www", filename)))
-    paste0(filename, "?v=", hash)
+    paste0("dashboard-assets/", filename, "?v=", hash)
   }
 
   fluidPage(

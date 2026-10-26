@@ -35,6 +35,12 @@ if (has_leaflet) {
 # - shinyapps.io deploy from repo root with `appPrimaryDoc = 'app/app.R'` (working dir = repo root)
 app_dir <- if (file.exists(file.path("app", "R", "snapshot.R"))) "app" else "."
 
+# Static files live under app/www in both launch modes. Register that directory
+# explicitly because a repository-root deployment does not serve it as /www.
+shiny::addResourcePath(
+  "dashboard-assets", normalizePath(file.path(app_dir, "www"), mustWork = TRUE)
+)
+
 source(file.path(app_dir, "R", "snapshot.R"))
 source(file.path(app_dir, "R", "formatting.R"))
 source(file.path(app_dir, "R", "map_helpers.R"))
