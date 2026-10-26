@@ -1,0 +1,36 @@
+division_id,level,source_name,school_id,school_name,disposition,note
+5100270,Elementary,Abingdon Elementary School,510027000081,Abingdon Elementary,mapped,
+5100270,Elementary,Alice West Fleet Elementary School,510027000094,Alice West Fleet Elementary,mapped,
+5100270,Elementary,Arlington Science Focus Elementary School,510027003093,Arlington Science Focus School,mapped,
+5100270,Elementary,Ashlawn Elementary School,510027000082,Ashlawn Elementary,mapped,
+5100270,Elementary,Barcroft Elementary School,510027000083,Barcroft Elementary,mapped,
+5100270,Elementary,Barrett Elementary School,510027000084,Barrett Elementary,mapped,
+5100270,Elementary,Cardinal Elementary School,510027000101,Cardinal Elementary,mapped,
+5100270,Elementary,Carlin Springs Elementary School,510027000093,Carlin Springs Elementary,mapped,
+5100270,Elementary,Discovery Elementary School,510027003006,Discovery Elementary,mapped,
+5100270,Elementary,Dr. Charles R. Drew Elementary School,510027000087,Dr. Charles R. Drew Elementary,mapped,
+5100270,Elementary,Glebe Elementary School,510027000092,Glebe Elementary,mapped,
+5100270,Elementary,Hoffman-Boston Elementary School,510027001900,Hoffman-Boston Elementary,mapped,
+5100270,Elementary,Innovation Elementary School,510027001067,Innovation Elementary ,mapped,
+5100270,Elementary,Jamestown Elementary School,510027000097,Jamestown Elementary,mapped,
+5100270,Elementary,Long Branch Elementary School,510027000100,Long Branch Elementary,mapped,
+5100270,Elementary,Nottingham Elementary School,510027000102,Nottingham Elementary,mapped,
+5100270,Elementary,Oakridge Elementary School,510027000103,Oakridge Elementary,mapped,
+5100270,Elementary,Randolph Elementary School,510027000013,Randolph Elementary,mapped,
+5100270,Elementary,Taylor Elementary School,510027000108,Taylor Elementary,mapped,
+5100270,Elementary,Tuckahoe Elementary School,510027000110,Tuckahoe Elementary,mapped,
+5100270,High,Wakefield High School,510027000111,Wakefield High,mapped,
+5100270,High,Washington-Liberty High School,510027000112,Washington-Liberty High,mapped,
+5100270,High,Yorktown High School,510027000115,Yorktown High,mapped,NCES school_level is Combined; APS source is High
+5100270,Middle,Dorothy Hamm Middle School,510027003062,Dorothy Hamm Middle,mapped,
+5100270,Middle,Gunston Middle School,510027000752,Gunston Middle,mapped,
+5100270,Middle,Jefferson Middle School,510027000098,Jefferson Middle,mapped,
+5100270,Middle,Kenmore Middle School,510027000099,Kenmore Middle,mapped,
+5100270,Middle,Swanson Middle School,510027000107,Swanson Middle,mapped,
+5100270,Middle,Williamsburg Middle School,510027000113,Williamsburg Middle,mapped,
+5100270,Elementary,,510027000104,Arlington Traditional,no_neighborhood_zone,No polygon in APS locator neighborhood boundary layers
+5100270,Elementary,,510027001940,Campbell Elementary,no_neighborhood_zone,No polygon in APS locator neighborhood boundary layers
+5100270,Elementary,,510027002404,Claremont Immersion,no_neighborhood_zone,No polygon in APS locator neighborhood boundary layers
+5100270,Elementary,,510027000090,Escuela Key Elementary,no_neighborhood_zone,No polygon in APS locator neighborhood boundary layers
+5100270,Elementary,,510027003063,Montessori Public School of Arlington,no_neighborhood_zone,No polygon in APS locator neighborhood boundary layers
+5100270,High,,510027002875,Arlington Community High,no_neighborhood_zone,No polygon in APS locator neighborhood boundary layers

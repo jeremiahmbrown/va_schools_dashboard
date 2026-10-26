@@ -1,0 +1,37 @@
+{
+  "division_id": "5103130",
+  "source_owner": "Prince William County Public Schools GIS",
+  "official_evidence_url": "https://www.pwcs.edu/registration/find_your_school",
+  "source_label": "PWCS Find Your School GIS attendance areas",
+  "popup_note": "The elementary layer is labeled 2025-26 in the PWCS locator web map; middle and high layers are labeled current. The high layer extends near Quantico beyond elementary and middle coverage. The 2026-27 elementary layer includes Woodbridge, absent from this frozen snapshot. Confirm an address with PWCS or the base school liaison.",
+  "expected_school_count": 95,
+  "max_same_level_overlap_m2": 170,
+  "overlap_review_note": "Equal-area check found 165.7914 m2 total same-level overlap in the 63 elementary polygons, scattered across shared boundaries; the largest contiguous patch measured 10.89 m2. Middle overlap is 0.647 m2 and high is 0.0002 m2. The 170 m2 limit preserves the source and rejects larger changes.",
+  "rights_access": "Public PWCS GIS REST query; check source terms before public release",
+  "layers": [
+    {
+      "level": "Elementary",
+      "source_type": "arcgis",
+      "source_url": "https://gis.pwcs.edu/server/rest/services/Find_Your_School_Update_2026/FeatureServer/1",
+      "name_field": "ES_First_Ref",
+      "expected_count": 63,
+      "source_year_note": "PWCS locator web map labels this layer 2025-26 Elementary School Attendance Areas"
+    },
+    {
+      "level": "Middle",
+      "source_type": "arcgis",
+      "source_url": "https://gis.pwcs.edu/server/rest/services/Find_Your_School_Update_2026/FeatureServer/2",
+      "name_field": "MS_First_Ref",
+      "expected_count": 18,
+      "source_year_note": "PWCS locator web map labels this layer Current Middle School Attendance Areas; no separate effective year is stated"
+    },
+    {
+      "level": "High",
+      "source_type": "arcgis",
+      "source_url": "https://gis.pwcs.edu/server/rest/services/Find_Your_School_Update_2026/FeatureServer/3",
+      "name_field": "HS_First_Ref",
+      "expected_count": 13,
+      "source_year_note": "PWCS locator web map labels this layer Current High School Attendance Areas; no separate effective year is stated"
+    }
+  ]
+}

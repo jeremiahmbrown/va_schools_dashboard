@@ -1,4 +1,4 @@
-"""Build checked, ready-to-render level files for the two Roanoke zone sources.
+"""Build checked, ready-to-render level files for division zone sources.
 
 Run after the City or County zone build. The app uses these files only while
 source.md5 matches the combined division file; otherwise it filters that file.
@@ -14,8 +14,13 @@ ROOT = Path(__file__).resolve().parents[1]
 ZONES = ROOT / "app" / "data" / "zones"
 LEVELS = ("Elementary", "Middle", "High")
 EXPECTED = {
+    "5100270": (20, 6, 3),  # Arlington APS locator; source year field is stale
+    "5100360": (13, 3, 3),  # Bedford County; primary is an old SABS fallback
+    "5100420": (7, 2, 2),  # Botetourt County
+    "5102520": (11, 10, 10),  # Montgomery County
     "5103300": (17, 5, 2),  # Roanoke City
     "5103330": (20, 20, 20),  # Roanoke County
+    "5103460": (4, 1, 1),  # Salem City; middle/high are old SABS fallbacks
 }
 
 

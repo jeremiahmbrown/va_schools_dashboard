@@ -206,6 +206,24 @@ server <- function(input, output, session) {
       "Roanoke City: 2026–27 elementary Phase 1 zones; City middle and high GIS. The source has a small overlap between Preston Park and Round Hill elementary areas. Confirm an address with RCPS."
     } else if (identical(division_id, "5103330")) {
       "Roanoke County: public county GIS, retrieved 2026-10-20. The service does not state a boundary effective date."
+    } else if (identical(division_id, "5100360")) {
+      "Bedford County: public county GIS for elementary, middle, and high zones; Bedford Primary uses an older NCES SABS 2015–16 polygon. The county is reviewing boundary changes. Confirm an address with BCPS."
+    } else if (identical(division_id, "5100420")) {
+      "Botetourt County: public county GIS elementary, middle, and high zones. The GIS layers do not state a school-year effective date. Confirm an address with BCPS."
+    } else if (identical(division_id, "5102520")) {
+      "Montgomery County: public county GIS elementary, middle, and high assignments. Christiansburg Primary shares the Christiansburg Elementary area, as listed by MCPS. The GIS layer does not state a school-year effective date."
+    } else if (identical(division_id, "5103460")) {
+      "Salem City: public city GIS elementary zones. Middle and high zones use older NCES SABS 2015–16 polygons. The GIS layer does not state a school-year effective date. Confirm an address with Salem City Schools."
+    } else if (identical(division_id, "5100270")) {
+      "Arlington County: public APS locator and County GIS neighborhood zones. APS links 2026–27 maps, but the GIS School_Year field says 2022–2023. Six schools have no neighborhood polygon. Confirm an address with APS."
+    } else if (identical(division_id, "5101260")) {
+      "Fairfax County: FCPS and County GIS standard attendance areas for 2026–27. Ten schools have no separate polygon in these layers. Some high-school edges overlap; confirm an address with the FCPS boundary locator."
+    } else if (identical(division_id, "5103130")) {
+      "Prince William County: PWCS GIS elementary areas are labeled 2025–26; middle and high areas are labeled current without a separate year. The high layer extends near Quantico beyond elementary and middle coverage. The 2026–27 elementary layer has Woodbridge, absent from this frozen snapshot. Confirm an address with PWCS or the base school liaison."
+    } else if (identical(division_id, "5101440")) {
+      "Franklin County: NCES SABS 2015–16 survey zones. This file includes former schools and may not match present assignments. Confirm an address with Franklin County Public Schools."
+    } else if (identical(division_id, "5101020") || identical(division_id, "5101350")) {
+      "NCES SABS 2015–16 survey zones. Some combined-grade schools appear under Unclassified (older source). Confirm an address with the school division."
     } else if (file.exists(file.path(app_dir, "data", "zones", "sabs", paste0(division_id, ".json")))) {
       "NCES SABS 2015–16 survey zones. These may not match current attendance rules."
     } else {

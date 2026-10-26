@@ -1,0 +1,40 @@
+{
+  "division_id": "5100270",
+  "source_owner": "Arlington County GIS / Arlington Public Schools",
+  "official_evidence_url": "https://www.apsva.us/registration/maps-boundaries/",
+  "source_label": "APS locator / Arlington County GIS",
+  "popup_note": "APS links this locator for current assignments. The GIS record still says School_Year 2022-2023. Confirm an address with APS.",
+  "expected_school_count": 35,
+  "max_same_level_overlap_m2": 5,
+  "overlap_review_note": "Equal-area GEOS check found at most 3.0 square metres of same-level slivers across a level area near 60 million square metres; no material overlap was seen in the APS map review.",
+  "rights_access": "Public ArcGIS REST query; explicit reuse license not found",
+  "layers": [
+    {
+      "level": "Elementary",
+      "source_type": "arcgis",
+      "source_url": "https://arlgis.arlingtonva.us/arcgis/rest/services/Public_Maps/School_Boundary_Locator_v2/MapServer/1",
+      "name_field": "ES_Name",
+      "expected_count": 20,
+      "year_field": "School_Year",
+      "expected_year_values": ["2022-2023"]
+    },
+    {
+      "level": "Middle",
+      "source_type": "arcgis",
+      "source_url": "https://arlgis.arlingtonva.us/arcgis/rest/services/Public_Maps/School_Boundary_Locator_v2/MapServer/3",
+      "name_field": "MS_Name",
+      "expected_count": 6,
+      "year_field": "School_Year",
+      "expected_year_values": ["2022-2023"]
+    },
+    {
+      "level": "High",
+      "source_type": "arcgis",
+      "source_url": "https://arlgis.arlingtonva.us/arcgis/rest/services/Public_Maps/School_Boundary_Locator_v2/MapServer/5",
+      "name_field": "HS_Name",
+      "expected_count": 3,
+      "year_field": "School_Year",
+      "expected_year_values": ["2022-2023"]
+    }
+  ]
+}

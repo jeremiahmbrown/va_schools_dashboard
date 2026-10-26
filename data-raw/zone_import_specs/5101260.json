@@ -1,0 +1,40 @@
+{
+  "division_id": "5101260",
+  "source_owner": "Fairfax County Public Schools GIS / Fairfax County, Virginia",
+  "official_evidence_url": "https://www.fcps.edu/facilities-planning-future/maps",
+  "source_label": "FCPS / Fairfax County GIS attendance areas",
+  "popup_note": "The GIS record says school year 2026_27. Some high-school polygon edges overlap; this map cannot decide an address in an overlap. Confirm an address with the FCPS boundary locator.",
+  "expected_school_count": 195,
+  "max_same_level_overlap_m2": 33000,
+  "overlap_review_note": "Equal-area geometry review found 32702.9124 m2 total same-level overlap in high-school areas, mainly Woodson with Fairfax, Falls Church, and Oakton. Woodson/Fairfax is split into 51 patches (largest 4880.1 m2); Falls Church/Woodson into 19 (largest 5253.5 m2). Elementary and middle totals are below 0.04 m2. Keep the overlap warning visible and require FCPS address confirmation.",
+  "rights_access": "Fairfax County GIS layer describes the data as publicly available; check source terms before public release",
+  "layers": [
+    {
+      "level": "Elementary",
+      "source_type": "arcgis",
+      "source_url": "https://services1.arcgis.com/ioennV6PpG5Xodq0/ArcGIS/rest/services/Elementary_School_Attendance_Areas/FeatureServer/0",
+      "name_field": "SCHOOL_NAME",
+      "expected_count": 138,
+      "year_field": "SCH_YR",
+      "expected_year_values": ["2026_27"]
+    },
+    {
+      "level": "Middle",
+      "source_type": "arcgis",
+      "source_url": "https://services1.arcgis.com/ioennV6PpG5Xodq0/ArcGIS/rest/services/Middle_School_Attendance_Areas/FeatureServer/0",
+      "name_field": "SCHOOL_NAME",
+      "expected_count": 26,
+      "year_field": "SCH_YR",
+      "expected_year_values": ["2026_27"]
+    },
+    {
+      "level": "High",
+      "source_type": "arcgis",
+      "source_url": "https://services1.arcgis.com/ioennV6PpG5Xodq0/ArcGIS/rest/services/High_School_Attendance_Areas/FeatureServer/0",
+      "name_field": "SCHOOL_NAME",
+      "expected_count": 24,
+      "year_field": "SCH_YR",
+      "expected_year_values": ["2026_27"]
+    }
+  ]
+}

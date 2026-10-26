@@ -1,0 +1,35 @@
+{
+  "division_id": "5100270",
+  "feature_count": 29,
+  "level_counts": {
+    "Elementary": 20,
+    "High": 3,
+    "Middle": 6
+  },
+  "matched_school_count": 29,
+  "valid_geometry_count": 29,
+  "empty_geometry_count": 0,
+  "bounds_wgs84": {
+    "xmin": -77.1723,
+    "ymin": 38.8275,
+    "xmax": -77.0322,
+    "ymax": 38.9343
+  },
+  "area_m2_by_level": {
+    "Elementary": 59455649.931,
+    "High": 67549885.4478,
+    "Middle": 67549890.1063
+  },
+  "same_level_overlap_m2": {
+    "Elementary": 1.5605,
+    "High": 2.9956,
+    "Middle": 0.0207
+  },
+  "gap_reference_level": "Middle",
+  "gap_from_reference_m2": {
+    "Elementary": 8094240.2004,
+    "High": 4.684,
+    "Middle": 0
+  },
+  "max_allowed_same_level_overlap_m2": 5
+}

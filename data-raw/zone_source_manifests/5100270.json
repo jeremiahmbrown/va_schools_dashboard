@@ -1,0 +1,89 @@
+{
+  "division_id": "5100270",
+  "source_owner": "Arlington County GIS / Arlington Public Schools",
+  "official_evidence_url": "https://www.apsva.us/registration/maps-boundaries/",
+  "retrieved_utc": "2026-10-25T22:33:44+00:00",
+  "spec_file": "data-raw/zone_import_specs/5100270.json",
+  "layers": [
+    {
+      "level": "Elementary",
+      "source_type": "arcgis",
+      "layer_url": "https://arlgis.arlingtonva.us/arcgis/rest/services/Public_Maps/School_Boundary_Locator_v2/MapServer/1",
+      "url": "https://arlgis.arlingtonva.us/arcgis/rest/services/Public_Maps/School_Boundary_Locator_v2/MapServer/1/query?where=1%3D1&outFields=%2A&outSR=4326&f=geojson",
+      "file": "data-raw/input/zones/5100270/7c64aeed7e7324ef/00_elementary.geojson",
+      "sha256": "0980d5a6d66af761397da2e8e196b4b8ce0088f9b2275362da9ca6e84caa9972",
+      "feature_count": 20,
+      "name_field": "ES_Name",
+      "object_id_field": "OBJECTID",
+      "school_year_values": [
+        "2022-2023"
+      ],
+      "school_names": [
+        "Abingdon Elementary School",
+        "Alice West Fleet Elementary School",
+        "Arlington Science Focus Elementary School",
+        "Ashlawn Elementary School",
+        "Barcroft Elementary School",
+        "Barrett Elementary School",
+        "Cardinal Elementary School",
+        "Carlin Springs Elementary School",
+        "Discovery Elementary School",
+        "Dr. Charles R. Drew Elementary School",
+        "Glebe Elementary School",
+        "Hoffman-Boston Elementary School",
+        "Innovation Elementary School",
+        "Jamestown Elementary School",
+        "Long Branch Elementary School",
+        "Nottingham Elementary School",
+        "Oakridge Elementary School",
+        "Randolph Elementary School",
+        "Taylor Elementary School",
+        "Tuckahoe Elementary School"
+      ],
+      "retrieval_method": "all object IDs then paged GeoJSON by objectIds"
+    },
+    {
+      "level": "Middle",
+      "source_type": "arcgis",
+      "layer_url": "https://arlgis.arlingtonva.us/arcgis/rest/services/Public_Maps/School_Boundary_Locator_v2/MapServer/3",
+      "url": "https://arlgis.arlingtonva.us/arcgis/rest/services/Public_Maps/School_Boundary_Locator_v2/MapServer/3/query?where=1%3D1&outFields=%2A&outSR=4326&f=geojson",
+      "file": "data-raw/input/zones/5100270/7c64aeed7e7324ef/01_middle.geojson",
+      "sha256": "a615025aecea27c9ae5c8faa02447cc7598d26bf7360ccdc5ff04567e1c2ab3d",
+      "feature_count": 6,
+      "name_field": "MS_Name",
+      "object_id_field": "OBJECTID",
+      "school_year_values": [
+        "2022-2023"
+      ],
+      "school_names": [
+        "Dorothy Hamm Middle School",
+        "Gunston Middle School",
+        "Jefferson Middle School",
+        "Kenmore Middle School",
+        "Swanson Middle School",
+        "Williamsburg Middle School"
+      ],
+      "retrieval_method": "all object IDs then paged GeoJSON by objectIds"
+    },
+    {
+      "level": "High",
+      "source_type": "arcgis",
+      "layer_url": "https://arlgis.arlingtonva.us/arcgis/rest/services/Public_Maps/School_Boundary_Locator_v2/MapServer/5",
+      "url": "https://arlgis.arlingtonva.us/arcgis/rest/services/Public_Maps/School_Boundary_Locator_v2/MapServer/5/query?where=1%3D1&outFields=%2A&outSR=4326&f=geojson",
+      "file": "data-raw/input/zones/5100270/7c64aeed7e7324ef/02_high.geojson",
+      "sha256": "10c3008bf7c2fec26e5e294376a8593cb65564017568c05ce68f90e0d5f28396",
+      "feature_count": 3,
+      "name_field": "HS_Name",
+      "object_id_field": "OBJECTID",
+      "school_year_values": [
+        "2022-2023"
+      ],
+      "school_names": [
+        "Wakefield High School",
+        "Washington-Liberty High School",
+        "Yorktown High School"
+      ],
+      "retrieval_method": "all object IDs then paged GeoJSON by objectIds"
+    }
+  ]
+}
