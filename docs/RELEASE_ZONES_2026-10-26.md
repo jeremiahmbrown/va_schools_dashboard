@@ -59,3 +59,9 @@ bundle that retains the static-asset fix and removes this boundary batch.
 The statewide research epic and its cohort beads remain open. Bead
 `va_schools_dashboard-nlf.6.3` tracks the later Prince William Woodbridge
 boundary. The next large-division validation is Loudoun County.
+
+The app's **Methods & sources** link still points to GitHub `master`. The
+authoritative local branch has nine commits beyond its last known remote
+tracking ref. An SSH fetch did not complete, so the current GitHub content was
+not confirmed or pushed in this release. The linked page may show older zone
+coverage until bead `va_schools_dashboard-nlf.13` resolves the source sync.
