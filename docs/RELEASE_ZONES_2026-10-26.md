@@ -45,8 +45,8 @@ for feature counts, geometry reports, exclusions, and source links.
   and Virginia division shapes were visible; the map stage measured 366 ×
   565 CSS pixels. Selecting Potomac View Elementary showed its profile and
   polygon after zooming in. The public snapshot still read `2026-10-22`.
-  This is an automated browser check; the owner's phone view remains a
-  separate observation.
+  This is an automated browser check. The owner later reported that the
+  mobile dashboard was working again on 2026-10-26.
 
 ## Recovery and remaining work
 
