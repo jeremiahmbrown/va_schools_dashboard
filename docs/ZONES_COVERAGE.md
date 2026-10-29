@@ -1,6 +1,6 @@
 # Attendance-zone coverage and checks
 
-Audit dates: 2026-10-20, 2026-10-24, and 2026-10-25. Beads: `va_schools_dashboard-e9i` and `va_schools_dashboard-nlf`.
+Audit dates: 2026-10-20, 2026-10-24, 2026-10-25, and 2026-10-28. Beads: `va_schools_dashboard-e9i` and `va_schools_dashboard-nlf`.
 
 ## Source and coverage
 
@@ -8,15 +8,26 @@ The optional attendance-zone layer has three source groups:
 
 | Source | Divisions | Features | School matches | Date |
 | --- | ---: | ---: | ---: | --- |
-| NCES SABS | 111 | 1,324 | 469 distinct schools | 2015–16 survey |
+| NCES SABS | 110 active sources | 1,264 | 447 distinct schools | 2015–16 survey; older files retained when a division GIS source takes priority |
 | Roanoke County public GIS | 1 | 60 level features from 20 assigned county areas | 26 of 26 county schools | Retrieved 2026-10-20; the GIS service does not state a boundary effective date |
 | Roanoke City public GIS | 1 | 24 features: 17 elementary, 5 middle, 2 high | 24 of 24 City schools | Elementary Phase 1 applies to 2026–27; middle and high layer metadata date from 2009 |
 | Neighboring division GIS and named SABS fallback | 4 | 67 features | 55 of 56 schools | Retrieved 2026-10-24; see source details below |
 | Arlington APS locator / County GIS | 1 | 29 features: 20 elementary, 6 middle, 3 high | 29 of 35 schools | Retrieved 2026-10-25; GIS records still say 2022–23; see below |
 | Fairfax FCPS / County GIS | 1 | 188 features: 138 elementary, 26 middle, 24 high | 185 of 195 schools | Retrieved 2026-10-25; GIS records say 2026–27; see below |
 | Prince William PWCS GIS | 1 | 94 features: 63 elementary, 18 middle, 13 high | 93 of 95 schools | Retrieved 2026-10-25; elementary 2025–26, middle/high labeled current; see below |
+| Chesterfield County Open GIS Data | 1 | 64 features: 41 elementary, 13 middle, 10 high | 63 of 65 schools; 1 source-only area | Retrieved 2026-10-26; no per-feature effective year; see below |
 
-There are 130 divisions and 1,810 schools in the dashboard. Ten divisions have no attendance-zone file. Another nine have only SABS features with an unknown school level; the app offers an explicit “Unclassified (older source)” view for those features. Across all divisions, 21 lack elementary features, 36 lack middle features, and 29 lack high features, including the ten without any file. Across the full snapshot, 881 schools have a matched zone and 929 do not. A zone file in a division does **not** mean every school has a matched polygon. The NCES SABS data are an old, incomplete survey; NCES calls the survey experimental and lists only 2013–14 and 2015–16 collections: [NCES SABS](https://nces.ed.gov/programs/edge/SABS).
+There are 130 divisions and 1,810 schools in the dashboard. Ten divisions have no attendance-zone file. Another nine have only SABS features with an unknown school level; the app offers an explicit “Unclassified (older source)” view for those features. Across all divisions, 21 lack elementary features, 36 lack middle features, and 29 lack high features, including the ten without any file. Across the full snapshot, 922 schools have a matched zone and 888 do not. A zone file in a division does **not** mean every school has a matched polygon. The NCES SABS data are an old, incomplete survey; NCES calls the survey experimental and lists only 2013–14 and 2015–16 collections: [NCES SABS](https://nces.ed.gov/programs/edge/SABS).
+
+## Chesterfield County large-division validation (2026-10-26)
+
+The official [County Open GIS Data portal](https://opengisdata.chesterfield.gov/) publishes school attendance areas. Its [elementary](https://services3.arcgis.com/TsynfzBSE6sXfoLq/ArcGIS/rest/services/Administrative_ProdA/FeatureServer/1), [middle](https://services3.arcgis.com/TsynfzBSE6sXfoLq/ArcGIS/rest/services/Administrative_ProdA/FeatureServer/10), and [high](https://services3.arcgis.com/TsynfzBSE6sXfoLq/ArcGIS/rest/services/Administrative_ProdA/FeatureServer/6) layers contain 41, 13, and 10 areas. The [source manifest](../data-raw/zone_source_manifests/5100840.json) records the retrieval, counts, and staged-file hashes. The layers have no per-feature school-year field. [CCPS reports](https://www.oneccps.org/article/3052429) that Deep Creek Elementary opened for 2026–27; its zone appears in the source. This supports that change, but does not establish a single effective year for every source feature. Use [CCPS Find My School](https://www.oneccps.org/find-my-school/) to confirm an address. The County portal's terms permit use and distribution and request attribution.
+
+The [strict crosswalk](../data-raw/zone_school_crosswalks/5100840.csv) links 63 of 65 snapshot schools, with eight explicit name aliases. Deep Creek Elementary is absent from this frozen snapshot, so its official area stays visible without a school-data link. Carver College and Career Academy and Chesterfield Virtual School have no separate standard neighborhood polygon. No boundary or school identity was inferred for those cases.
+
+All 64 saved geometries are valid and nonempty. The [equal-area report](../data-raw/zone_validation_reports/5100840.json) measures same-level overlap of 15,721.9 m² elementary, 457.2 m² middle, and 45.0 m² high. The largest elementary pairs are Old Hundred/Deep Creek (9,561.9 m²), Ettrick/Matoaca (2,826.6 m²), and Matoaca/O.B. Gates (1,264.1 m²). The reviewed import cap is 16,000 m². The source polygons are kept as published; CCPS must confirm an address near an overlap.
+
+Run `python3 data-raw/stage_zone_source.py 5100840`, `python3 data-raw/build_chesterfield_zone_crosswalk.py`, and `python3 data-raw/import_zone_source.py 5100840` to rebuild the checked candidate. The checked file has SHA-256 `7953ae7ea95af8f59c76ad6675ddad7464c546a44662f1f7d7a3bc168fba70dd`. The importer regression, R zone/cache test, and statewide audit pass. In the local Shiny app, the Chesterfield division view rendered all 41 elementary, 13 middle, and 10 high paths; the Filters panel showed the source note. This is a local integration; public release remains a separate bead.
 
 ## Fairfax County large-division validation (2026-10-25)
 
