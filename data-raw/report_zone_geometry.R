@@ -37,11 +37,16 @@ gaps <- setNames(vapply(levels, function(level) {
   sum(as.numeric(st_area(difference)))
 }, numeric(1)), levels)
 box <- st_bbox(zones)
+linked_ids <- as.character(stats::na.omit(zones$app_school_id))
+if ("app_school_ids" %in% names(zones)) {
+  shared_ids <- as.character(unlist(zones$app_school_ids, use.names = FALSE))
+  linked_ids <- c(linked_ids, shared_ids[!is.na(shared_ids) & nzchar(shared_ids)])
+}
 report <- list(
   division_id = unique(zones$division_id),
   feature_count = nrow(zones),
   level_counts = as.list(table(zones$level)),
-  matched_school_count = length(unique(zones$app_school_id)),
+  matched_school_count = length(unique(linked_ids)),
   valid_geometry_count = sum(valid),
   empty_geometry_count = sum(empty),
   bounds_wgs84 = as.list(as.numeric(box)),

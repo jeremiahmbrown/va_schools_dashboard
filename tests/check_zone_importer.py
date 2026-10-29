@@ -59,7 +59,7 @@ def main():
     first_layer = json.loads((ROOT / json.loads(manifest_before)["layers"][0]["file"]).read_text(encoding="utf-8"))
     calls = 0
 
-    def fail_second_layer(url, expected):
+    def fail_second_layer(url, expected, where="1=1"):
         nonlocal calls
         calls += 1
         if calls == 1:

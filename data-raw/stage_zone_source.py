@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Stage all checked ArcGIS or direct GeoJSON polygons for one division.
+"""Stage checked ArcGIS, GeoJSON, or shapefile polygons for one division.
 
 The tracked spec fixes source URLs, record counts, and year fields. Raw files
 are immutable and ignored by Git. A new manifest becomes active only after
@@ -8,13 +8,17 @@ all layers have passed download and geometry checks.
 
 import argparse
 import hashlib
+import io
 import json
 import os
 import tempfile
 import urllib.parse
 import urllib.request
+import zipfile
 from datetime import datetime, timezone
 from pathlib import Path
+
+from osgeo import ogr, osr
 
 ROOT = Path(__file__).resolve().parents[1]
 PAGE_SIZE = 500
@@ -30,17 +34,61 @@ def get_json(url):
     return data
 
 
+def fetch_shapefile_zip(url, member, id_field):
+    request = urllib.request.Request(url, headers={"User-Agent": "va-schools-dashboard/zone-research"})
+    with urllib.request.urlopen(request, timeout=60) as response:
+        archive = response.read()
+    with zipfile.ZipFile(io.BytesIO(archive)) as zipped:
+        if member not in zipped.namelist() or not member.lower().endswith(".shp"):
+            raise ValueError(f"Missing reviewed shapefile member in {url}: {member}")
+        if zipped.testzip() is not None:
+            raise ValueError(f"Corrupt shapefile archive: {url}")
+    with tempfile.TemporaryDirectory() as directory:
+        archive_path = Path(directory) / "source.zip"
+        archive_path.write_bytes(archive)
+        dataset = ogr.Open(f"/vsizip/{archive_path}/{member}")
+        if dataset is None:
+            raise ValueError(f"Cannot open shapefile: {url}")
+        source = dataset.GetLayer()
+        source_crs = source.GetSpatialRef()
+        if source_crs is None:
+            raise ValueError(f"Shapefile has no CRS: {url}")
+        source_crs.SetAxisMappingStrategy(osr.OAMS_TRADITIONAL_GIS_ORDER)
+        target_crs = osr.SpatialReference()
+        target_crs.ImportFromEPSG(4326)
+        target_crs.SetAxisMappingStrategy(osr.OAMS_TRADITIONAL_GIS_ORDER)
+        transform = osr.CoordinateTransformation(source_crs, target_crs)
+        features = []
+        for record in source:
+            properties = record.items()
+            if not isinstance(properties.get(id_field), str) or not properties[id_field]:
+                raise ValueError(f"Missing shapefile identifier {id_field}: {url}")
+            geometry = record.GetGeometryRef()
+            if geometry is None:
+                raise ValueError(f"Empty shapefile geometry: {url}")
+            geometry = geometry.Clone()
+            geometry.Transform(transform)
+            features.append({"type": "Feature", "properties": properties,
+                             "geometry": json.loads(geometry.ExportToJson())})
+        dataset = None
+    ids = [feature["properties"][id_field] for feature in features]
+    if len(ids) != len(set(ids)):
+        raise ValueError(f"Duplicate shapefile identifiers: {url}")
+    features.sort(key=lambda feature: feature["properties"][id_field])
+    return features, archive
+
+
 def query(url, parameters):
     return get_json(url + "/query?" + urllib.parse.urlencode(parameters))
 
 
-def fetch_arcgis(url, expected):
+def fetch_arcgis(url, expected, where="1=1", page_size_cap=PAGE_SIZE):
     metadata = get_json(url + "?f=json")
     server_limit = metadata.get("maxRecordCount")
     if not isinstance(server_limit, int) or server_limit < 1:
         raise ValueError(f"ArcGIS layer has no usable page limit: {url}")
-    page_size = min(PAGE_SIZE, server_limit)
-    inventory = query(url, {"where": "1=1", "returnIdsOnly": "true", "f": "json"})
+    page_size = min(page_size_cap, server_limit)
+    inventory = query(url, {"where": where, "returnIdsOnly": "true", "f": "json"})
     field = inventory.get("objectIdFieldName")
     ids = inventory.get("objectIds")
     if (not field or not isinstance(ids, list) or len(ids) != expected
@@ -110,13 +158,19 @@ def validate_spec(spec):
     if spec["max_same_level_overlap_m2"] > 0 and not spec.get("overlap_review_note"):
         raise ValueError("A positive overlap limit needs a reviewed reason")
     for layer in layers:
-        if (layer.get("level") not in LEVELS or layer.get("source_type") not in ("arcgis", "geojson")
+        if (layer.get("level") not in LEVELS or layer.get("source_type") not in ("arcgis", "geojson", "shapefile_zip")
                 or not layer.get("source_url", "").startswith("https://")
                 or not layer.get("name_field") or not isinstance(layer.get("expected_count"), int)
                 or layer["expected_count"] <= 0):
             raise ValueError(f"Invalid source layer: {layer}")
         if layer.get("year_field") and not layer.get("expected_year_values"):
             raise ValueError("Year field requires explicit expected values")
+        if layer["source_type"] == "shapefile_zip" and (
+                not layer.get("shapefile_member", "").lower().endswith(".shp")
+                or not layer.get("object_id_field")):
+            raise ValueError("Shapefile ZIP needs a member and object_id_field")
+        if not isinstance(layer.get("where", "1=1"), str) or not layer.get("where", "1=1").strip():
+            raise ValueError("ArcGIS filter must be a nonempty string")
     return division_id
 
 
@@ -143,10 +197,17 @@ def stage(division_id):
         for index, layer in enumerate(spec["layers"]):
             url = layer["source_url"]
             if layer["source_type"] == "arcgis":
-                features, object_id_field = fetch_arcgis(url, layer["expected_count"])
+                features, object_id_field = fetch_arcgis(url, layer["expected_count"], layer.get("where", "1=1"))
                 source_url = url + "/query?" + urllib.parse.urlencode({
-                    "where": "1=1", "outFields": "*", "outSR": "4326", "f": "geojson",
+                    "where": layer.get("where", "1=1"), "outFields": "*", "outSR": "4326", "f": "geojson",
                 })
+            elif layer["source_type"] == "shapefile_zip":
+                object_id_field = layer["object_id_field"]
+                features, archive = fetch_shapefile_zip(
+                    url, layer["shapefile_member"], object_id_field)
+                source_url = url
+                archive_filename = f"{index:02d}_{layer['level'].lower()}.zip"
+                (work / archive_filename).write_bytes(archive)
             else:
                 data = get_json(url)
                 if data.get("type") != "FeatureCollection" or not isinstance(data.get("features"), list):
@@ -170,11 +231,18 @@ def stage(division_id):
             manifest["layers"].append({
                 "level": layer["level"], "source_type": layer["source_type"],
                 "layer_url": url, "url": source_url,
+                "where": layer.get("where", "1=1"),
                 "file": "", "sha256": digest, "feature_count": len(features),
                 "name_field": layer["name_field"], "object_id_field": object_id_field,
                 "school_year_values": years, "school_names": names,
                 "retrieval_method": "all object IDs then paged GeoJSON by objectIds" if layer["source_type"] == "arcgis" else "direct GeoJSON",
             })
+            if layer["source_type"] == "shapefile_zip":
+                manifest["layers"][-1].update({
+                    "retrieval_method": "official shapefile ZIP converted to WGS84 GeoJSON with GDAL",
+                    "shapefile_member": layer["shapefile_member"],
+                    "archive_file": "", "archive_sha256": hashlib.sha256(archive).hexdigest(),
+                })
         run_id = hashlib.sha256("".join(hashes).encode("ascii")).hexdigest()[:16]
         run_dir = base / run_id
         if not run_dir.exists():
@@ -187,6 +255,12 @@ def stage(division_id):
         for index, row in enumerate(manifest["layers"]):
             filename = f"{index:02d}_{row['level'].lower()}.geojson"
             row["file"] = str((run_dir / filename).relative_to(ROOT)).replace("\\", "/")
+            if row["source_type"] == "shapefile_zip":
+                archive_filename = f"{index:02d}_{row['level'].lower()}.zip"
+                archive_path = run_dir / archive_filename
+                if hashlib.sha256(archive_path.read_bytes()).hexdigest() != row["archive_sha256"]:
+                    raise ValueError(f"Existing source archive differs: {archive_path}")
+                row["archive_file"] = str(archive_path.relative_to(ROOT)).replace("\\", "/")
     temporary_manifest = manifest_path.with_suffix(".json.tmp")
     temporary_manifest.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
     os.replace(temporary_manifest, manifest_path)

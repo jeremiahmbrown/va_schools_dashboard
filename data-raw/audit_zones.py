@@ -41,8 +41,13 @@ def main():
             level = props.get("level", "missing")
             level_counts[(source, level)] += 1
             div_levels.add(level)
-            sid = props.get("app_school_id")
-            if sid:
+            linked = ([props["app_school_id"]] if props.get("app_school_id") else [])
+            shared = props.get("app_school_ids", [])
+            if not isinstance(shared, list):
+                invalid_ids.append((division_id, "invalid shared school ID list"))
+                shared = []
+            linked.extend(shared)
+            for sid in linked:
                 if sid not in school_ids:
                     invalid_ids.append((division_id, sid))
                 else:

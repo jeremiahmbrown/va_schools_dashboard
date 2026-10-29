@@ -1,0 +1,67 @@
+division_id,level,source_name,school_id,school_name,disposition,note
+5100840,Elementary,BETTIE WEAVER,510084000762,Bettie Weaver Elementary,mapped,County GIS SchoolNum 51.
+5100840,Elementary,ROBIOUS,510084000346,Robious Elementary,mapped,County GIS SchoolNum 73.
+5100840,Elementary,BON AIR,510084000318,Bon Air Elementary,mapped,County GIS SchoolNum 2.
+5100840,Elementary,CRESTWOOD,510084000325,Crestwood Elementary,mapped,County GIS SchoolNum 56.
+5100840,Elementary,OLD HUNDRED,510084003066,Old Hundred Elementary,mapped,County GIS SchoolNum 90.
+5100840,Elementary,GREENFIELD,510084000331,Greenfield Elementary,mapped,County GIS SchoolNum 7.
+5100840,Elementary,REAMS ROAD,510084000345,Reams Road Elementary,mapped,County GIS SchoolNum 70.
+5100840,Elementary,GORDON,510084001835,W.W. Gordon Elementary,mapped,County GIS SchoolNum 29. Official source name differs from the frozen snapshot name.
+5100840,Elementary,A. M. DAVIS,510084000314,A.M. Davis Elementary,mapped,County GIS SchoolNum 62.
+5100840,Elementary,EVERGREEN,510084002097,Evergreen Elementary,mapped,County GIS SchoolNum 30.
+5100840,Elementary,PROVIDENCE,510084002056,Providence Elementary,mapped,County GIS SchoolNum 38.
+5100840,Elementary,CHALKLEY,510084000334,J.A. Chalkley Elementary,mapped,County GIS SchoolNum 55. Official source name differs from the frozen snapshot name.
+5100840,Elementary,JACOBS ROAD,510084002098,Jacobs Road Elementary,mapped,County GIS SchoolNum 40.
+5100840,Elementary,THELMA CRENSHAW,510084002099,Thelma Crenshaw Elementary,mapped,County GIS SchoolNum 41.
+5100840,Elementary,ALBERTA SMITH,510084000462,Alberta Smith Elementary,mapped,County GIS SchoolNum 47.
+5100840,Elementary,ETTRICK,510084000327,Ettrick Elementary,mapped,County GIS SchoolNum 35.
+5100840,Elementary,MATOACA,510084000339,Matoaca Elementary,mapped,County GIS SchoolNum 37.
+5100840,Elementary,BENSLEY,510084000316,Bensley Elementary,mapped,County GIS SchoolNum 43.
+5100840,Elementary,FALLING CREEK,510084000328,Falling Creek Elementary,mapped,County GIS SchoolNum 59.
+5100840,Elementary,BELLWOOD,510084000315,Bellwood Elementary,mapped,County GIS SchoolNum 66.
+5100840,Elementary,WATKINS,510084000335,J.B. Watkins Elementary,mapped,County GIS SchoolNum 65. Official source name differs from the frozen snapshot name.
+5100840,Elementary,MOSELEY,510084003092,Moseley Elementary,mapped,County GIS SchoolNum 92.
+5100840,Elementary,WOOLRIDGE,510084002176,Woolridge Elementary,mapped,County GIS SchoolNum 44.
+5100840,Elementary,HENING,510084000336,J.G. Hening Elementary,mapped,County GIS SchoolNum 50. Official source name differs from the frozen snapshot name.
+5100840,Elementary,SWIFT CREEK,510084001990,Swift Creek Elementary,mapped,County GIS SchoolNum 34.
+5100840,Elementary,O. B. GATES,510084001989,O.B. Gates Elementary,mapped,County GIS SchoolNum 36.
+5100840,Elementary,SPRING RUN,510084001903,Spring Run Elementary,mapped,County GIS SchoolNum 80.
+5100840,Elementary,CLOVER HILL,510084002055,Clover Hill Elementary,mapped,County GIS SchoolNum 15.
+5100840,Elementary,BEULAH,510084000317,Beulah Elementary,mapped,County GIS SchoolNum 13.
+5100840,Elementary,SALEM CHURCH,510084000348,Salem Church Elementary,mapped,County GIS SchoolNum 21.
+5100840,Elementary,ECOFF,510084002177,Ecoff Elementary,mapped,County GIS SchoolNum 48.
+5100840,Elementary,C. E. CURTIS,510084000320,C.E. Curtis Elementary,mapped,County GIS SchoolNum 49.
+5100840,Elementary,ENON,510084000326,Enon Elementary,mapped,County GIS SchoolNum 39.
+5100840,Elementary,HARROWGATE,510084000332,Harrowgate Elementary,mapped,County GIS SchoolNum 46.
+5100840,Elementary,C. C. WELLS,510084000319,C.C. Wells Elementary,mapped,County GIS SchoolNum 5.
+5100840,Elementary,HOPKINS ROAD,510084000333,Hopkins Road Elementary,mapped,County GIS SchoolNum 6.
+5100840,Elementary,ELIZABETH N. SCOTT,510084002779,Elizabeth Scott Elementary,mapped,County GIS SchoolNum 85. Official source name differs from the frozen snapshot name.
+5100840,Elementary,GRANGE HALL,510084000330,Grange Hall Elementary,mapped,County GIS SchoolNum 18.
+5100840,Elementary,WINTERPOCK,510084002780,Winterpock Elementary,mapped,County GIS SchoolNum 86.
+5100840,Elementary,MARGUERITE CHRISTIAN,510084001086,Marguerite F. Christian Elementary,mapped,County GIS SchoolNum 78. Official source name differs from the frozen snapshot name.
+5100840,Elementary,DEEP CREEK,,Deep Creek Elementary,source_only,Opened for 2026–27 after the frozen snapshot; County GIS SchoolNum 95. Show its area without attaching another school's data.
+5100840,Middle,SALEM CHURCH,510084000349,Salem Church Middle,mapped,County GIS SchoolNum 72.
+5100840,Middle,ELIZABETH B DAVIS,510084002767,Elizabeth Davis Middle,mapped,County GIS SchoolNum 87. Official source name differs from the frozen snapshot name.
+5100840,Middle,MATOACA,510084000341,Matoaca Middle,mapped,County GIS SchoolNum 11.
+5100840,Middle,CARVER,510084000321,Carver Middle,mapped,County GIS SchoolNum 42.
+5100840,Middle,ROBIOUS,510084000347,Robious Middle,mapped,County GIS SchoolNum 76.
+5100840,Middle,MIDLOTHIAN,510084000343,Midlothian Middle,mapped,County GIS SchoolNum 32.
+5100840,Middle,PROVIDENCE,510084000344,Providence Middle,mapped,County GIS SchoolNum 69.
+5100840,Middle,DEEP CREEK,510084003146,Deep Creek Middle,mapped,County GIS SchoolNum 94.
+5100840,Middle,SWIFT CREEK,510084001834,Swift Creek Middle,mapped,County GIS SchoolNum 27.
+5100840,Middle,BAILEY BRIDGE,510084000053,Bailey Bridge Middle,mapped,County GIS SchoolNum 63.
+5100840,Middle,FALLING CREEK,510084000329,Falling Creek Middle,mapped,County GIS SchoolNum 67.
+5100840,Middle,MANCHESTER,510084000338,Manchester Middle,mapped,County GIS SchoolNum 25.
+5100840,Middle,TOMAHAWK CREEK,510084002754,Tomahawk Creek Middle,mapped,County GIS SchoolNum 88.
+5100840,High,MONACAN,510084001833,Monacan High,mapped,County GIS SchoolNum 28.
+5100840,High,MANCHESTER,510084000056,Manchester High,mapped,County GIS SchoolNum 60.
+5100840,High,MEADOWBROOK,510084000342,Meadowbrook High,mapped,County GIS SchoolNum 58.
+5100840,High,CLOVER HILL,510084000324,Clover Hill High,mapped,County GIS SchoolNum 74.
+5100840,High,L. C. BIRD,510084000337,Lloyd C. Bird High,mapped,County GIS SchoolNum 1. Official source name differs from the frozen snapshot name.
+5100840,High,THOMAS DALE,510084000350,Thomas Dale High,mapped,County GIS SchoolNum 61.
+5100840,High,MATOACA,510084000340,Matoaca High,mapped,County GIS SchoolNum 53.
+5100840,High,MIDLOTHIAN,510084002006,Midlothian High,mapped,County GIS SchoolNum 4.
+5100840,High,COSBY,510084002661,Cosby High,mapped,County GIS SchoolNum 84.
+5100840,High,JAMES RIVER,510084000766,James River High,mapped,County GIS SchoolNum 77.
+5100840,High,,510084001605,Carver College and Career Academy,no_neighborhood_zone,The standard county high-school boundary layer has no Carver College and Career Academy area; its admissions or program rules need a separate check.
+5100840,Combined (K-8),,510084003097,Chesterfield Virtual School,no_neighborhood_zone,The county's standard attendance-area layers have no separate virtual-school area.

@@ -222,6 +222,8 @@ server <- function(input, output, session) {
       "Salem City: public city GIS elementary zones. Middle and high zones use older NCES SABS 2015–16 polygons. The GIS layer does not state a school-year effective date. Confirm an address with Salem City Schools."
     } else if (identical(division_id, "5100270")) {
       "Arlington County: public APS locator and County GIS neighborhood zones. APS links 2026–27 maps, but the GIS School_Year field says 2022–2023. Six schools have no neighborhood polygon. Confirm an address with APS."
+    } else if (identical(division_id, "5100840")) {
+      "Chesterfield County: current County GIS school attendance areas include Deep Creek Elementary, which opened in 2026–27 but is absent from this frozen school snapshot. That area is shown without a school-data link. Carver College and Career Academy and Chesterfield Virtual School have no separate standard zone. Some published elementary edges overlap, mainly Old Hundred and Deep Creek. Confirm an address with CCPS Find My School."
     } else if (identical(division_id, "5101260")) {
       "Fairfax County: FCPS and County GIS standard attendance areas for 2026–27. Ten schools have no separate polygon in these layers. Some high-school edges overlap; confirm an address with the FCPS boundary locator."
     } else if (identical(division_id, "5103130")) {

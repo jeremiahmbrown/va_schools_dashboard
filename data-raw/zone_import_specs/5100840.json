@@ -1,0 +1,34 @@
+{
+  "division_id": "5100840",
+  "source_owner": "Chesterfield County GIS",
+  "official_evidence_url": "https://www.oneccps.org/find-my-school/",
+  "source_label": "Chesterfield County GIS school attendance areas, retrieved 2026-10-26",
+  "popup_note": "The County GIS layers include the new 2026-27 Deep Creek Elementary area but have no per-feature effective-year field. Confirm an address with CCPS Find My School.",
+  "expected_school_count": 65,
+  "max_same_level_overlap_m2": 16000,
+  "rights_access": "Chesterfield Open GIS Data terms permit copying, modifying, distributing, and analysis; attribution requested.",
+  "layers": [
+    {
+      "level": "Elementary",
+      "source_type": "arcgis",
+      "source_url": "https://services3.arcgis.com/TsynfzBSE6sXfoLq/ArcGIS/rest/services/Administrative_ProdA/FeatureServer/1",
+      "name_field": "SchoolName",
+      "expected_count": 41
+    },
+    {
+      "level": "Middle",
+      "source_type": "arcgis",
+      "source_url": "https://services3.arcgis.com/TsynfzBSE6sXfoLq/ArcGIS/rest/services/Administrative_ProdA/FeatureServer/10",
+      "name_field": "SchoolName",
+      "expected_count": 13
+    },
+    {
+      "level": "High",
+      "source_type": "arcgis",
+      "source_url": "https://services3.arcgis.com/TsynfzBSE6sXfoLq/ArcGIS/rest/services/Administrative_ProdA/FeatureServer/6",
+      "name_field": "SchoolName",
+      "expected_count": 10
+    }
+  ],
+  "overlap_review_note": "Equal-area review of 64 source polygons found 15,721.9198 m2 elementary same-level overlap, mainly Old Hundred/Deep Creek (9,561.9 m2), Ettrick/Matoaca (2,826.6 m2), and Matoaca/O.B. Gates (1,264.1 m2). Middle overlap is 457.2 m2 and high overlap is 45.0 m2. The 16,000 m2 cap rejects a larger change. Keep published County geometry and confirm affected addresses with CCPS."
+}
