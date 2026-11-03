@@ -6,10 +6,10 @@ import sys
 
 root = Path(sys.argv[1])
 schools = {r['school_id']: r for r in csv.DictReader((root / 'app/data/schools.csv').open())}
-paths = subprocess.check_output(['git', '-C', str(root), 'diff', '--name-only', '--', 'app/data/zones/sabs'], text=True).splitlines()
+paths = subprocess.check_output(['git', '-C', str(root), 'diff', '--name-only', 'c773376', '--', 'app/data/zones/sabs'], text=True).splitlines()
 count = 0
 for path in paths:
-    old = json.loads(subprocess.check_output(['git', '-C', str(root), 'show', 'HEAD:' + path]))
+    old = json.loads(subprocess.check_output(['git', '-C', str(root), 'show', 'c773376:' + path]))
     new = json.loads((root / path).read_text())
     assert len(old['features']) == len(new['features'])
     for a, b in zip(old['features'], new['features']):

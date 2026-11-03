@@ -5,3 +5,5 @@ Prepared from production source commit c773376. Adds 247 exact NCES school-ID li
 The release candidate audit reports 1,169 of 1,810 schools with a matched zone and 641 without. Ten divisions have no zone file. The previously deployed GIS sources remain unchanged. Newer locally researched GIS layers and their source reviews remain separate.
 
 Validation: independent JSON comparison of all 76 files passed, including division and ID checks; R zone and snapshot tests passed; audit found no invalid school IDs or empty geometry; git diff --check passed. Rollback baseline: c773376 and production bundle 12752849.
+
+Deployed to shinyapps.io app 16676824 as bundle 12771632, from production GitHub commit f22dfe91aeb315f254893aadccce2930e31c0b05 (same Git tree as local f931674). The live app opened Critzer Elementary in Pulaski County, displayed its selected school zone, and labeled the source NCES SABS 2015–16 with a current-boundary warning.
