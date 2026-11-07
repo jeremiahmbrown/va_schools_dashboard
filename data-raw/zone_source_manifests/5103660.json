@@ -1,0 +1,87 @@
+{
+  "division_id": "5103660",
+  "source_owner": "Stafford County Public Schools Planning & GIS",
+  "official_evidence_url": "https://www.staffordschools.net/community/how-can-we-help/maps-and-reports",
+  "retrieved_utc": "2026-10-27T01:52:51+00:00",
+  "spec_file": "data-raw/zone_import_specs/5103660.json",
+  "layers": [
+    {
+      "level": "Elementary",
+      "source_type": "arcgis",
+      "layer_url": "https://services9.arcgis.com/VEbqiV0jZuocUaxq/arcgis/rest/services/ES_2026/FeatureServer/0",
+      "url": "https://services9.arcgis.com/VEbqiV0jZuocUaxq/arcgis/rest/services/ES_2026/FeatureServer/0/query?where=1%3D1&outFields=%2A&outSR=4326&f=geojson",
+      "file": "data-raw/input/zones/5103660/a5cb02de5b1e7554/00_elementary.geojson",
+      "sha256": "25b1b24a6a0e6a1714003636e1a42da6300b999a977d33535cf779cae2aa3b9a",
+      "feature_count": 19,
+      "name_field": "ES_2627",
+      "object_id_field": "FID",
+      "school_year_values": [],
+      "school_names": [
+        "Barrett ES",
+        "Brent ES",
+        "Burns ES",
+        "Conway ES",
+        "ES#18",
+        "ES#19",
+        "Falmouth ES",
+        "Ferry Farm ES",
+        "Garrisonville ES",
+        "Grafton Village ES",
+        "Hampton Oaks ES",
+        "Hartwood ES",
+        "Moncure ES",
+        "Park Ridge ES",
+        "Rockhill ES",
+        "Rocky Run ES",
+        "Stafford ES",
+        "Widewater ES",
+        "Winding Creek ES"
+      ],
+      "retrieval_method": "all object IDs then paged GeoJSON by objectIds"
+    },
+    {
+      "level": "Middle",
+      "source_type": "arcgis",
+      "layer_url": "https://services9.arcgis.com/VEbqiV0jZuocUaxq/arcgis/rest/services/MS_2025/FeatureServer/0",
+      "url": "https://services9.arcgis.com/VEbqiV0jZuocUaxq/arcgis/rest/services/MS_2025/FeatureServer/0/query?where=1%3D1&outFields=%2A&outSR=4326&f=geojson",
+      "file": "data-raw/input/zones/5103660/a5cb02de5b1e7554/01_middle.geojson",
+      "sha256": "d17ea17be086c8a37fb719cb964a3b7d411611033bb343c670d18f395e91982c",
+      "feature_count": 8,
+      "name_field": "MS2324",
+      "object_id_field": "FID",
+      "school_year_values": [],
+      "school_names": [
+        "Dixon-Smith MS",
+        "Drew MS",
+        "Gayle MS",
+        "Heim MS",
+        "Poole MS",
+        "Stafford MS",
+        "Thompson MS",
+        "Wright MS"
+      ],
+      "retrieval_method": "all object IDs then paged GeoJSON by objectIds"
+    },
+    {
+      "level": "High",
+      "source_type": "arcgis",
+      "layer_url": "https://services9.arcgis.com/VEbqiV0jZuocUaxq/arcgis/rest/services/HS_2026/FeatureServer/0",
+      "url": "https://services9.arcgis.com/VEbqiV0jZuocUaxq/arcgis/rest/services/HS_2026/FeatureServer/0/query?where=1%3D1&outFields=%2A&outSR=4326&f=geojson",
+      "file": "data-raw/input/zones/5103660/a5cb02de5b1e7554/02_high.geojson",
+      "sha256": "0e65527c0eac6827842e6d54c2952c9bf1b7f65a85e1ea55148e2690eed9239d",
+      "feature_count": 6,
+      "name_field": "HS_2627",
+      "object_id_field": "FID",
+      "school_year_values": [],
+      "school_names": [
+        "Brooke Point HS",
+        "Colonial Forge HS",
+        "HS#6",
+        "Mountain View HS",
+        "North Stafford HS",
+        "Stafford HS"
+      ],
+      "retrieval_method": "all object IDs then paged GeoJSON by objectIds"
+    }
+  ]
+}

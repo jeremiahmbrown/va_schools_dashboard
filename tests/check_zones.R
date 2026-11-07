@@ -169,4 +169,11 @@ for (sid in c("510189002124", "510189000834")) {
 kaechele <- jsonlite::fromJSON(filter_zone_geojson_by_school_id(henrico_text, "510189002953"), simplifyVector = FALSE)$features
 stopifnot(length(kaechele) == 2L)
 
+stafford_text <- read_zone_geojson(pick_zone_file("app/data", "5103660"))
+stafford_features <- jsonlite::fromJSON(stafford_text, simplifyVector = FALSE)$features
+stopifnot(length(stafford_features) == 33L)
+source_only <- Filter(function(f) f$properties$official_school_name %in% c("ES#18", "ES#19", "HS#6"), stafford_features)
+stopifnot(length(source_only) == 3L,
+          all(vapply(source_only, function(f) is.null(f$properties[["app_school_id", exact = TRUE]]), logical(1))))
+
 cat("Division zone level, school match, geometry, and cache checks passed.\n")

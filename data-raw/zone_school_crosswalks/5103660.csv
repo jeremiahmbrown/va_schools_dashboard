@@ -1,0 +1,34 @@
+division_id,level,source_name,school_id,school_name,disposition,note
+5103660,Elementary,Rocky Run ES,510366002547,Rocky Run Elementary,mapped,SCPS GIS FID 1; explicit source abbreviation to frozen snapshot school.
+5103660,Elementary,ES#18,,Falls Run Elementary,source_only,SCPS GIS FID 2. SCPS identifies ES18 as Falls Run; opened for 2026–27. This frozen snapshot has no school row; show area without another school's data.
+5103660,Elementary,Falmouth ES,510366001596,Falmouth Elementary,mapped,SCPS GIS FID 3; explicit source abbreviation to frozen snapshot school.
+5103660,Elementary,Barrett ES,510366002320,Kate Waller Barrett Elementary,mapped,SCPS GIS FID 4; explicit source abbreviation to frozen snapshot school.
+5103660,Elementary,Rockhill ES,510366002135,Rockhill Elementary,mapped,SCPS GIS FID 5; explicit source abbreviation to frozen snapshot school.
+5103660,Elementary,Stafford ES,510366001600,Stafford Elementary,mapped,SCPS GIS FID 6; explicit source abbreviation to frozen snapshot school.
+5103660,Elementary,Grafton Village ES,510366001598,Grafton Village Elementary,mapped,SCPS GIS FID 7; explicit source abbreviation to frozen snapshot school.
+5103660,Elementary,Conway ES,510366002465,Conway Elementary,mapped,SCPS GIS FID 8; explicit source abbreviation to frozen snapshot school.
+5103660,Elementary,ES#19,,Crow's Nest Elementary,source_only,SCPS GIS FID 9. SCPS identifies ES19 as Crow's Nest; opened for 2026–27. This frozen snapshot has no school row; show area without another school's data.
+5103660,Elementary,Ferry Farm ES,510366001597,Ferry Farm Elementary,mapped,SCPS GIS FID 10; explicit source abbreviation to frozen snapshot school.
+5103660,Elementary,Burns ES,510366002601,Anthony Burns Elementary,mapped,SCPS GIS FID 11; explicit source abbreviation to frozen snapshot school.
+5103660,Elementary,Moncure ES,510366001594,Anne E. Moncure Elementary,mapped,SCPS GIS FID 12; explicit source abbreviation to frozen snapshot school.
+5103660,Elementary,Garrisonville ES,510366002084,Garrisonville Elementary,mapped,SCPS GIS FID 13; explicit source abbreviation to frozen snapshot school.
+5103660,Elementary,Brent ES,510366002463,Margaret Brent Elementary ,mapped,SCPS GIS FID 14; explicit source abbreviation to frozen snapshot school.
+5103660,Elementary,Winding Creek ES,510366001634,Winding Creek Elementary,mapped,SCPS GIS FID 15; explicit source abbreviation to frozen snapshot school.
+5103660,Elementary,Hartwood ES,510366001599,Hartwood Elementary,mapped,SCPS GIS FID 16; explicit source abbreviation to frozen snapshot school.
+5103660,Elementary,Hampton Oaks ES,510366000265,Hampton Oaks Elementary,mapped,SCPS GIS FID 17; explicit source abbreviation to frozen snapshot school.
+5103660,Elementary,Park Ridge ES,510366002201,Park Ridge Elementary,mapped,SCPS GIS FID 18; explicit source abbreviation to frozen snapshot school.
+5103660,Elementary,Widewater ES,510366002106,Widewater Elementary,mapped,SCPS GIS FID 19; explicit source abbreviation to frozen snapshot school.
+5103660,Middle,Dixon-Smith MS,510366002600,Donald B. Dixon-Lyle R. Smith Middle,mapped,SCPS GIS FID 1; explicit source abbreviation to frozen snapshot school.
+5103660,Middle,Drew MS,510366001595,Edward E. Drew Jr. Middle,mapped,SCPS GIS FID 2; explicit source abbreviation to frozen snapshot school.
+5103660,Middle,Gayle MS,510366001603,T. Benton Gayle Middle,mapped,SCPS GIS FID 3; explicit source abbreviation to frozen snapshot school.
+5103660,Middle,Heim MS,510366002781,Shirley C. Heim Middle,mapped,SCPS GIS FID 4; explicit source abbreviation to frozen snapshot school.
+5103660,Middle,Poole MS,510366001199,H.H. Poole Middle,mapped,SCPS GIS FID 5; explicit source abbreviation to frozen snapshot school.
+5103660,Middle,Stafford MS,510366001601,Stafford Middle,mapped,SCPS GIS FID 6; explicit source abbreviation to frozen snapshot school.
+5103660,Middle,Thompson MS,510366002548,Rodney E. Thompson Middle,mapped,SCPS GIS FID 7; explicit source abbreviation to frozen snapshot school.
+5103660,Middle,Wright MS,510366001978,Andrew G. Wright Middle,mapped,SCPS GIS FID 8; explicit source abbreviation to frozen snapshot school.
+5103660,High,Brooke Point HS,510366000591,Brooke Point High,mapped,SCPS GIS FID 1; explicit source abbreviation to frozen snapshot school.
+5103660,High,Colonial Forge HS,510366001923,Colonial Forge High,mapped,SCPS GIS FID 2; explicit source abbreviation to frozen snapshot school.
+5103660,High,HS#6,,Hartwood High,source_only,SCPS GIS FID 3. SCPS identifies HS6 as Hartwood High; opened for 2026–27. This frozen snapshot has no school row; show area without another school's data.
+5103660,High,Mountain View HS,510366002464,Mountain View High ,mapped,SCPS GIS FID 4; explicit source abbreviation to frozen snapshot school.
+5103660,High,North Stafford HS,510366001979,North Stafford High,mapped,SCPS GIS FID 5; explicit source abbreviation to frozen snapshot school.
+5103660,High,Stafford HS,510366001602,Stafford Senior High,mapped,SCPS GIS FID 6; explicit source abbreviation to frozen snapshot school.
