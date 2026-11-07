@@ -1,0 +1,23 @@
+division_id,level,source_name,school_id,school_name,disposition,note
+5101830,Elementary,Beaverdam Elementary School,510183000765,Beaverdam Elementary,mapped,HCPS-linked County GIS OBJECTID 1; explicit source-label to snapshot-school match.
+5101830,Elementary,Battlefield Park Elementary School,510183000764,Battlefield Park Elementary,mapped,HCPS-linked County GIS OBJECTID 2; explicit source-label to snapshot-school match.
+5101830,Elementary,Cold Harbor Elementary School,510183001995,Cold Harbor Elementary,mapped,HCPS-linked County GIS OBJECTID 3; explicit source-label to snapshot-school match.
+5101830,Elementary,Cool Spring Elementary School,510183001617,Cool Spring Elementary,mapped,HCPS-linked County GIS OBJECTID 4; explicit source-label to snapshot-school match.
+5101830,Elementary,Elmont Elementary School,510183000769,Elmont Elementary,mapped,HCPS-linked County GIS OBJECTID 5; explicit source-label to snapshot-school match.
+5101830,Elementary,Kersey Creek Elementary School,510183002506,Kersey Creek Elementary,mapped,HCPS-linked County GIS OBJECTID 6; explicit source-label to snapshot-school match.
+5101830,Elementary,Laurel Meadow Elementary School,510183002772,Laurel Meadow Elementary,mapped,HCPS-linked County GIS OBJECTID 7; explicit source-label to snapshot-school match.
+5101830,Elementary,Mechanicsville Elementary School,510183000774,Mechanicsville Elementary,mapped,HCPS-linked County GIS OBJECTID 8; explicit source-label to snapshot-school match.
+5101830,Elementary,Pearson's Corner Elementary School,510183000777,Pearson's Corner Elementary,mapped,HCPS-linked County GIS OBJECTID 9; explicit source-label to snapshot-school match.
+5101830,Elementary,Pole Green Elementary School,510183002535,Pole Green Elementary,mapped,HCPS-linked County GIS OBJECTID 10; explicit source-label to snapshot-school match.
+5101830,Elementary,Rural Point Elementary School,510183000779,Rural Point Elementary,mapped,HCPS-linked County GIS OBJECTID 11; explicit source-label to snapshot-school match.
+5101830,Elementary,South Anna Elementary School,510183001996,South Anna Elementary,mapped,HCPS-linked County GIS OBJECTID 12; explicit source-label to snapshot-school match.
+5101830,Elementary,Washington-Henry Elementary School,510183000781,Washington-Henry Elementary ,mapped,HCPS-linked County GIS OBJECTID 13; explicit source-label to snapshot-school match.
+5101830,Elementary,Ashland Elementary School,510183003147,Ashland Elementary,mapped,HCPS-linked County GIS OBJECTID 14; explicit source-label to snapshot-school match.
+5101830,Middle,Liberty Middle - Patrick Henry High,510183000773,Liberty Middle,mapped,HCPS-linked County GIS OBJECTID 5; explicit source-label to snapshot-school match. The source combines one middle and one high school in this area.
+5101830,Middle,Bell Creek Middle - Mechanicsville High,510183000780,Bell Creek Middle,mapped,HCPS-linked County GIS OBJECTID 6; explicit source-label to snapshot-school match. The source combines one middle and one high school in this area.
+5101830,Middle,Oak Knoll Middle - Hanover High,510183002277,Oak Knoll Middle,mapped,HCPS-linked County GIS OBJECTID 7; explicit source-label to snapshot-school match. The source combines one middle and one high school in this area.
+5101830,Middle,Chickahominy Middle - Atlee High,510183002191,Chickahominy Middle,mapped,HCPS-linked County GIS OBJECTID 8; explicit source-label to snapshot-school match. The source combines one middle and one high school in this area.
+5101830,High,Liberty Middle - Patrick Henry High,510183000776,Patrick Henry High,mapped,HCPS-linked County GIS OBJECTID 5; explicit source-label to snapshot-school match. The source combines one middle and one high school in this area.
+5101830,High,Bell Creek Middle - Mechanicsville High,510183000772,Mechanicsville High,mapped,HCPS-linked County GIS OBJECTID 6; explicit source-label to snapshot-school match. The source combines one middle and one high school in this area. The frozen snapshot classifies this high school as Combined.
+5101830,High,Oak Knoll Middle - Hanover High,510183002338,Hanover High,mapped,HCPS-linked County GIS OBJECTID 7; explicit source-label to snapshot-school match. The source combines one middle and one high school in this area.
+5101830,High,Chickahominy Middle - Atlee High,510183000114,Atlee High,mapped,HCPS-linked County GIS OBJECTID 8; explicit source-label to snapshot-school match. The source combines one middle and one high school in this area. The frozen snapshot classifies this high school as Combined.

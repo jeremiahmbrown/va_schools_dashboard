@@ -1,0 +1,35 @@
+{
+  "division_id": "5101830",
+  "source_owner": "Hanover County GIS / Hanover County Public Schools",
+  "official_evidence_url": "https://www.hcps.us/about_us/school_attendance_zones",
+  "source_label": "HCPS-linked Hanover County 2026–27 school district map",
+  "display_source_url": "https://hanovercounty.maps.arcgis.com/apps/instant/lookup/index.html?appid=c0c302eabce348a7802e4793e4bf5259",
+  "popup_note": "HCPS labels its linked map effective in 2026–27. This polygon comes from that map's County GIS layers. Confirm an address and enrollment with HCPS.",
+  "expected_school_count": 22,
+  "max_same_level_overlap_m2": 0.5,
+  "rights_access": "Public HCPS-linked County GIS layers; no explicit redistribution terms found on exact feature services. Review before public release.",
+  "layers": [
+    {
+      "level": "Elementary",
+      "source_type": "arcgis",
+      "source_url": "https://services2.arcgis.com/sKZWgJlU6SekCzQV/arcgis/rest/services/Elementary_School_Districts_2026/FeatureServer/0",
+      "name_field": "Zone",
+      "expected_count": 14
+    },
+    {
+      "level": "Middle",
+      "source_type": "arcgis",
+      "source_url": "https://services2.arcgis.com/sKZWgJlU6SekCzQV/arcgis/rest/services/Middle_and_High_School_Districts_2026/FeatureServer/0",
+      "name_field": "Middle_Hig",
+      "expected_count": 4
+    },
+    {
+      "level": "High",
+      "source_type": "arcgis",
+      "source_url": "https://services2.arcgis.com/sKZWgJlU6SekCzQV/arcgis/rest/services/Middle_and_High_School_Districts_2026/FeatureServer/0",
+      "name_field": "Middle_Hig",
+      "expected_count": 4
+    }
+  ],
+  "overlap_review_note": "The equal-area report measures 0.3966 m2 elementary and 0.1881 m2 each for middle and high same-level overlap, across about 1.227 billion m2. A 0.5 m2 cap accepts only these tiny source edge differences. The elementary union exceeds the shared middle/high union by 2296.25 m2; retain source shapes and confirm addresses with HCPS."
+}

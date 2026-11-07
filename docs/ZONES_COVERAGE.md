@@ -1,6 +1,6 @@
 # Attendance-zone coverage and checks
 
-Audit dates: 2026-10-20, 2026-10-24, 2026-10-25, 2026-10-28, and 2026-11-02. Beads: `va_schools_dashboard-e9i` and `va_schools_dashboard-nlf`.
+Audit dates: 2026-10-20, 2026-10-24, 2026-10-25, 2026-10-28, 2026-11-02, and 2026-11-07. Beads: `va_schools_dashboard-e9i` and `va_schools_dashboard-nlf`.
 
 ## Source and coverage
 
@@ -16,8 +16,9 @@ The optional attendance-zone layer has three source groups:
 | Fairfax FCPS / County GIS | 1 | 188 features: 138 elementary, 26 middle, 24 high | 185 of 195 schools | Retrieved 2026-10-25; GIS records say 2026–27; see below |
 | Prince William PWCS GIS | 1 | 94 features: 63 elementary, 18 middle, 13 high | 93 of 95 schools | Retrieved 2026-10-25; elementary 2025–26, middle/high labeled current; see below |
 | Chesterfield County Open GIS Data | 1 | 64 features: 41 elementary, 13 middle, 10 high | 63 of 65 schools; 1 source-only area | Retrieved 2026-10-26; no per-feature effective year; see below |
+| Hanover HCPS-linked County GIS | 1 | 22 features: 14 elementary, 4 middle, 4 high | 22 of 22 schools | Effective 2026-27 per HCPS; retrieved 2026-10-27 |
 
-There are 130 divisions and 1,810 schools in the dashboard. Ten divisions have no attendance-zone file. Another nine have only SABS features with an unknown school level; the app offers an explicit “Unclassified (older source)” view for those features. Across all divisions, 21 lack elementary features, 36 lack middle features, and 29 lack high features, including the ten without any file. Across the full snapshot, 1,169 schools have a matched zone and 641 do not. A zone file in a division does **not** mean every school has a matched polygon. The NCES SABS data are an old, incomplete survey; NCES calls the survey experimental and lists only 2013–14 and 2015–16 collections: [NCES SABS](https://nces.ed.gov/programs/edge/SABS).
+There are 130 divisions and 1,810 schools in the dashboard. Ten divisions have no attendance-zone file. Another nine have only SABS features with an unknown school level; the app offers an explicit “Unclassified (older source)” view for those features. Across all divisions, 21 lack elementary features, 36 lack middle features, and 29 lack high features, including the ten without any file. Across the full snapshot, 1,185 schools have a matched zone and 625 do not. A zone file in a division does **not** mean every school has a matched polygon. The NCES SABS data are an old, incomplete survey; NCES calls the survey experimental and lists only 2013–14 and 2015–16 collections: [NCES SABS](https://nces.ed.gov/programs/edge/SABS).
 
 ## Chesterfield County large-division validation (2026-10-26)
 

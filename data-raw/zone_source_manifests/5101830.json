@@ -1,0 +1,76 @@
+{
+  "division_id": "5101830",
+  "source_owner": "Hanover County GIS / Hanover County Public Schools",
+  "official_evidence_url": "https://www.hcps.us/about_us/school_attendance_zones",
+  "retrieved_utc": "2026-10-27T20:15:57+00:00",
+  "spec_file": "data-raw/zone_import_specs/5101830.json",
+  "layers": [
+    {
+      "level": "Elementary",
+      "source_type": "arcgis",
+      "layer_url": "https://services2.arcgis.com/sKZWgJlU6SekCzQV/arcgis/rest/services/Elementary_School_Districts_2026/FeatureServer/0",
+      "url": "https://services2.arcgis.com/sKZWgJlU6SekCzQV/arcgis/rest/services/Elementary_School_Districts_2026/FeatureServer/0/query?where=1%3D1&outFields=%2A&outSR=4326&f=geojson",
+      "file": "data-raw/input/zones/5101830/01b3ff4d805901e8/00_elementary.geojson",
+      "sha256": "373477060a047f23709783638896138ff4b2b86b66827d35306c8684b0cf6e08",
+      "feature_count": 14,
+      "name_field": "Zone",
+      "object_id_field": "OBJECTID",
+      "school_year_values": [],
+      "school_names": [
+        "Ashland Elementary School",
+        "Battlefield Park Elementary School",
+        "Beaverdam Elementary School",
+        "Cold Harbor Elementary School",
+        "Cool Spring Elementary School",
+        "Elmont Elementary School",
+        "Kersey Creek Elementary School",
+        "Laurel Meadow Elementary School",
+        "Mechanicsville Elementary School",
+        "Pearson's Corner Elementary School",
+        "Pole Green Elementary School",
+        "Rural Point Elementary School",
+        "South Anna Elementary School",
+        "Washington-Henry Elementary School"
+      ],
+      "retrieval_method": "all object IDs then paged GeoJSON by objectIds"
+    },
+    {
+      "level": "Middle",
+      "source_type": "arcgis",
+      "layer_url": "https://services2.arcgis.com/sKZWgJlU6SekCzQV/arcgis/rest/services/Middle_and_High_School_Districts_2026/FeatureServer/0",
+      "url": "https://services2.arcgis.com/sKZWgJlU6SekCzQV/arcgis/rest/services/Middle_and_High_School_Districts_2026/FeatureServer/0/query?where=1%3D1&outFields=%2A&outSR=4326&f=geojson",
+      "file": "data-raw/input/zones/5101830/01b3ff4d805901e8/01_middle.geojson",
+      "sha256": "dad7812fca886ff559a3736663f52d78189e2457c498b38d623ee54f45c89eae",
+      "feature_count": 4,
+      "name_field": "Middle_Hig",
+      "object_id_field": "OBJECTID",
+      "school_year_values": [],
+      "school_names": [
+        "Bell Creek Middle - Mechanicsville High",
+        "Chickahominy Middle - Atlee High",
+        "Liberty Middle - Patrick Henry High",
+        "Oak Knoll Middle - Hanover High"
+      ],
+      "retrieval_method": "all object IDs then paged GeoJSON by objectIds"
+    },
+    {
+      "level": "High",
+      "source_type": "arcgis",
+      "layer_url": "https://services2.arcgis.com/sKZWgJlU6SekCzQV/arcgis/rest/services/Middle_and_High_School_Districts_2026/FeatureServer/0",
+      "url": "https://services2.arcgis.com/sKZWgJlU6SekCzQV/arcgis/rest/services/Middle_and_High_School_Districts_2026/FeatureServer/0/query?where=1%3D1&outFields=%2A&outSR=4326&f=geojson",
+      "file": "data-raw/input/zones/5101830/01b3ff4d805901e8/02_high.geojson",
+      "sha256": "dad7812fca886ff559a3736663f52d78189e2457c498b38d623ee54f45c89eae",
+      "feature_count": 4,
+      "name_field": "Middle_Hig",
+      "object_id_field": "OBJECTID",
+      "school_year_values": [],
+      "school_names": [
+        "Bell Creek Middle - Mechanicsville High",
+        "Chickahominy Middle - Atlee High",
+        "Liberty Middle - Patrick Henry High",
+        "Oak Knoll Middle - Hanover High"
+      ],
+      "retrieval_method": "all object IDs then paged GeoJSON by objectIds"
+    }
+  ]
+}

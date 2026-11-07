@@ -1,0 +1,11 @@
+# Hanover 2026-27 attendance-zone release - 2026-11-07
+
+Scope: Add only the Hanover County Public Schools division GIS file and its level caches to the production snapshot. Replace the old 2015-16 SABS display for division 5101830. No school, metric, or other division data change.
+
+Source: [HCPS attendance zones](https://hcps.us/about_us/school_attendance_zones) labels its linked County map effective in the 2026-27 school year. The linked Hanover County ArcGIS FeatureServers provide 14 elementary areas and 4 combined middle/high areas. Live source counts on 2026-11-07 still match the pinned manifest. The [County GIS Data Hub](https://www.hanovercounty.gov/338/Mapping-Services) offers data downloads and direct use in GIS applications. The public ArcGIS items contain no item-specific license or attribution restriction. The map attributes the source to HCPS and Hanover County and says to confirm an address with HCPS.
+
+The [source manifest](../data-raw/zone_source_manifests/5101830.json), [import specification](../data-raw/zone_import_specs/5101830.json), [strict crosswalk](../data-raw/zone_school_crosswalks/5101830.csv), and [geometry report](../data-raw/zone_validation_reports/5101830.json) pin the local integration. Source JSON SHA-256: 951f195f9f87bd758ead827686eddb7af1653fc9ce7011e095ec922e58addec9. All 22 Hanover snapshot schools are linked. The 22 display features have valid, nonempty geometry. Same-level overlap is at most 0.3966 square metres, below the reviewed 0.5 square-metre cap. The elementary union exceeds the secondary union by 2,296.25 square metres across about 1.227 billion square metres; source shapes are retained.
+
+Release baseline: 1,169 of 1,810 schools matched; 641 unmatched. Candidate: 1,185 matched; 625 unmatched; 10 divisions without a zone file. The increase is 16 because six Hanover schools already had a SABS match. The statewide audit reports no invalid school IDs or empty geometry. R zone/cache checks passed. Rollback to previous production GitHub commit 306e1a1def7d414cbbc5c42f3343d5ae5d96bb7c and shinyapps.io bundle 12771632.
+
+Production commit, bundle, and live school selection: pending deployment verification.
