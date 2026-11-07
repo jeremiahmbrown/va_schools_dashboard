@@ -1,6 +1,6 @@
 # Hanover 2026-27 attendance-zone release - 2026-11-07
 
-Scope: Add only the Hanover County Public Schools division GIS file and its level caches to the production snapshot. Replace the old 2015-16 SABS display for division 5101830. No school, metric, or other division data change.
+Scope: Add only the Hanover County Public Schools division GIS file and its level caches to the production snapshot. Replace the old 2015-16 SABS display for division 5101830. No school, metric, or other division data change. The source-note rule identifies the Hanover GIS layer in the filter panel.
 
 Source: [HCPS attendance zones](https://hcps.us/about_us/school_attendance_zones) labels its linked County map effective in the 2026-27 school year. The linked Hanover County ArcGIS FeatureServers provide 14 elementary areas and 4 combined middle/high areas. Live source counts on 2026-11-07 still match the pinned manifest. The [County GIS Data Hub](https://www.hanovercounty.gov/338/Mapping-Services) offers data downloads and direct use in GIS applications. The public ArcGIS items contain no item-specific license or attribution restriction. The map attributes the source to HCPS and Hanover County and says to confirm an address with HCPS.
 
