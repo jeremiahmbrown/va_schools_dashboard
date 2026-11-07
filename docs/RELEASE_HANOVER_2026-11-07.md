@@ -8,4 +8,4 @@ The [source manifest](../data-raw/zone_source_manifests/5101830.json), [import s
 
 Release baseline: 1,169 of 1,810 schools matched; 641 unmatched. Candidate: 1,185 matched; 625 unmatched; 10 divisions without a zone file. The increase is 16 because six Hanover schools already had a SABS match. The statewide audit reports no invalid school IDs or empty geometry. R zone/cache checks passed. Rollback to previous production GitHub commit 306e1a1def7d414cbbc5c42f3343d5ae5d96bb7c and shinyapps.io bundle 12771632.
 
-Production commit, bundle, and live school selection: pending deployment verification.
+Published in GitHub master as app-source commit b9430c5bd52c3576b96404fa5e6f43fd3d3e1f24 and deployed to shinyapps.io app 16676824 as bundle 12791636. The live app selected Ashland Elementary, displayed its elementary boundary, and showed the Hanover 2026-27 County GIS source note with address-confirmation guidance. The first bundle 12791630 displayed a stale SABS note; it was superseded by the corrected bundle 12791636.
