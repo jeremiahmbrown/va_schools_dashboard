@@ -228,6 +228,8 @@ server <- function(input, output, session) {
       "Fairfax County: FCPS and County GIS standard attendance areas for 2026–27. Ten schools have no separate polygon in these layers. Some high-school edges overlap; confirm an address with the FCPS boundary locator."
     } else if (identical(division_id, "5103130")) {
       "Prince William County: PWCS GIS elementary areas are labeled 2025–26; middle and high areas are labeled current without a separate year. The high layer extends near Quantico beyond elementary and middle coverage. The 2026–27 elementary layer has Woodbridge, absent from this frozen snapshot. Confirm an address with PWCS or the base school liaison."
+    } else if (identical(division_id, "5103840")) {
+      "Virginia Beach: VBCPS 2026–27 elementary, middle, and high attendance zones. Tri-Campus serves three grade-paired schools. Some source edges overlap; confirm an address with VBCPS. Green Run Collegiate and Old Donation have no separate standard zone."
     } else if (identical(division_id, "5101830")) {
       "Hanover County: HCPS-linked County GIS attendance areas effective in 2026–27. The elementary and secondary source outlines differ slightly at some edges. Confirm an address with HCPS."
     } else if (identical(division_id, "5101440")) {

@@ -1,8 +1,8 @@
 # School attendance-zone gap plan - 2026-11-07
 
-The production baseline before the Hanover release had 641 unmatched schools among 1,810 snapshot schools. The Hanover 2026-27 release added 16 net matches. Production now has 1,185 matched and 625 unmatched. These are school-to-polygon links, not verified household assignments.
+The production baseline before the Hanover release had 641 unmatched schools among 1,810 snapshot schools. The Hanover and Virginia Beach 2026-27 releases added 16 and 55 net matches. Production now has 1,240 matched and 570 unmatched. These are school-to-polygon links, not verified household assignments.
 
-Of the 625 still unmatched, 493 have a school-to-zone link in the separate local research checkout. Each division needs a release review against the production school IDs, school year, source rights, geometry, special programs, map labels, and a live app test. This is not 493 ready-to-publish schools. The Loudoun layer, for example, fails the current production snapshot check for Richard and Mildred Loving Elementary and Gum Spring Middle; the local snapshot has their new IDs. Other locally staged sources have unresolved dates, overlaps, incomplete levels, or reuse terms. Release one qualified division at a time, with the exact source year shown in the app.
+Of the 570 still unmatched, 438 have a school-to-zone link in the separate local research checkout. Each division needs a release review against the production school IDs, school year, source rights, geometry, special programs, map labels, and a live app test. This is not 493 ready-to-publish schools. The Loudoun layer, for example, fails the current production snapshot check for Richard and Mildred Loving Elementary and Gum Spring Middle; the local snapshot has their new IDs. Other locally staged sources have unresolved dates, overlaps, incomplete levels, or reuse terms. Release one qualified division at a time, with the exact source year shown in the app.
 
 The other 132 have no school link even in local research:
 

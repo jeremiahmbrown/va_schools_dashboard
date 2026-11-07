@@ -1,0 +1,45 @@
+{
+  "division_id": "5103840",
+  "source_owner": "Virginia Beach City Public Schools, Department of School Division Services, Office of Facilities Services, Demographics and Planning",
+  "official_evidence_url": "https://www.vbschools.com/families/registration/schoollocator",
+  "source_label": "VBCPS 2026–27 attendance zones",
+  "popup_note": "VBCPS GIS labels these areas 2026–27. Tri-Campus is a shared area for three elementary schools; confirm an address with the VBCPS school locator.",
+  "expected_school_count": 81,
+  "max_same_level_overlap_m2": 66000,
+  "rights_access": "Public VBCPS ArcGIS service; explicit reuse terms not yet found",
+  "layers": [
+    {
+      "level": "Elementary",
+      "source_type": "arcgis",
+      "source_url": "https://services5.arcgis.com/36soGIYKLrgDhHrr/ArcGIS/rest/services/VBCPS_2026_27_ESAttendanceZones/FeatureServer/0",
+      "name_field": "FULLNAME",
+      "expected_count": 53
+    },
+    {
+      "level": "Middle",
+      "source_type": "arcgis",
+      "source_url": "https://services5.arcgis.com/36soGIYKLrgDhHrr/ArcGIS/rest/services/VBCPS_2026_27_MSAttendanceZones/FeatureServer/0",
+      "name_field": "FULL_NAME",
+      "expected_count": 13
+    },
+    {
+      "level": "High",
+      "source_type": "arcgis",
+      "source_url": "https://services5.arcgis.com/36soGIYKLrgDhHrr/ArcGIS/rest/services/VBCPS_2026_27_HSAttendanceZones/FeatureServer/0",
+      "name_field": "FULLNAME",
+      "expected_count": 12
+    }
+  ],
+  "overlap_review_note": "Equal-area check of the reviewed 77 display polygons found 65,779.597 m2 high-school overlap, 20,067.4117 m2 middle-school overlap, and 1,398.8025 m2 elementary overlap. Largest high-school pairs are Green Run/First Colonial (20,063 m2), Green Run/Ocean Lakes (16,815 m2), and Green Run/Princess Anne (15,351 m2); middle-school overlap is mainly Plaza/Independence and Plaza/Lynnhaven (about 9,694 and 9,568 m2). These official-source overlaps can affect an address near a zone edge. The 66,000 m2 cap rejects a larger change; confirm any assignment with VBCPS.",
+  "same_school_dissolves": [
+    {
+      "level": "High",
+      "source_name": "GREEN RUN HIGH SCHOOL",
+      "source_object_ids": [
+        10,
+        12
+      ],
+      "note": "The 2026-27 VBCPS locator web map uses this high-school service without a definition filter. Both FIDs have the same VBCPS SCH_ID 0010 and OBJECTID_1 14; union preserves both source footprints as one Green Run High display zone."
+    }
+  ]
+}
