@@ -158,4 +158,15 @@ for (sid in tri_ids) {
 }
 stopifnot(is.null(filter_zone_geojson_by_school_id(beach_text, "510384002957")))
 
+henrico_text <- read_zone_geojson(pick_zone_file("app/data", "5101890"))
+henrico_features <- jsonlite::fromJSON(henrico_text, simplifyVector = FALSE)$features
+joint <- Filter(function(f) identical(f$properties$official_school_name, "MEHFOUD&VARINA"), henrico_features)
+stopifnot(length(joint) == 1L)
+for (sid in c("510189002124", "510189000834")) {
+  selected <- jsonlite::fromJSON(filter_zone_geojson_by_school_id(henrico_text, sid), simplifyVector = FALSE)$features
+  stopifnot(length(selected) == 1L, identical(selected[[1]]$properties$zone_id, joint[[1]]$properties$zone_id))
+}
+kaechele <- jsonlite::fromJSON(filter_zone_geojson_by_school_id(henrico_text, "510189002953"), simplifyVector = FALSE)$features
+stopifnot(length(kaechele) == 2L)
+
 cat("Division zone level, school match, geometry, and cache checks passed.\n")

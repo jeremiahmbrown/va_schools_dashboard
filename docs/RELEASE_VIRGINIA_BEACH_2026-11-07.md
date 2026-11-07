@@ -10,4 +10,4 @@ Reviewed same-level overlap is 1,398.8025 square metres elementary, 20,067.4117 
 
 Prior production: 1,185 of 1,810 schools matched; 625 unmatched. Candidate: 1,240 matched; 570 unmatched; zero invalid school IDs or empty geometry; ten divisions without a zone file. R zone/cache, shared-school selection, importer, and snapshot tests passed, as did the statewide audit and Git diff check. Rollback baseline: GitHub commit f3d17326374fcdb3f2fd41fea50addd7628c7b42 and shinyapps.io bundle 12791636.
 
-Production commit, bundle, and live map check: pending deployment verification.
+Published in GitHub master as corrected app-source commit b9b2af061a78b97c31fa64d07dca4127592a4267 and deployed to shinyapps.io app 16676824 as bundle 12791677. The first bundle 12791664 exposed a shared-school selection bug: Diamond Springs showed a missing-zone warning. The corrected school-ID filter and regression test select the one Tri-Campus area for all three schools. Live Diamond Springs selected with the zone layer on; the 2026-27 VBCPS source warning displayed and the missing-zone warning was absent.

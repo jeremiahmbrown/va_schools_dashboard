@@ -1,0 +1,69 @@
+division_id,level,source_name,school_id,school_name,disposition,note
+5101890,Elementary,ADAMS,510189000813,Jacob L. Adams Elementary,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,Elementary,ASHE,510189000869,Arthur Ashe Jr. Elementary ,mapped,HCPS GIS DistrictName; 1 source polygon(s). Explicit snapshot-name alias.
+5101890,Elementary,BAKER,510189000788,George F. Baker Elementary,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,Elementary,CARVER,510189000824,Ruby F. Carver Elementary,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,Elementary,CHAMBERLAYNE,510189000792,Chamberlayne Elementary,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,Elementary,COLONIAL TRAIL,510189002756,Colonial Trail Elementary,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,Elementary,CRESTVIEW,510189000793,Crestview Elementary,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,Elementary,DAVIS,510189000812,Jackson Davis Elementary,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,Elementary,DONAHOE,510189000794,Cashell Donahoe Elementary,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,Elementary,DUMBARTON,510189000796,Dumbarton Elementary,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,Elementary,ECHO LAKE,510189001912,Echo Lake Elementary,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,Elementary,FAIR OAKS,510189000798,Fair Oaks Elementary,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,Elementary,GAYTON,510189002123,Gayton Elementary,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,Elementary,GLEN ALLEN,510189000801,Glen Allen Elementary,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,Elementary,GLEN LEA,510189000802,Glen Lea Elementary,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,Elementary,GREENWOOD,510189002441,Greenwood Elementary ,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,Elementary,HARVIE,510189002788,Harvie Elementary,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,Elementary,HIGHLAND SPRINGS,510189000808,Highland Springs Elementary,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,Elementary,HOLLADAY,510189000797,Elizabeth Holladay Elementary,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,Elementary,JOHNSON,510189000789,Charles M. Johnson Elementary,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,Elementary,KAECHELE,510189002953,David A. Kaechele Elementary ,mapped,HCPS GIS DistrictName; 2 source polygon(s).
+5101890,Elementary,LABURNUM,510189000814,Laburnum Elementary,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,Elementary,LAKESIDE,510189000815,Lakeside Elementary,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,Elementary,LONGAN,510189000821,R.C. Longan Elementary,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,Elementary,LONGDALE,510189000816,Longdale Elementary,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,Elementary,MAYBEURY,510189000817,Maybeury Elementary,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,Elementary,MEHFOUD&VARINA,510189002124,Anthony P. Mehfoud Elementary,shared_zone,HCPS source uses one MEHFOUD&VARINA area. The HCPS 2025–26 adopted plan lists Mehfoud K–2 and Varina grades 3–5; confirm an address with HCPS.
+5101890,Elementary,MEHFOUD&VARINA,510189000834,Varina Elementary,shared_zone,HCPS source uses one MEHFOUD&VARINA area. The HCPS 2025–26 adopted plan lists Mehfoud K–2 and Varina grades 3–5; confirm an address with HCPS.
+5101890,Elementary,MONTROSE,510189000818,Montrose Elementary,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,Elementary,NUCKOLS FARM,510189001624,Nuckols Farm Elementary,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,Elementary,PEMBERTON,510189000819,Pemberton Elementary,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,Elementary,PINCHBECK,510189000820,Pinchbeck Elementary,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,Elementary,RATCLIFFE,510189000822,Harold Macon Ratcliffe Elementary,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,Elementary,RIDGE,510189000823,Ridge Elementary,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,Elementary,RIVERS EDGE,510189002410,Rivers Edge Elementary,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,Elementary,SANDSTON,510189000825,Sandston Elementary,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,Elementary,SEVEN PINES,510189000826,Seven Pines Elementary,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,Elementary,SHADY GROVE,510189000133,Shady Grove Elementary,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,Elementary,SHORT PUMP,510189000827,Short Pump Elementary,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,Elementary,SKIPWITH,510189000828,Skipwith Elementary,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,Elementary,SPRINGFIELD PARK,510189001384,Springfield Park Elementary,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,Elementary,THREE CHOPT,510189000829,Three Chopt Elementary,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,Elementary,TREVVETT,510189000830,Maude Trevvett Elementary,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,Elementary,TUCKAHOE,510189000831,Tuckahoe Elementary,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,Elementary,TWIN HICKORY,510189002536,Twin Hickory Elementary,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,Elementary,WARD,510189001128,Henry D. Ward Elementary,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,Middle,Brookland,510189000790,Brookland Middle,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,Middle,Elko,510189002757,Elko Middle,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,Middle,Fairfield,510189000799,Fairfield Middle,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,Middle,Holman,510189002833,Holman Middle ,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,Middle,Hungary Creek,510189002440,Hungary Creek Middle ,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,Middle,Moody,510189000800,George H. Moody Middle,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,Middle,Pocahontas,510189001911,Pocahontas Middle,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,Middle,Quioccasin,510189000803,Quioccasin Middle,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,Middle,Rolfe,510189001850,John Rolfe Middle,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,Middle,Short Pump,510189000123,Short Pump Middle,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,Middle,Tuckahoe,510189000832,Tuckahoe Middle,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,Middle,Wilder,510189001622,L. Douglas Wilder Middle,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,High,DEEP RUN,510189002278,Deep Run High,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,High,FREEMAN,510189000795,Douglas S. Freeman High,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,High,GLEN ALLEN,510189002837,Glen Allen High,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,High,GODWIN,510189001851,Mills E. Godwin High,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,High,HENRICO,510189000804,Henrico High,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,High,HERMITAGE,510189000806,Hermitage High,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,High,HIGHLAND SPRINGS,510189000809,Highland Springs High,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,High,TUCKER,510189000811,John Randolph Tucker High,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,High,VARINA,510189000835,Varina High,mapped,HCPS GIS DistrictName; 1 source polygon(s).
+5101890,Combined,,510189003098,Henrico Virtual Academy,no_neighborhood_zone,The standard HCPS attendance-zone layers have no separate virtual-academy area.
