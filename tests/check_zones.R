@@ -146,4 +146,16 @@ for (division_id in c(names(neighbor_expected), "5103300", "5103330")) {
   unlink(crlf_source)
 }
 
+beach_text <- read_zone_geojson(pick_zone_file("app/data", "5103840"))
+beach_features <- jsonlite::fromJSON(beach_text, simplifyVector = FALSE)$features
+tri <- Filter(function(f) identical(f$properties$official_school_name, "TRI-CAMPUS"), beach_features)
+stopifnot(length(tri) == 1L)
+tri_ids <- unlist(tri[[1]]$properties$app_school_ids, use.names = FALSE)
+stopifnot(setequal(tri_ids, c("510384002770", "510384001704", "510384001725")))
+for (sid in tri_ids) {
+  selected <- jsonlite::fromJSON(filter_zone_geojson_by_school_id(beach_text, sid), simplifyVector = FALSE)$features
+  stopifnot(length(selected) == 1L, identical(selected[[1]]$properties$zone_id, tri[[1]]$properties$zone_id))
+}
+stopifnot(is.null(filter_zone_geojson_by_school_id(beach_text, "510384002957")))
+
 cat("Division zone level, school match, geometry, and cache checks passed.\n")

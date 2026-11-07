@@ -53,7 +53,7 @@ pick_zone_level_cache <- function(data_dir, division_id, level, source_path) {
 }
 
 filter_zone_geojson_by_school_id <- function(geojson_text, school_id) {
-  # Keep only features for the selected app school_id. Returns GeoJSON text.
+  # Keep features linked to the selected school ID, including shared areas.
   # If no features match, returns NULL.
   if (is.null(geojson_text) || !nzchar(geojson_text)) return(NULL)
   if (is.null(school_id) || !nzchar(school_id)) return(NULL)
@@ -67,7 +67,9 @@ filter_zone_geojson_by_school_id <- function(geojson_text, school_id) {
     function(f) {
       props <- f$properties
       if (is.null(props)) return(FALSE)
-      sid <- props$app_school_id
+      shared_ids <- props[["app_school_ids", exact = TRUE]]
+      if (!is.null(shared_ids) && school_id %in% as.character(unlist(shared_ids, use.names = FALSE))) return(TRUE)
+      sid <- props[["app_school_id", exact = TRUE]]
       if (is.null(sid)) return(FALSE)
       if (is.list(sid)) {
         if (length(sid) != 1) return(FALSE)

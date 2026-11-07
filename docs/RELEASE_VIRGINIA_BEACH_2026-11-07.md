@@ -8,6 +8,6 @@ The [source manifest](../data-raw/zone_source_manifests/5103840.json), [import s
 
 Reviewed same-level overlap is 1,398.8025 square metres elementary, 20,067.4117 middle, and 65,779.597 high, below the 66,000 square-metre cap. These source edges do not determine a home address assignment. The division locator is the check for an address in an overlap.
 
-Prior production: 1,185 of 1,810 schools matched; 625 unmatched. Candidate: 1,240 matched; 570 unmatched; zero invalid school IDs or empty geometry; ten divisions without a zone file. R zone/cache, importer, and snapshot tests passed, as did the statewide audit and Git diff check. Rollback baseline: GitHub commit f3d17326374fcdb3f2fd41fea50addd7628c7b42 and shinyapps.io bundle 12791636.
+Prior production: 1,185 of 1,810 schools matched; 625 unmatched. Candidate: 1,240 matched; 570 unmatched; zero invalid school IDs or empty geometry; ten divisions without a zone file. R zone/cache, shared-school selection, importer, and snapshot tests passed, as did the statewide audit and Git diff check. Rollback baseline: GitHub commit f3d17326374fcdb3f2fd41fea50addd7628c7b42 and shinyapps.io bundle 12791636.
 
 Production commit, bundle, and live map check: pending deployment verification.
