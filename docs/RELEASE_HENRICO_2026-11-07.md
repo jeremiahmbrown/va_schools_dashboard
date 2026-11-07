@@ -10,4 +10,4 @@ Same-level overlap is 33,996.6878 square metres elementary, 13,150.6609 middle, 
 
 Prior production: 1,240 of 1,810 schools matched; 570 unmatched. Candidate: 1,292 matched; 518 unmatched; zero invalid school IDs or empty geometry; ten divisions without a file. R zone/cache and shared-area selection, importer, snapshot, statewide audit, and Git diff checks passed. Rollback baseline: GitHub app-source commit b9b2af061a78b97c31fa64d07dca4127592a4267 and shinyapps.io bundle 12791677.
 
-Production commit, bundle, and live map check: pending deployment verification.
+Published in GitHub master as app-source commit aa0d87766ea268cd7ff1e4ece83d41bf5d85c224 and deployed to shinyapps.io app 16676824 as bundle 12791710. The live app selected Anthony P. Mehfoud Elementary with the zone layer on; it showed the HCPS/County GIS 2026-27 note and no missing-zone warning.

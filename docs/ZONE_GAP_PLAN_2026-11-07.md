@@ -1,6 +1,6 @@
 # School attendance-zone gap plan - 2026-11-07
 
-The production baseline before the Hanover release had 641 unmatched schools among 1,810 snapshot schools. The Hanover, Virginia Beach, and Henrico 2026-27 releases added 16, 55, and 52 net matches. Production now has 1,292 matched and 518 unmatched. These are school-to-polygon links, not verified household assignments.
+The production baseline before these releases had 641 unmatched schools among 1,810 snapshot schools: 509 already had a local candidate school-zone link, and 132 had no link even locally. The Hanover, Virginia Beach, and Henrico 2026-27 releases added 16, 55, and 52 net matches. Production now has 1,292 matched and 518 unmatched. These are school-to-polygon links, not verified household assignments.
 
 Of the 518 still unmatched, 386 have a school-to-zone link in the separate local research checkout. Each division needs a release review against the production school IDs, school year, source rights, geometry, special programs, map labels, and a live app test. This is not 493 ready-to-publish schools. The Loudoun layer, for example, fails the current production snapshot check for Richard and Mildred Loving Elementary and Gum Spring Middle; the local snapshot has their new IDs. Other locally staged sources have unresolved dates, overlaps, incomplete levels, or reuse terms. Release one qualified division at a time, with the exact source year shown in the app.
 
