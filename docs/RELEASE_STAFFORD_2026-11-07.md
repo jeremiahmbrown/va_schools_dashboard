@@ -10,4 +10,4 @@ Same-level overlap is 13,930.6239 square metres elementary, 719.3805 middle, and
 
 Prior production: 1,292 of 1,810 schools matched; 518 unmatched. Candidate: 1,310 matched; 500 unmatched; zero invalid school IDs or empty geometry; ten divisions without a file. R zone/cache, source-only, importer, snapshot, statewide audit, and Git diff checks passed. Rollback baseline: GitHub commit 099b97b9304690df4fa371145ed8767714c6c9e3 and shinyapps.io bundle 12791710.
 
-Production commit, bundle, and live map check: pending deployment verification.
+Published in GitHub master as app-source commit f3e68cd532320ed70628b55477a3a225be79d4d9 and deployed to shinyapps.io app 16676824 as bundle 12791743. The live app selected Falmouth Elementary with the zone layer on; it showed the SCPS 2026-27 source note and no missing-zone warning.
