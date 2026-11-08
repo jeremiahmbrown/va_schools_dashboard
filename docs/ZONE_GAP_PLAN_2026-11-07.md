@@ -2,7 +2,7 @@
 
 The original baseline had 641 unmatched schools among 1,810 snapshot schools. Releases for Hanover, Virginia Beach, Henrico, Stafford, Alexandria, Norfolk, WJCC, Chesapeake, Loudoun, and Newport News have added verified links. The refreshed production dashboard has 1,814 schools: 1,476 matched and 338 unmatched. These are school-to-polygon links, not household assignments.
 
-Of the 338 unmatched schools, 205 have a link in the separate local research checkout. Each requires a release review of school IDs, school year, source rights, geometry, special programs, map labels, and live app behavior. A local link is not a release approval.
+Of the 338 unmatched schools, 205 have a link in the separate local research checkout. Each requires a release review of school IDs, school year, source rights, geometry, special programs, map labels, and live app behavior. A local link is not a release approval. Harrisonburg has ten local links but remains held for the exact service year and reuse terms; see the [source audit](HARRISONBURG_SOURCE_AUDIT_2026-11-08.md).
 
 The other 133 have no verified local link in either the production or research checkout:
 

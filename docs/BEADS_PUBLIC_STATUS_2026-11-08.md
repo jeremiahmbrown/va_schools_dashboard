@@ -11,6 +11,7 @@ This is a contact-free summary of boundary work. The full Beads ledger stays in 
 | `va_schools_dashboard-nlf.11.22` | Closed | Chesapeake and Loudoun 2026-27 zones, four school identities, and year-aware names released; local and live checks passed. |
 | `va_schools_dashboard-nlf.11.20` | Closed | Newport News current-map zones released after exact public-item, geometry, and live app checks. |
 | `va_schools_dashboard-nlf.6.21` | In progress | Hampton source year, reuse, and choice-area meaning remain unresolved. |
+| `va_schools_dashboard-nlf.2.6` | Blocked | Harrisonburg City map checked; exact service has no effective year or reuse terms. Ten local links stay out of production. |
 | `va_schools_dashboard-nlf.7.25` | Closed | Pulaski County GIS school-district polygons identified as supervisor districts, not attendance areas. |
 | `va_schools_dashboard-nlf.7.31` | Open | Request official Pulaski attendance areas and year; request draft is unsent. |
 | `va_schools_dashboard-nlf.7.26` | In progress | Dinwiddie County public GIS lacks verified attendance polygons; source request draft is unsent. |
