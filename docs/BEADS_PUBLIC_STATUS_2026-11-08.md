@@ -12,5 +12,6 @@ This is a contact-free summary of boundary work. The full Beads ledger stays in 
 | `va_schools_dashboard-nlf.6.21` | In progress | Hampton source year, reuse, and choice-area meaning remain unresolved. |
 | `va_schools_dashboard-nlf.7.25` | Closed | Pulaski County GIS school-district polygons identified as supervisor districts, not attendance areas. |
 | `va_schools_dashboard-nlf.7.31` | Open | Request official Pulaski attendance areas and year; request draft is unsent. |
+| `va_schools_dashboard-nlf.7.26` | In progress | Dinwiddie County public GIS lacks verified attendance polygons; source request draft is unsent. |
 
-The current production dashboard has **1,370 of 1,810** schools matched to a zone polygon. The 440 unmatched schools include 308 with a local candidate link awaiting release review and 132 without a verified local link. See [gap plan](ZONE_GAP_PLAN_2026-11-07.md) and the [Pulaski audit](PULASKI_SOURCE_AUDIT_2026-11-08.md).
+The current production dashboard has **1,370 of 1,810** schools matched to a zone polygon. The 440 unmatched schools include 308 with a local candidate link awaiting release review and 132 without a verified local link. See [gap plan](ZONE_GAP_PLAN_2026-11-07.md) and the [Pulaski audit](PULASKI_SOURCE_AUDIT_2026-11-08.md) and [Dinwiddie audit](DINWIDDIE_SOURCE_AUDIT_2026-11-08.md).
