@@ -21,4 +21,7 @@ Chesapeake has 38 source polygons and 45/45 school links. Loudoun has 93 polygon
 - `Rscript --vanilla tests/check_zones.R`: passed.
 - `python3 tests/check_zone_importer.py`: passed.
 - `python3 data-raw/audit_zones.py`: 1,454 matches; 360 unmatched; zero invalid school IDs; zero empty geometries.
-- Git and live Shiny release: pending.
+- GitHub master commit `f6b0b1090b544d2d22d557db2f2f37fa685ad976` has tree `5473440961932c6687f4e1460ee89eb587c6d2f9`, identical to the locally checked tree.
+- Shiny app ID `16676824`, bundle `12795723`: deployment completed on 2026-11-08 at the existing URL.
+- Live UI: 1,814-school snapshot; B.M. Williams Elementary shows 734 enrollment, 2026 measures, its zone outline, and the Chesapeake source warning. Gum Spring Middle shows its 2026 profile and the Loudoun source warning; 2025 data year displays Mercer Middle. These are browser checks, not household-address validation.
+- Rollback target: prior bundle `12794667` and Git commit `c4c4d9c6a649e5dd7b5c988d5c4cb071fa247e01`.
