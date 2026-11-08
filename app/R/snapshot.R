@@ -27,6 +27,7 @@
 load_snapshot <- function(data_dir = "data") {
   snapshot_meta_path <- file.path(data_dir, "snapshot_meta.json")
   schools_path <- file.path(data_dir, "schools.csv")
+  school_renames_path <- file.path(data_dir, "school_renames.csv")
   metric_defs_path <- file.path(data_dir, "metric_defs.csv")
   school_metrics_path <- file.path(data_dir, "school_metrics.csv")
   enrollment_by_year_path <- file.path(data_dir, "enrollment_by_year.csv")
@@ -51,6 +52,19 @@ load_snapshot <- function(data_dir = "data") {
       enrollment_latest = "integer"
     )
   )
+
+  school_renames <- read.csv(
+    school_renames_path,
+    stringsAsFactors = FALSE,
+    colClasses = c(school_id = "character", prior_name = "character",
+                   current_name = "character", first_current_year = "integer")
+  )
+  if (anyDuplicated(school_renames$school_id) ||
+      !all(school_renames$school_id %in% schools$school_id) ||
+      !all(school_renames$current_name ==
+           schools$school_name[match(school_renames$school_id, schools$school_id)])) {
+    stop("School rename table does not match the snapshot")
+  }
 
   metric_defs <- read.csv(
     metric_defs_path,
@@ -153,6 +167,7 @@ load_snapshot <- function(data_dir = "data") {
   list(
     meta = meta,
     schools = schools,
+    school_renames = school_renames,
     metric_defs = metric_defs,
     school_metrics = school_metrics,
     enrollment_by_year = enrollment_by_year,

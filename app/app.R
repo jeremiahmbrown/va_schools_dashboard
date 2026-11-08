@@ -42,6 +42,7 @@ shiny::addResourcePath(
 )
 
 source(file.path(app_dir, "R", "snapshot.R"))
+source(file.path(app_dir, "R", "school_identity.R"))
 source(file.path(app_dir, "R", "formatting.R"))
 source(file.path(app_dir, "R", "map_helpers.R"))
 source(file.path(app_dir, "R", "detail_viz.R"))
@@ -54,6 +55,7 @@ source(file.path(app_dir, "R", "metric_availability.R"))
 snapshot <- load_snapshot(file.path(app_dir, "data"))
 
 schools <- snapshot$schools
+school_renames <- snapshot$school_renames
 metric_defs <- snapshot$metric_defs
 school_metrics <- snapshot$school_metrics
 enrollment_by_year <- snapshot$enrollment_by_year
@@ -232,6 +234,10 @@ server <- function(input, output, session) {
       "Norfolk City: NPS-linked locator labels these elementary, middle, and high boundaries 2026–27. The middle and high service layer names still say 2025–26. Four snapshot schools have no separate standard neighborhood area. Confirm an address with NPS."
     } else if (identical(division_id, "5104020")) {
       "Williamsburg-James City County: WJCC identifies these as current 2026–27 attendance zones. Board-approved replacement zones begin in August 2027 and are not shown. Confirm an address with WJCC Schools."
+    } else if (identical(division_id, "5100810")) {
+      "Chesapeake City: CPS GIS attendance layers are labeled 2026–27. Some primary and intermediate schools share areas; Sparrow Road Intermediate serves two published areas. B.M. Williams and Crestwood Elementary link to 2025–26 school records. Confirm an address with CPS Planning."
+    } else if (identical(division_id, "5102250")) {
+      "Loudoun County: LCPS GIS attendance layers are labeled 2026–27. Two schools renamed in 2025 keep their NCES IDs; five schools have no separate standard polygon. Confirm an address with the LCPS attendance locator."
     } else if (identical(division_id, "5100120")) {
       "Alexandria City: ACPS approved these elementary, middle, and high attendance boundaries for 2026–27, effective July 1, 2026. Confirm an address and enrollment with ACPS Attendance Zone Locator."
     } else if (identical(division_id, "5103660")) {
@@ -294,7 +300,8 @@ server <- function(input, output, session) {
   dashboard_panel_server(
     input, output, session, selected_school_id, selected_division_id,
     metric_id_selected, schools, division_name_lookup, divisions_sp,
-    metric_defs_by_id, school_metrics, division_metrics, enrollment_by_year
+    metric_defs_by_id, school_metrics, division_metrics, enrollment_by_year,
+    school_renames
   )
 
   metric_available_years <- reactive({
@@ -438,6 +445,8 @@ server <- function(input, output, session) {
 
     schools_joined <- schools_filtered %>%
       left_join(school_vals, by = "school_id")
+    schools_joined$school_name <- school_name_for_year(
+      schools_joined$school_id, year_selected, schools_joined$school_name, school_renames)
 
     threshold_school_ids <- schools$school_id
     threshold_division_ids <- divisions_sp@data$division_id

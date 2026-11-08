@@ -897,6 +897,84 @@ nces_va <- nces_sch_va %>%
     nces_division_name = as.character(LEA_NAME)
   )
 
+# The 2024-25 EDGE file predates two Chesapeake K-5 schools that opened in
+# 2025-26. NCES gave them new IDs. Their former schools used the same physical
+# addresses, so retain the verified campus coordinates without reusing IDs or
+# moving any earlier metrics. These rows are reviewed in school_identity_overrides.csv.
+identity_path <- file.path("data-raw", "school_identity_overrides.csv")
+identity_overrides <- read.csv(identity_path, stringsAsFactors = FALSE,
+                               colClasses = "character")
+required_identity <- c("division_id", "school_name", "school_id",
+                       "predecessor_nces_school_id", "start_year",
+                       "state_school_number", "source_url")
+if (!identical(names(identity_overrides), required_identity) ||
+    nrow(identity_overrides) != 2L ||
+    anyDuplicated(identity_overrides$school_id) ||
+    anyDuplicated(identity_overrides$school_name) ||
+    any(identity_overrides$division_id != "5100810") ||
+    any(identity_overrides$start_year != "2026") ||
+    any(!nzchar(identity_overrides$source_url))) {
+  stop("Reviewed Chesapeake school identity overrides changed")
+}
+for (i in seq_len(nrow(identity_overrides))) {
+  entry <- identity_overrides[i, ]
+  former <- nces_va[nces_va$school_id == entry$predecessor_nces_school_id, ]
+  if (nrow(former) != 1L || former$division_id != entry$division_id ||
+      !is.finite(former$lat) || !is.finite(former$lon) ||
+      entry$school_id %in% nces_va$school_id ||
+      !any(enroll_keep$division_name == "Chesapeake City Public Schools" &
+           enroll_keep$school_name == entry$school_name &
+           enroll_keep$year == as.integer(entry$start_year))) {
+    stop("Chesapeake identity or 2025-26 enrollment source changed: ",
+         entry$school_name)
+  }
+  current <- former
+  current$school_id <- entry$school_id
+  current$nces_school_name <- entry$school_name
+  nces_va <- dplyr::bind_rows(nces_va, current)
+}
+
+# LCPS renamed two existing schools effective July 1, 2025. VDOE exports use
+# current names even for older rows, while the 2024-25 EDGE file has prior names.
+# Add name aliases to the NCES join, retaining each school's ID and coordinates.
+# A separate display table preserves the name that applied to each school year.
+loudoun_rename_path <- file.path("data-raw", "loudoun_school_rename_evidence.csv")
+loudoun_renames <- read.csv(loudoun_rename_path, stringsAsFactors = FALSE,
+                            colClasses = "character")
+required_rename <- c("school_id", "prior_name", "current_name", "effective_date",
+                     "division_id", "level", "lcps_source_url", "id_source")
+if (!identical(names(loudoun_renames), required_rename) ||
+    nrow(loudoun_renames) != 2L ||
+    !setequal(loudoun_renames$school_id, c("510225002450", "510225002412")) ||
+    anyDuplicated(loudoun_renames$school_id) ||
+    any(loudoun_renames$division_id != "5102250") ||
+    any(loudoun_renames$effective_date != "2025-07-01") ||
+    any(!startsWith(loudoun_renames$lcps_source_url, "https://www.lcps.org/"))) {
+  stop("Reviewed Loudoun rename evidence changed")
+}
+for (i in seq_len(nrow(loudoun_renames))) {
+  entry <- loudoun_renames[i, ]
+  prior <- nces_va[nces_va$school_id == entry$school_id, ]
+  if (nrow(prior) != 1L ||
+      prior$division_id != entry$division_id ||
+      prior$nces_school_name != entry$prior_name ||
+      any(nces_va$division_id == entry$division_id &
+          nces_va$nces_school_name == entry$current_name) ||
+      !is.finite(prior$lat) || !is.finite(prior$lon) ||
+      !any(enroll_keep$division_name == "Loudoun County Public Schools" &
+           enroll_keep$school_name == entry$current_name &
+           enroll_keep$year == 2026L)) {
+    stop("Loudoun identity or 2025-26 enrollment source changed: ",
+         entry$current_name)
+  }
+  current <- prior
+  current$nces_school_name <- entry$current_name
+  nces_va <- dplyr::bind_rows(nces_va, current)
+}
+school_renames_out <- loudoun_renames %>%
+  dplyr::transmute(school_id, prior_name, current_name,
+                   first_current_year = as.integer(substr(effective_date, 1L, 4L)) + 1L)
+
 # Build VDOE school list from core_join and match to NCES by normalized division+school names.
 vdoe_schools <- core_join %>%
   distinct(division_name, school_name) %>%
@@ -1288,6 +1366,15 @@ sbar <- build_sbar_sanction_metrics(sbar_archive, schools_out, enroll_keep,
                                     matched, years_keep, norm_key,
                                     historical_enrollment_archive)
 school_metrics_out <- dplyr::bind_rows(school_metrics_out, sbar$metrics)
+# Completeness builders can emit suppressed placeholders for years before
+# a new school opened. Keep no metric row before its verified start year.
+identity_start <- identity_overrides %>%
+  dplyr::transmute(school_id = school_id,
+                   first_metric_year = as.integer(start_year))
+school_metrics_out <- school_metrics_out %>%
+  dplyr::left_join(identity_start, by = "school_id") %>%
+  dplyr::filter(is.na(first_metric_year) | year >= first_metric_year) %>%
+  dplyr::select(-first_metric_year)
 if (anyDuplicated(school_metrics_out[c('school_id', 'year', 'metric_id')])) {
   stop('Duplicate school metric keys after supplemental imports.')
 }
@@ -1762,7 +1849,7 @@ snapshot_meta <- list(
   snapshot_date = as.character(Sys.Date()),
   year_min = min(years_keep),
   year_max = max(years_keep),
-  transform_version = 12,
+  transform_version = 13,
   annual_sol_match = list(source_schools = annual_sol$source_schools,
                           matched_schools = annual_sol$matched_schools,
                           unmatched_schools = nrow(annual_sol$unmatched)),
@@ -1791,6 +1878,7 @@ snapshot_meta <- list(
     file.path("data-raw", "fall_membership_race_sources.json"),
     file.path("data-raw", "fall_membership_historical_sources.json"),
     file.path("data-raw", "sbar_school_sanctions_sources.json"),
+    loudoun_rename_path,
     vapply(c("enrollment", "absenteeism", "fr_eligibility", "fr_breakfast", "fr_lunch"),
            history_path, character(1))), source_file_info),
   notes = "Built from VDOE School Quality Profiles downloads, annual SOL School Subject-Area workbooks, 2022–26 Fall Membership race counts, and school-level SBAR sanction actions, plus NCES EDGE geocodes and TIGER/Line boundaries. The 2022 annual SOL files report school and division subject rates without test counts; later division subject rates use matched school test counts. The 2022 SBAR denominator uses checked Fall Membership school totals; later years use checked SQP enrollment. The 2023 race shares exclude schools whose race sum differs from separately reported SQP enrollment because that year's gender export omits Other. Legacy SQP suspension rates and SBAR action rates are separate measures. Historical ACR/SQP Percent Passing and annual SOL test-administration rates are separate measures.",
@@ -1808,6 +1896,7 @@ snapshot_meta <- list(
 jsonlite::write_json(snapshot_meta, file.path(snapshot_stage, "snapshot_meta.json"), pretty = TRUE, auto_unbox = TRUE)
 write_csv_atomic(metric_defs_out, file.path(snapshot_stage, "metric_defs.csv"))
 write_csv_atomic(schools_out, file.path(snapshot_stage, "schools.csv"))
+write_csv_atomic(school_renames_out, file.path(snapshot_stage, "school_renames.csv"))
 write_csv_atomic(school_metrics_out, file.path(snapshot_stage, "school_metrics.csv"))
 write_csv_atomic(enrollment_by_year, file.path(snapshot_stage, "enrollment_by_year.csv"))
 write_csv_atomic(division_metrics_out, file.path(snapshot_stage, "division_metrics.csv"))

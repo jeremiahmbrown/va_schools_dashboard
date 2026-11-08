@@ -1,0 +1,34 @@
+{
+  "division_id": "5102250",
+  "source_owner": "Loudoun County Public Schools Planning & GIS Services",
+  "official_evidence_url": "https://www.lcps.org/o/support/page/planning-gis-services/",
+  "source_label": "LCPS Planning & GIS 2026–27 attendance zones",
+  "popup_note": "LCPS GIS labels these areas 2026–27. School data may use an earlier snapshot; confirm an address with the LCPS attendance boundary locator.",
+  "expected_school_count": 98,
+  "max_same_level_overlap_m2": 0.01,
+  "rights_access": "LCPS public ArcGIS service; confirm reuse terms before public release",
+  "layers": [
+    {
+      "level": "Elementary",
+      "source_type": "arcgis",
+      "source_url": "https://services3.arcgis.com/PgITX2Sy39aYHLDV/ArcGIS/rest/services/eszonesAGOL/FeatureServer/0",
+      "name_field": "ELEM_CODE",
+      "expected_count": 59
+    },
+    {
+      "level": "Middle",
+      "source_type": "arcgis",
+      "source_url": "https://services3.arcgis.com/PgITX2Sy39aYHLDV/ArcGIS/rest/services/mszonesAGOL/FeatureServer/0",
+      "name_field": "INT_CODE",
+      "expected_count": 17
+    },
+    {
+      "level": "High",
+      "source_type": "arcgis",
+      "source_url": "https://services3.arcgis.com/PgITX2Sy39aYHLDV/ArcGIS/rest/services/hszonesAGOL/FeatureServer/0",
+      "name_field": "HIGH_CODE",
+      "expected_count": 17
+    }
+  ],
+  "overlap_review_note": "Equal-area review found 0.0014 m² total elementary same-level overlap and 0.0006 m² at each secondary level. These are coordinate edge slivers, so allow at most 0.01 m²; confirm any address with the LCPS locator."
+}

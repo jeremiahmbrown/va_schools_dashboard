@@ -8,7 +8,7 @@ The optional attendance-zone layer has three source groups:
 
 | Source | Divisions | Features | School matches | Date |
 | --- | ---: | ---: | ---: | --- |
-| NCES SABS | 104 active sources | 994 | 627 distinct schools | 2015–16 survey; older files retained when a division GIS source takes priority |
+| NCES SABS | 102 active sources | 864 | See statewide total below | 2015–16 survey; older files retained when a division GIS source takes priority |
 | Roanoke County public GIS | 1 | 60 level features from 20 assigned county areas | 26 of 26 county schools | Retrieved 2026-10-20; the GIS service does not state a boundary effective date |
 | Roanoke City public GIS | 1 | 24 features: 17 elementary, 5 middle, 2 high | 24 of 24 City schools | Elementary Phase 1 applies to 2026–27; middle and high layer metadata date from 2009 |
 | Neighboring division GIS and named SABS fallback | 4 | 67 features | 55 of 56 schools | Retrieved 2026-10-24; see source details below |
@@ -23,8 +23,18 @@ The optional attendance-zone layer has three source groups:
 | Alexandria ACPS-linked SchoolSiteLocator | 1 | 20 features: 14 elementary, 5 middle, 1 high | 17 of 17 snapshot schools | ACPS-approved 2026-27; retrieved 2026-10-27 |
 | WJCC-linked current ArcGIS map | 1 | 16 features: 9 elementary, 4 middle, 3 high | 16 of 16 snapshot schools | Current 2026-27; adopted replacement zones start August 2027 |
 | Norfolk NPS-linked Woolpert locator | 1 | 41 features: 27 elementary, 8 middle, 6 high | 37 of 41 snapshot schools | NPS web map labels 2026-27; retrieved 2026-10-26 |
+| Chesapeake CPS locator GIS | 1 | 38 features: 21 elementary, 10 middle, 7 high | 45 of 45 schools | Official 2026-27 locator and service names; retrieved 2026-10-29 |
+| Loudoun LCPS Planning GIS | 1 | 93 features: 59 elementary, 17 middle, 17 high | 93 of 98 schools | Official 2026-27 layer names; retrieved 2026-10-30 |
 
-There are 130 divisions and 1,810 schools in the dashboard. Nine divisions have no attendance-zone file. Another nine have only SABS features with an unknown school level; the app offers an explicit “Unclassified (older source)” view for those features. Across all divisions, 20 lack elementary features, 35 lack middle features, and 28 lack high features, including the ten without any file. Across the full snapshot, 1,370 schools have a matched zone and 440 do not. A zone file in a division does **not** mean every school has a matched polygon. The NCES SABS data are an old, incomplete survey; NCES calls the survey experimental and lists only 2013–14 and 2015–16 collections: [NCES SABS](https://nces.ed.gov/programs/edge/SABS).
+There are 130 divisions and 1,814 schools in the dashboard. Nine divisions have no attendance-zone file. Another nine have only SABS features with an unknown school level; the app offers an explicit “Unclassified (older source)” view for those features. Across all divisions, 20 lack elementary features, 35 lack middle features, and 28 lack high features, including the nine without any file. Across the full snapshot, 1,454 schools have a matched zone and 360 do not. A zone file in a division does **not** mean every school has a matched polygon. The NCES SABS data are an old, incomplete survey; NCES calls the survey experimental and lists only 2013–14 and 2015–16 collections: [NCES SABS](https://nces.ed.gov/programs/edge/SABS).
+
+## Chesapeake and Loudoun public release (2026-11-08)
+
+The [CPS school-zone page](https://www.cpschools.com/o/cps/page/school-zones-enrollment) links its public locator. The saved 2026-27 elementary, middle, and high layers have 21, 10, and 7 valid polygons. All 45 Chesapeake schools in the refreshed snapshot have a zone link. B.M. Williams and Crestwood use their new 2025-26 NCES IDs; [CPS states that their approved zones began in September 2025](https://www.cpschools.com/o/bmw/article/1917173). Eight primary/intermediate pairs share areas and Sparrow Road has two areas. The maximum same-level overlap is 0.0313 m² against a 0.05 m² cap. Source SHA-256: `4b9fb989ce305de1512d08d505d571f6bec2b1114d4dda6d49f073ad39d1ae41`.
+
+[LCPS Planning and GIS](https://www.lcps.org/o/support/page/planning-gis-services/) provides its locator and school-year-specific boundary information. The saved 2026-27 elementary, middle, and high layers have 59, 17, and 17 valid polygons. They link 93 of 98 Loudoun schools in the refreshed snapshot. Five schools have no separate standard polygon. The snapshot shows Gum Spring Middle and Richard and Mildred Loving Elementary under their names from July 2025, and preserves their earlier names on older metrics. The maximum same-level overlap is 0.0014 m² against a 0.01 m² cap. Source SHA-256: `226e25200152c05598fcc4ec0cc3a630eff9658c3859b5b53ded65c332a7702d`.
+
+Each division's three public ArcGIS items had the same object-ID sets as the saved source on 2026-11-08. The Chesapeake item states an informational-use disclaimer but no redistribution limit; the Loudoun item has an empty license-info field and credits LCPS. [ArcGIS public sharing terms](https://doc.arcgis.com/en/arcgis-online/reference/terms-of-use.htm) allow redistribution of public items subject to owner conditions. The app attributes each division and directs address checks to its official locator. See the [release record](RELEASE_CHESAPEAKE_LOUDOUN_2026-11-08.md), manifests, crosswalks, and geometry reports under `data-raw/`.
 
 ## Williamsburg-James City County public release (2026-11-08)
 

@@ -2,7 +2,8 @@
 dashboard_panel_server <- function(
   input, output, session, selected_school_id, selected_division_id,
   metric_id_selected, schools, division_name_lookup, divisions_sp,
-  metric_defs_by_id, school_metrics, division_metrics, enrollment_by_year
+  metric_defs_by_id, school_metrics, division_metrics, enrollment_by_year,
+  school_renames
 ) {
 
 entity_context <- reactive({
@@ -13,8 +14,11 @@ entity_context <- reactive({
     row <- schools[schools$school_id == school_id, , drop = FALSE]
     if (nrow(row) == 0) return(NULL)
     level <- if (is.na(row$school_level[[1]])) "School" else paste(row$school_level[[1]], "school")
+    display_year <- suppressWarnings(as.integer(input$year))
+    if (length(display_year) != 1L || !is.finite(display_year)) display_year <- NA_integer_
+    display_name <- school_name_for_year(school_id, display_year, row$school_name[[1]], school_renames)
     return(list(
-      kind = "school", id = school_id, name = row$school_name[[1]],
+      kind = "school", id = school_id, name = display_name[[1]],
       subtitle = paste(level, row$division_name[[1]], sep = " · ")
     ))
   }

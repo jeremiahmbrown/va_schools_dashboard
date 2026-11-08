@@ -1,0 +1,92 @@
+{
+  "division_id": "5100810",
+  "source_owner": "Chesapeake Public Schools GIS",
+  "official_evidence_url": "https://www.cpschools.com/o/cps/page/school-zones-enrollment",
+  "retrieved_utc": "2026-10-27T01:41:33+00:00",
+  "spec_file": "data-raw/zone_import_specs/5100810.json",
+  "layers": [
+    {
+      "level": "Elementary",
+      "source_type": "arcgis",
+      "layer_url": "https://services.arcgis.com/LcyMcTk2tV5FXPLX/arcgis/rest/services/ESZones202627/FeatureServer/0",
+      "url": "https://services.arcgis.com/LcyMcTk2tV5FXPLX/arcgis/rest/services/ESZones202627/FeatureServer/0/query?where=1%3D1&outFields=%2A&outSR=4326&f=geojson",
+      "file": "data-raw/input/zones/5100810/7feb438f8cfb4ad5/00_elementary.geojson",
+      "sha256": "008edd024c32ad7d34d19cc349cbac3f380c17a2ce9fa4f14069594e30616caf",
+      "feature_count": 21,
+      "name_field": "Elem_Name",
+      "object_id_field": "FID",
+      "school_year_values": [],
+      "school_names": [
+        "B. M. Williams Elementary",
+        "Butts Road Primary",
+        "Camelot Elementary",
+        "Cedar Road Elementary",
+        "Chittum Elementary",
+        "Crestwood Elementary",
+        "Deep Creek Central Elementary",
+        "Deep Creek Elementary",
+        "Georgetown Primary",
+        "Grassfield Elementary",
+        "Great Bridge Primary",
+        "Greenbrier Primary",
+        "Hickory Elementary",
+        "Norfolk Highlands Primary",
+        "Portlock Primary",
+        "Rena B. Wright Primary",
+        "Southeastern Elementary",
+        "Southwestern Elementary",
+        "Thurgood Marshall Elementary",
+        "Treakle Elementary",
+        "Western Branch Primary"
+      ],
+      "retrieval_method": "all object IDs then paged GeoJSON by objectIds"
+    },
+    {
+      "level": "Middle",
+      "source_type": "arcgis",
+      "layer_url": "https://services.arcgis.com/LcyMcTk2tV5FXPLX/arcgis/rest/services/MSZones202627/FeatureServer/0",
+      "url": "https://services.arcgis.com/LcyMcTk2tV5FXPLX/arcgis/rest/services/MSZones202627/FeatureServer/0/query?where=1%3D1&outFields=%2A&outSR=4326&f=geojson",
+      "file": "data-raw/input/zones/5100810/7feb438f8cfb4ad5/01_middle.geojson",
+      "sha256": "9cc3723eb2b33d0c901d1142b187fb51f0a3d30be875fe0c9dad32ead99f4199",
+      "feature_count": 10,
+      "name_field": "Mid_Name",
+      "object_id_field": "FID",
+      "school_year_values": [],
+      "school_names": [
+        "Crestwood Middle",
+        "Deep Creek Middle",
+        "Great Bridge Middle",
+        "Greenbrier Middle",
+        "Hickory Middle",
+        "Hugo A. Owens Middle",
+        "Indian River Middle",
+        "Jolliff Middle",
+        "Oscar Smith Middle",
+        "Western Branch Middle"
+      ],
+      "retrieval_method": "all object IDs then paged GeoJSON by objectIds"
+    },
+    {
+      "level": "High",
+      "source_type": "arcgis",
+      "layer_url": "https://services.arcgis.com/LcyMcTk2tV5FXPLX/arcgis/rest/services/HSZones202627/FeatureServer/0",
+      "url": "https://services.arcgis.com/LcyMcTk2tV5FXPLX/arcgis/rest/services/HSZones202627/FeatureServer/0/query?where=1%3D1&outFields=%2A&outSR=4326&f=geojson",
+      "file": "data-raw/input/zones/5100810/7feb438f8cfb4ad5/02_high.geojson",
+      "sha256": "16c2cde6b7f92bb678ca6c145d37db5dd62f9d8e439bf456e7a7ac55d7d4585f",
+      "feature_count": 7,
+      "name_field": "High_Name",
+      "object_id_field": "FID",
+      "school_year_values": [],
+      "school_names": [
+        "Deep Creek High",
+        "Grassfield High",
+        "Great Bridge High",
+        "Hickory High",
+        "Indian River High",
+        "Oscar Smith High",
+        "Western Branch High"
+      ],
+      "retrieval_method": "all object IDs then paged GeoJSON by objectIds"
+    }
+  ]
+}

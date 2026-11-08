@@ -1,0 +1,611 @@
+{
+  "source_url": "https://services3.arcgis.com/PgITX2Sy39aYHLDV/ArcGIS/rest/services/LCPSsitesAGOL/FeatureServer/0/query?where=1%3D1&outFields=SCH_CODE%2CNAME%2CCLASS&returnGeometry=false&f=json",
+  "retrieved_utc": "2026-10-26T11:37:19+00:00",
+  "records": [
+    {
+      "SCH_CODE": "ACL",
+      "NAME": "ACADEMIES OF LOUDOUN",
+      "CLASS": "EDUCATIONAL CENTER"
+    },
+    {
+      "SCH_CODE": "ADM",
+      "NAME": "LCPS ADMINISTRATION BUILDING",
+      "CLASS": "FACILITY"
+    },
+    {
+      "SCH_CODE": "ADML-DI",
+      "NAME": "DEPARTMENT OF DIGITAL INNOVATION",
+      "CLASS": "FACILITY"
+    },
+    {
+      "SCH_CODE": "ADML-SS",
+      "NAME": "DEPARTMENT OF SUPPORT SERVICES",
+      "CLASS": "FACILITY"
+    },
+    {
+      "SCH_CODE": "ALD",
+      "NAME": "ALDIE ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "ALG",
+      "NAME": "ALGONKIAN ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "ALT",
+      "NAME": "THE ALTERNATIVE EDUCATION PROGRAM",
+      "CLASS": "EDUCATIONAL CENTER"
+    },
+    {
+      "SCH_CODE": "ARC",
+      "NAME": "ARCOLA ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "ASH",
+      "NAME": "ASHBURN ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "BAL",
+      "NAME": "BALL'S BLUFF ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "BAM",
+      "NAME": "BRAMBLETON MS",
+      "CLASS": "MIDDLE"
+    },
+    {
+      "SCH_CODE": "BAN",
+      "NAME": "BANNEKER ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "BEM",
+      "NAME": "BELMONT RIDGE MS",
+      "CLASS": "MIDDLE"
+    },
+    {
+      "SCH_CODE": "BRH",
+      "NAME": "BROAD RUN HS",
+      "CLASS": "HIGH"
+    },
+    {
+      "SCH_CODE": "BRM",
+      "NAME": "BLUE RIDGE MS",
+      "CLASS": "MIDDLE"
+    },
+    {
+      "SCH_CODE": "BST",
+      "NAME": "BELMONT STATION ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "BUF",
+      "NAME": "BUFFALO TRAIL ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "BWH",
+      "NAME": "BRIAR WOODS HS",
+      "CLASS": "HIGH"
+    },
+    {
+      "SCH_CODE": "CAT",
+      "NAME": "CATOCTIN ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "CCE",
+      "NAME": "CREIGHTON'S CORNER ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "CED",
+      "NAME": "CEDAR LANE ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "CRE",
+      "NAME": "CARDINAL RIDGE ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "CSD",
+      "NAME": "CUSTODIAL SUPPLIES DISTRIBUTION CENTER",
+      "CLASS": "FACILITY"
+    },
+    {
+      "SCH_CODE": "CSP",
+      "NAME": "COOL SPRING ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "CTY",
+      "NAME": "COUNTRYSIDE ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "DIS",
+      "NAME": "DISCOVERY ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "DIT",
+      "NAME": "LOUDOUN CO DEPT OF INFORMATION TECH",
+      "CLASS": "FACILITY"
+    },
+    {
+      "SCH_CODE": "DMH",
+      "NAME": "DOMINION HS",
+      "CLASS": "HIGH"
+    },
+    {
+      "SCH_CODE": "DOM",
+      "NAME": "DOMINION TRAIL ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "EME",
+      "NAME": "EMERICK ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "ERM",
+      "NAME": "EAGLE RIDGE MS",
+      "CLASS": "MIDDLE"
+    },
+    {
+      "SCH_CODE": "ETE",
+      "NAME": "ELAINE E. THOMPSON ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "EVE",
+      "NAME": "EVERGREEN MILL ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "FAC_A",
+      "NAME": "DISTRIBUTION CENTER",
+      "CLASS": "FACILITY"
+    },
+    {
+      "SCH_CODE": "FAC_C",
+      "NAME": "FACILITIES OPERATIONS CENTER",
+      "CLASS": "FACILITY"
+    },
+    {
+      "SCH_CODE": "FDE",
+      "NAME": "FREDERICK DOUGLASS ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "FHS",
+      "NAME": "FREEDOM HS",
+      "CLASS": "HIGH"
+    },
+    {
+      "SCH_CODE": "FOR",
+      "NAME": "FOREST GROVE ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "FWS",
+      "NAME": "FARMWELL STATION MS",
+      "CLASS": "MIDDLE"
+    },
+    {
+      "SCH_CODE": "GMS",
+      "NAME": "GUM SPRING MS",
+      "CLASS": "MIDDLE"
+    },
+    {
+      "SCH_CODE": "GPE",
+      "NAME": "GOSHEN POST ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "GUI",
+      "NAME": "GUILFORD ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "HAM",
+      "NAME": "HAMILTON ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "HCA",
+      "NAME": "HILLSBORO CHARTER ACADEMY",
+      "CLASS": "CHARTER"
+    },
+    {
+      "SCH_CODE": "HDC",
+      "NAME": "THE HISTORIC DOUGLASS HIGH SCHOOL EDUCATION AND DEVELOPMENT CAMPUS",
+      "CLASS": "EDUCATIONAL CENTER"
+    },
+    {
+      "SCH_CODE": "HEN",
+      "NAME": "HENRIETTA LACKS ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "HLS",
+      "NAME": "HILLSIDE ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "HOV",
+      "NAME": "HOVATTER ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "HPM",
+      "NAME": "HARPER PARK MS",
+      "CLASS": "MIDDLE"
+    },
+    {
+      "SCH_CODE": "HRM",
+      "NAME": "HARMONY MS",
+      "CLASS": "MIDDLE"
+    },
+    {
+      "SCH_CODE": "HRZ",
+      "NAME": "HORIZON ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "HTH",
+      "NAME": "HERITAGE HS",
+      "CLASS": "HIGH"
+    },
+    {
+      "SCH_CODE": "HUT",
+      "NAME": "HUTCHISON FARM ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "IHS",
+      "NAME": "INDEPENDENCE HS",
+      "CLASS": "HIGH"
+    },
+    {
+      "SCH_CODE": "JCH",
+      "NAME": "JOHN CHAMPE HS",
+      "CLASS": "HIGH"
+    },
+    {
+      "SCH_CODE": "JLS",
+      "NAME": "J. LUPTON SIMPSON MS",
+      "CLASS": "MIDDLE"
+    },
+    {
+      "SCH_CODE": "JML",
+      "NAME": "J. MICHAEL LUNSFORD MS",
+      "CLASS": "MIDDLE"
+    },
+    {
+      "SCH_CODE": "KWC",
+      "NAME": "KENNETH W. CULBERT ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "LCH",
+      "NAME": "LOUDOUN COUNTY HS",
+      "CLASS": "HIGH"
+    },
+    {
+      "SCH_CODE": "LEE",
+      "NAME": "LEESBURG ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "LEG",
+      "NAME": "LEGACY ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "LIB",
+      "NAME": "LIBERTY ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "LIN",
+      "NAME": "LINCOLN ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "LIT",
+      "NAME": "LITTLE RIVER ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "LOV",
+      "NAME": "LOVETTSVILLE ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "LOW",
+      "NAME": "LOWES ISLAND ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "LRA",
+      "NAME": "R.I.S.E",
+      "CLASS": "EDUCATIONAL CENTER"
+    },
+    {
+      "SCH_CODE": "LRH",
+      "NAME": "LIGHTRIDGE HS",
+      "CLASS": "HIGH"
+    },
+    {
+      "SCH_CODE": "LUC",
+      "NAME": "LUCKETTS ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "LVH",
+      "NAME": "LOUDOUN VALLEY HS",
+      "CLASS": "HIGH"
+    },
+    {
+      "SCH_CODE": "MCCS",
+      "NAME": "MIDDLEBURG COMMUNITY CHARTER SCHOOL",
+      "CLASS": "CHARTER"
+    },
+    {
+      "SCH_CODE": "MEA",
+      "NAME": "MEADOWLAND ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "MIL",
+      "NAME": "MILL RUN ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "MLDR",
+      "NAME": "MILLER DRIVE ANNEX",
+      "CLASS": "FACILITY"
+    },
+    {
+      "SCH_CODE": "MPK",
+      "NAME": "MICKIE GORDON MEMORIAL PARK",
+      "CLASS": "LCPS PROPERTY"
+    },
+    {
+      "SCH_CODE": "MSE",
+      "NAME": "MOOREFIELD STATION ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "MTE",
+      "NAME": "MADISON'S TRUST ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "MTV",
+      "NAME": "MOUNTAIN VIEW ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "NLE",
+      "NAME": "NEWTON-LEE ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "NSS",
+      "NAME": "THE NORTH STAR SCHOOL",
+      "CLASS": "EDUCATIONAL CENTER"
+    },
+    {
+      "SCH_CODE": null,
+      "NAME": "VIEW TRANSITION ACADEMY",
+      "CLASS": "EDUCATIONAL CENTER"
+    },
+    {
+      "SCH_CODE": "PFH",
+      "NAME": "POTOMAC FALLS HS",
+      "CLASS": "HIGH"
+    },
+    {
+      "SCH_CODE": "PMK",
+      "NAME": "POTOWMACK ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "PNB",
+      "NAME": "PINEBROOK ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "PVH",
+      "NAME": "PARK VIEW HS",
+      "CLASS": "HIGH"
+    },
+    {
+      "SCH_CODE": "RBM",
+      "NAME": "RIVER BEND MS",
+      "CLASS": "MIDDLE"
+    },
+    {
+      "SCH_CODE": "RHC",
+      "NAME": "ROUND HILL SUPPORT",
+      "CLASS": "FACILITY"
+    },
+    {
+      "SCH_CODE": "RHL",
+      "NAME": "ROUND HILL ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "RLC",
+      "NAME": "ROSA LEE CARTER ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "RML",
+      "NAME": "RICHARD AND MILDRED LOVING ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "RRD",
+      "NAME": "ROLLING RIDGE ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "RRH",
+      "NAME": "ROCK RIDGE HS",
+      "CLASS": "HIGH"
+    },
+    {
+      "SCH_CODE": "RVH",
+      "NAME": "RIVERSIDE HS",
+      "CLASS": "HIGH"
+    },
+    {
+      "SCH_CODE": "SAN",
+      "NAME": "SANDERS CORNER ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "SBH",
+      "NAME": "STONE BRIDGE HS",
+      "CLASS": "HIGH"
+    },
+    {
+      "SCH_CODE": "SEL",
+      "NAME": "SELDENS LANDING ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "SHM",
+      "NAME": "STONE HILL MS",
+      "CLASS": "MIDDLE"
+    },
+    {
+      "SCH_CODE": "SMM",
+      "NAME": "SMART'S MILL MS",
+      "CLASS": "MIDDLE"
+    },
+    {
+      "SCH_CODE": "SRM",
+      "NAME": "SENECA RIDGE MS",
+      "CLASS": "MIDDLE"
+    },
+    {
+      "SCH_CODE": "STE",
+      "NAME": "STERLING ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "STM",
+      "NAME": "STERLING MS",
+      "CLASS": "MIDDLE"
+    },
+    {
+      "SCH_CODE": "STU",
+      "NAME": "STEUART W. WELLER ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "SUG",
+      "NAME": "SUGARLAND ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "SUL",
+      "NAME": "SULLY ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "SYC",
+      "NAME": "SYCOLIN CREEK ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "THS",
+      "NAME": "TUSCARORA HS",
+      "CLASS": "HIGH"
+    },
+    {
+      "SCH_CODE": "TMS",
+      "NAME": "TRAILSIDE MS",
+      "CLASS": "MIDDLE"
+    },
+    {
+      "SCH_CODE": "TOL",
+      "NAME": "JOHN W. TOLBERT, JR. ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "TRANS",
+      "NAME": "TRANSPORTATION",
+      "CLASS": "FACILITY"
+    },
+    {
+      "SCH_CODE": "TSH",
+      "NAME": "THORNTON SUMMIT HS",
+      "CLASS": "HIGH"
+    },
+    {
+      "SCH_CODE": "VSC",
+      "NAME": "VALLEY SERVICE CENTER",
+      "CLASS": "FACILITY/GARAGE"
+    },
+    {
+      "SCH_CODE": "WAT",
+      "NAME": "WATERFORD ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "WCE",
+      "NAME": "WELCOME CENTER EAST",
+      "CLASS": "FACILITY"
+    },
+    {
+      "SCH_CODE": "WDC",
+      "NAME": "WESTERN DISTRIBUTION CENTER",
+      "CLASS": "FACILITY"
+    },
+    {
+      "SCH_CODE": "WES",
+      "NAME": "WAXPOOL ES",
+      "CLASS": "ELEMENTARY"
+    },
+    {
+      "SCH_CODE": "WFO",
+      "NAME": "WESTERN FACILITIES OPERATIONS",
+      "CLASS": "FACILITY"
+    },
+    {
+      "SCH_CODE": "WHS",
+      "NAME": "WOODGROVE HS",
+      "CLASS": "HIGH"
+    },
+    {
+      "SCH_CODE": "WMM",
+      "NAME": "WATSON MOUNTAIN MS",
+      "CLASS": "MIDDLE"
+    },
+    {
+      "SCH_CODE": "WMS",
+      "NAME": "WILLARD MS",
+      "CLASS": "MIDDLE"
+    },
+    {
+      "SCH_CODE": "WOR",
+      "NAME": "WILLIAM OBEDIAH ROBEY HS",
+      "CLASS": "HIGH"
+    },
+    {
+      "SCH_CODE": "WSC",
+      "NAME": "WESTERN SUPPORT CENTER",
+      "CLASS": "FACILITY"
+    }
+  ]
+}

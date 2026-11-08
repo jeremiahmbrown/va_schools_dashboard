@@ -1,0 +1,99 @@
+division_id,level,source_name,school_id,school_name,disposition,note
+5102250,Elementary,ALD,510225000908,Aldie Elementary,mapped,LCPS school-site code ALD: ALDIE ES.
+5102250,Elementary,ALG,510225002153,Algonkian Elementary,mapped,LCPS school-site code ALG: ALGONKIAN ES.
+5102250,Elementary,ARC,510225002762,Arcola Elementary,mapped,LCPS school-site code ARC: ARCOLA ES.
+5102250,Elementary,ASH,510225000134,Ashburn Elementary,mapped,LCPS school-site code ASH: ASHBURN ES.
+5102250,Elementary,BAL,510225001143,Ball's Bluff Elementary,mapped,LCPS school-site code BAL: BALL'S BLUFF ES.
+5102250,Elementary,BAN,510225000911,Banneker Elementary,mapped,LCPS school-site code BAN: BANNEKER ES.
+5102250,Elementary,BST,510225002449,Belmont Station Elementary ,mapped,LCPS school-site code BST: BELMONT STATION ES.
+5102250,Elementary,CAT,510225000914,Catoctin Elementary,mapped,LCPS school-site code CAT: CATOCTIN ES.
+5102250,Elementary,CED,510225001915,Cedar Lane Elementary,mapped,LCPS school-site code CED: CEDAR LANE ES.
+5102250,Elementary,CSP,510225002154,Cool Spring Elementary,mapped,LCPS school-site code CSP: COOL SPRING ES.
+5102250,Elementary,CTY,510225002413,Countryside Elementary,mapped,LCPS school-site code CTY: COUNTRYSIDE ES.
+5102250,Elementary,DOM,510225001632,Dominion Trail Elementary,mapped,LCPS school-site code DOM: DOMINION TRAIL ES.
+5102250,Elementary,EME,510225000917,Emerick Elementary,mapped,LCPS school-site code EME: EMERICK ES.
+5102250,Elementary,EVE,510225001845,Evergreen Mill Elementary,mapped,LCPS school-site code EVE: EVERGREEN MILL ES.
+5102250,Elementary,FOR,510225002283,Forest Grove Elementary,mapped,LCPS school-site code FOR: FOREST GROVE ES.
+5102250,Elementary,RML,510225002412,Richard and Mildred Loving Elementary,mapped,LCPS school-site code RML: RICHARD AND MILDRED LOVING ES.
+5102250,Elementary,GUI,510225000918,Guilford Elementary,mapped,LCPS school-site code GUI: GUILFORD ES.
+5102250,Elementary,HAM,510225000919,Hamilton Elementary,mapped,LCPS school-site code HAM: HAMILTON ES.
+5102250,Elementary,HLS,510225001855,Hillside Elementary,mapped,LCPS school-site code HLS: HILLSIDE ES.
+5102250,Elementary,HRZ,510225001914,Horizon Elementary,mapped,LCPS school-site code HRZ: HORIZON ES.
+5102250,Elementary,HUT,510225002286,Hutchison Farm Elementary,mapped,LCPS school-site code HUT: HUTCHISON FARM ES.
+5102250,Elementary,LEE,510225001852,Leesburg Elementary,mapped,LCPS school-site code LEE: LEESBURG ES.
+5102250,Elementary,LIN,510225000922,Lincoln Elementary,mapped,LCPS school-site code LIN: LINCOLN ES.
+5102250,Elementary,LIT,510225002539,Little River Elementary,mapped,LCPS school-site code LIT: LITTLE RIVER ES.
+5102250,Elementary,LOV,510225000925,Lovettsville Elementary,mapped,LCPS school-site code LOV: LOVETTSVILLE ES.
+5102250,Elementary,LOW,510225001633,Lowes Island Elementary,mapped,LCPS school-site code LOW: LOWES ISLAND ES.
+5102250,Elementary,LUC,510225000926,Lucketts Elementary,mapped,LCPS school-site code LUC: LUCKETTS ES.
+5102250,Elementary,MEA,510225001853,Meadowland Elementary,mapped,LCPS school-site code MEA: MEADOWLAND ES.
+5102250,Elementary,MIL,510225002540,Mill Run Elementary,mapped,LCPS school-site code MIL: MILL RUN ES.
+5102250,Elementary,MTV,510225002415,Mountain View Elementary,mapped,LCPS school-site code MTV: MOUNTAIN VIEW ES.
+5102250,Elementary,PMK,510225001158,Potowmack Elementary,mapped,LCPS school-site code PMK: POTOWMACK ES.
+5102250,Elementary,RRD,510225000929,Rolling Ridge Elementary,mapped,LCPS school-site code RRD: ROLLING RIDGE ES.
+5102250,Elementary,RHL,510225000930,Round Hill Elementary,mapped,LCPS school-site code RHL: ROUND HILL ES.
+5102250,Elementary,SAN,510225001148,Sanders Corner Elementary,mapped,LCPS school-site code SAN: SANDERS CORNER ES.
+5102250,Elementary,SEL,510225002289,Seldens Landing Elementary,mapped,LCPS school-site code SEL: SELDENS LANDING ES.
+5102250,Elementary,STE,510225000932,Sterling Elementary,mapped,LCPS school-site code STE: STERLING ES.
+5102250,Elementary,SUG,510225000934,Sugarland Elementary,mapped,LCPS school-site code SUG: SUGARLAND ES.
+5102250,Elementary,SUL,510225000935,Sully Elementary,mapped,LCPS school-site code SUL: SULLY ES.
+5102250,Elementary,TOL,510225002287,John W. Tolbert Jr. Elementary ,mapped,"LCPS school-site code TOL: JOHN W. TOLBERT, JR. ES."
+5102250,Elementary,WAT,510225000936,Waterford Elementary,mapped,LCPS school-site code WAT: WATERFORD ES.
+5102250,Elementary,LEG,510225002452,Legacy Elementary ,mapped,LCPS school-site code LEG: LEGACY ES.
+5102250,Elementary,NLE,510225002448,Newton-Lee Elementary ,mapped,LCPS school-site code NLE: NEWTON-LEE ES.
+5102250,Elementary,PNB,510225002514,Pinebrook Elementary,mapped,LCPS school-site code PNB: PINEBROOK ES.
+5102250,Elementary,RLC,510225002751,Rosa Lee Carter Elementary,mapped,LCPS school-site code RLC: ROSA LEE CARTER ES.
+5102250,Elementary,SYC,510225002755,Sycolin Creek Elementary,mapped,LCPS school-site code SYC: SYCOLIN CREEK ES.
+5102250,Elementary,KWC,510225002809,Kenneth W.Culbert Elementary,mapped,LCPS school-site code KWC: KENNETH W. CULBERT ES.
+5102250,Elementary,LIB,510225002774,Liberty Elementary,mapped,LCPS school-site code LIB: LIBERTY ES.
+5102250,Elementary,STU,510225002776,Steuart W. Weller Elementary,mapped,LCPS school-site code STU: STEUART W. WELLER ES.
+5102250,Elementary,CCE,510225002773,Creighton's Corner Elementary,mapped,LCPS school-site code CCE: CREIGHTON'S CORNER ES.
+5102250,Elementary,BUF,510225002832,Buffalo Trail Elementary,mapped,LCPS school-site code BUF: BUFFALO TRAIL ES.
+5102250,Elementary,FDE,510225002864,Frederick Douglass Elementary,mapped,LCPS school-site code FDE: FREDERICK DOUGLASS ES.
+5102250,Elementary,DIS,510225002955,Discovery Elementary,mapped,LCPS school-site code DIS: DISCOVERY ES.
+5102250,Elementary,MSE,510225002954,Moorefield Station Elementary,mapped,LCPS school-site code MSE: MOOREFIELD STATION ES.
+5102250,Elementary,CRE,510225002980,Cardinal Ridge Elementary ,mapped,LCPS school-site code CRE: CARDINAL RIDGE ES.
+5102250,Elementary,MTE,510225003026,Madison's Trust Elementary,mapped,LCPS school-site code MTE: MADISON'S TRUST ES.
+5102250,Elementary,GPE,510225003046,Goshen Post Elementary,mapped,LCPS school-site code GPE: GOSHEN POST ES.
+5102250,Elementary,WES,510225003060,Waxpool Elementary,mapped,LCPS school-site code WES: WAXPOOL ES.
+5102250,Elementary,HOV,510225003086,Hovatter Elementary,mapped,LCPS school-site code HOV: HOVATTER ES.
+5102250,Elementary,ETE,510225003091,Elaine E. Thompson Elementary,mapped,LCPS school-site code ETE: ELAINE E. THOMPSON ES.
+5102250,Middle,BEM,510225002414,Belmont Ridge Middle,mapped,LCPS school-site code BEM: BELMONT RIDGE MS.
+5102250,Middle,BRM,510225000912,Blue Ridge Middle,mapped,LCPS school-site code BRM: BLUE RIDGE MS.
+5102250,Middle,ERM,510225002282,Eagle Ridge Middle,mapped,LCPS school-site code ERM: EAGLE RIDGE MS.
+5102250,Middle,FWS,510225001131,Farmwell Station Middle,mapped,LCPS school-site code FWS: FARMWELL STATION MS.
+5102250,Middle,HRM,510225002831,Harmony Middle,mapped,LCPS school-site code HRM: HARMONY MS.
+5102250,Middle,HPM,510225001913,Harper Park Middle,mapped,LCPS school-site code HPM: HARPER PARK MS.
+5102250,Middle,GMS,510225002450,Gum Spring Middle,mapped,LCPS school-site code GMS: GUM SPRING MS.
+5102250,Middle,RBM,510225002288,River Bend Middle,mapped,LCPS school-site code RBM: RIVER BEND MS.
+5102250,Middle,JLS,510225000921,J. Lupton Simpson Middle,mapped,LCPS school-site code JLS: J. LUPTON SIMPSON MS.
+5102250,Middle,SRM,510225000931,Seneca Ridge Middle,mapped,LCPS school-site code SRM: SENECA RIDGE MS.
+5102250,Middle,SMM,510225002446,Smart's Mill Middle ,mapped,LCPS school-site code SMM: SMART'S MILL MS.
+5102250,Middle,STM,510225000933,Sterling Middle,mapped,LCPS school-site code STM: STERLING MS.
+5102250,Middle,SHM,510225002764,Stone Hill Middle,mapped,LCPS school-site code SHM: STONE HILL MS.
+5102250,Middle,JML,510225002853,J. Michael Lunsford Middle,mapped,LCPS school-site code JML: J. MICHAEL LUNSFORD MS.
+5102250,Middle,TMS,510225002965,Trailside Middle,mapped,LCPS school-site code TMS: TRAILSIDE MS.
+5102250,Middle,BAM,510225003036,Brambleton Middle,mapped,LCPS school-site code BAM: BRAMBLETON MS.
+5102250,Middle,WMS,510225003059,Willard Middle,mapped,LCPS school-site code WMS: WILLARD MS.
+5102250,High,BRH,510225000913,Broad Run High,mapped,LCPS school-site code BRH: BROAD RUN HS.
+5102250,High,DMH,510225002411,Dominion High,mapped,LCPS school-site code DMH: DOMINION HS. Snapshot level is Combined; LCPS zone level is High.
+5102250,High,HTH,510225002285,Heritage High,mapped,LCPS school-site code HTH: HERITAGE HS. Snapshot level is Combined; LCPS zone level is High.
+5102250,High,LCH,510225000923,Loudoun County High,mapped,LCPS school-site code LCH: LOUDOUN COUNTY HS.
+5102250,High,LVH,510225000924,Loudoun Valley High,mapped,LCPS school-site code LVH: LOUDOUN VALLEY HS.
+5102250,High,PVH,510225000928,Park View High,mapped,LCPS school-site code PVH: PARK VIEW HS.
+5102250,High,PFH,510225001627,Potomac Falls High,mapped,LCPS school-site code PFH: POTOMAC FALLS HS.
+5102250,High,SBH,510225002538,Stone Bridge High,mapped,LCPS school-site code SBH: STONE BRIDGE HS.
+5102250,High,BWH,510225002451,Briar Woods High ,mapped,LCPS school-site code BWH: BRIAR WOODS HS. Snapshot level is Combined; LCPS zone level is High.
+5102250,High,FHS,510225002447,Freedom High ,mapped,LCPS school-site code FHS: FREEDOM HS.
+5102250,High,WHS,510225002812,Woodgrove High,mapped,LCPS school-site code WHS: WOODGROVE HS. Snapshot level is Combined; LCPS zone level is High.
+5102250,High,THS,510225002817,Tuscarora High,mapped,LCPS school-site code THS: TUSCARORA HS. Snapshot level is Combined; LCPS zone level is High.
+5102250,High,JCH,510225002865,John Champe High,mapped,LCPS school-site code JCH: JOHN CHAMPE HS.
+5102250,High,RRH,510225002969,Rock Ridge High,mapped,LCPS school-site code RRH: ROCK RIDGE HS. Snapshot level is Combined; LCPS zone level is High.
+5102250,High,RVH,510225003001,Riverside High,mapped,LCPS school-site code RVH: RIVERSIDE HS.
+5102250,High,IHS,510225003061,Independence High,mapped,LCPS school-site code IHS: INDEPENDENCE HS.
+5102250,High,LRH,510225003079,Lightridge High,mapped,LCPS school-site code LRH: LIGHTRIDGE HS.
+5102250,Elementary,,510225003136,Henrietta Lacks Elementary ,no_neighborhood_zone,LCPS says Henrietta Lacks serves K–2 and Hovatter serves grades 3–5 as one school community. The 2026–27 LCPS standard layer has a Hovatter polygon but no separate Henrietta Lacks polygon; do not infer an address assignment from this shared campus.
+5102250,Elementary,,510225003028,Hillsboro Charter Academy,no_neighborhood_zone,Charter school has no separate polygon in the LCPS standard layer.
+5102250,Elementary,,510225002970,Middleburg Community Charter,no_neighborhood_zone,Charter school has no separate polygon in the LCPS standard layer.
+5102250,High,,510225003084,W.O. Robey High,no_neighborhood_zone,Alternative high school has no separate polygon in the LCPS standard layer.
+5102250,Middle,,510225003137,Watson Mountain Middle,no_neighborhood_zone,LCPS says Watson Mountain serves grades 6–7 in 2026–27 while Brambleton serves grade 8 in a temporary arrangement; no separate Watson Mountain polygon appears in this layer. Do not use the Brambleton polygon as a Watson Mountain address assignment.

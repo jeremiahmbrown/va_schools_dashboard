@@ -1,0 +1,47 @@
+division_id,level,source_name,school_id,school_name,disposition,note
+5100810,Elementary,Greenbrier Primary,510081002054,Greenbrier Primary,shared_zone,CPS GIS source FID 1. Shared K-2/3-5 primary/intermediate area.
+5100810,Elementary,Greenbrier Primary,510081000459,Greenbrier Intermediate,shared_zone,CPS GIS source FID 1. Shared K-2/3-5 primary/intermediate area.
+5100810,Elementary,Western Branch Primary,510081001910,Western Branch Primary,shared_zone,CPS GIS source FID 2. Shared K-2/3-5 primary/intermediate area.
+5100810,Elementary,Western Branch Primary,510081000311,Western Branch Intermediate,shared_zone,CPS GIS source FID 2. Shared K-2/3-5 primary/intermediate area.
+5100810,Elementary,Southwestern Elementary,510081000308,Southwestern Elementary,mapped,CPS GIS source FID 3.
+5100810,Elementary,Chittum Elementary,510081000291,Edwin W. Chittum Elementary,mapped,CPS GIS source FID 4.
+5100810,Elementary,Camelot Elementary,510081000282,Camelot Elementary,mapped,CPS GIS source FID 5.
+5100810,Elementary,Treakle Elementary,510081000292,G.A. Treakle Elementary,mapped,CPS GIS source FID 6.
+5100810,Elementary,Deep Creek Elementary,510081000288,Deep Creek Elementary,mapped,CPS GIS source FID 7.
+5100810,Elementary,Deep Creek Central Elementary,510081002223,Deep Creek Central Elementary,mapped,CPS GIS source FID 8.
+5100810,Elementary,Grassfield Elementary,510081002432,Grassfield Elementary,mapped,CPS GIS source FID 9.
+5100810,Elementary,Hickory Elementary,510081000298,Hickory Elementary,mapped,CPS GIS source FID 10.
+5100810,Elementary,Southeastern Elementary,510081000307,Southeastern Elementary,mapped,CPS GIS source FID 11.
+5100810,Elementary,Cedar Road Elementary,510081001483,Cedar Road Elementary,mapped,CPS GIS source FID 12.
+5100810,Elementary,Great Bridge Primary,510081000295,Great Bridge Primary,shared_zone,CPS GIS source FID 13. Shared K-2/3-5 primary/intermediate area.
+5100810,Elementary,Great Bridge Primary,510081000456,Great Bridge Intermediate,shared_zone,CPS GIS source FID 13. Shared K-2/3-5 primary/intermediate area.
+5100810,Elementary,Georgetown Primary,510081000294,Georgetown Primary,shared_zone,CPS GIS source FID 14. Shared K-3/4-5 primary/intermediate area.
+5100810,Elementary,Georgetown Primary,510081000309,Sparrow Road Intermediate,shared_zone,CPS GIS source FID 14. Shared K-3/4-5 primary/intermediate area.
+5100810,Elementary,Rena B. Wright Primary,510081000306,Rena B. Wright Primary,shared_zone,CPS GIS source FID 15. Shared K-2/3-5 primary/intermediate area.
+5100810,Elementary,Rena B. Wright Primary,510081001899,Truitt Intermediate,shared_zone,CPS GIS source FID 15. Shared K-2/3-5 primary/intermediate area.
+5100810,Elementary,Portlock Primary,510081000305,Portlock Primary,shared_zone,CPS GIS source FID 16. Shared K-2/3-5 primary/intermediate area.
+5100810,Elementary,Portlock Primary,510081000293,George W. Carver Intermediate,shared_zone,CPS GIS source FID 16. Shared K-2/3-5 primary/intermediate area.
+5100810,Elementary,Thurgood Marshall Elementary,510081000304,Thurgood Marshall Elementary,mapped,CPS GIS source FID 17.
+5100810,Elementary,Norfolk Highlands Primary,510081000302,Norfolk Highlands Primary,shared_zone,CPS GIS source FID 18. Shared K-3/4-5 primary/intermediate area.
+5100810,Elementary,Norfolk Highlands Primary,510081000309,Sparrow Road Intermediate,shared_zone,CPS GIS source FID 18. Shared K-3/4-5 primary/intermediate area.
+5100810,Elementary,Butts Road Primary,510081000281,Butts Road Primary,shared_zone,CPS GIS source FID 19. Shared K-2/3-5 primary/intermediate area.
+5100810,Elementary,Butts Road Primary,510081000457,Butts Road Intermediate,shared_zone,CPS GIS source FID 19. Shared K-2/3-5 primary/intermediate area.
+5100810,Elementary,Crestwood Elementary,510081003158,Crestwood Elementary School,mapped,CPS GIS source FID 20. New NCES 2025-26 school ID; keep earlier metrics separate from the former school.
+5100810,Elementary,B. M. Williams Elementary,510081003157,B.M. Williams Elementary,mapped,CPS GIS source FID 21. New NCES 2025-26 school ID; keep earlier metrics separate from the former school.
+5100810,Middle,Greenbrier Middle,510081002557,Greenbrier Middle,mapped,CPS GIS source FID 1.
+5100810,Middle,Western Branch Middle,510081000313,Western Branch Middle,mapped,CPS GIS source FID 2.
+5100810,Middle,Jolliff Middle,510081001954,Jolliff Middle,mapped,CPS GIS source FID 3.
+5100810,Middle,Hugo A. Owens Middle,510081001672,Hugo A. Owens Middle,mapped,CPS GIS source FID 4.
+5100810,Middle,Deep Creek Middle,510081000289,Deep Creek Middle,mapped,CPS GIS source FID 5.
+5100810,Middle,Hickory Middle,510081000297,Hickory Middle,mapped,CPS GIS source FID 6.
+5100810,Middle,Crestwood Middle,510081000287,Crestwood Middle,mapped,CPS GIS source FID 7.
+5100810,Middle,Indian River Middle,510081000300,Indian River Middle,mapped,CPS GIS source FID 8.
+5100810,Middle,Oscar Smith Middle,510081000310,Oscar Smith Middle,mapped,CPS GIS source FID 9.
+5100810,Middle,Great Bridge Middle,510081000296,Great Bridge Middle,mapped,CPS GIS source FID 10.
+5100810,High,Indian River High,510081000299,Indian River High,mapped,CPS GIS source FID 1.
+5100810,High,Western Branch High,510081000312,Western Branch High,mapped,CPS GIS source FID 2.
+5100810,High,Deep Creek High,510081001832,Deep Creek High,mapped,CPS GIS source FID 3.
+5100810,High,Grassfield High,510081002765,Grassfield High,mapped,CPS GIS source FID 4.
+5100810,High,Great Bridge High,510081002031,Great Bridge High,mapped,CPS GIS source FID 5.
+5100810,High,Oscar Smith High,510081000303,Oscar F. Smith High,mapped,CPS GIS source FID 6. Explicit snapshot-name alias.
+5100810,High,Hickory High,510081001482,Hickory High,mapped,CPS GIS source FID 7.

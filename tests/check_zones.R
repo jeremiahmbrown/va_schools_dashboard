@@ -204,4 +204,27 @@ stopifnot(length(lake_taylor) == 2L,
           setequal(vapply(lake_taylor, function(f) f$properties$level, character(1)), c("Elementary", "Middle")),
           length(azalea) == 2L, length(norview_high) == 2L)
 
+chesapeake_text <- read_zone_geojson(pick_zone_file("app/data", "5100810"))
+chesapeake_features <- jsonlite::fromJSON(chesapeake_text, simplifyVector = FALSE)$features
+stopifnot(length(chesapeake_features) == 38L)
+for (sid in c("510081003157", "510081003158")) {
+  selected <- jsonlite::fromJSON(filter_zone_geojson_by_school_id(chesapeake_text, sid),
+                                  simplifyVector = FALSE)$features
+  stopifnot(length(selected) == 1L, identical(selected[[1]]$properties$level, "Elementary"))
+}
+sparrow <- jsonlite::fromJSON(filter_zone_geojson_by_school_id(chesapeake_text, "510081000309"),
+                              simplifyVector = FALSE)$features
+stopifnot(length(sparrow) == 2L)
+
+loudoun_text <- read_zone_geojson(pick_zone_file("app/data", "5102250"))
+loudoun_features <- jsonlite::fromJSON(loudoun_text, simplifyVector = FALSE)$features
+stopifnot(length(loudoun_features) == 93L,
+          length(unique(vapply(loudoun_features, function(f) f$properties$app_school_id,
+                               character(1)))) == 93L)
+for (sid in c("510225002412", "510225002450")) {
+  selected <- jsonlite::fromJSON(filter_zone_geojson_by_school_id(loudoun_text, sid),
+                                  simplifyVector = FALSE)$features
+  stopifnot(length(selected) == 1L)
+}
+
 cat("Division zone level, school match, geometry, and cache checks passed.\n")

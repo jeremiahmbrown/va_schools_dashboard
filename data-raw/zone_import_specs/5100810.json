@@ -1,0 +1,34 @@
+{
+  "division_id": "5100810",
+  "source_owner": "Chesapeake Public Schools GIS",
+  "official_evidence_url": "https://www.cpschools.com/o/cps/page/school-zones-enrollment",
+  "source_label": "CPS 2026–27 attendance zones",
+  "popup_note": "CPS address lookup is informational and was updated for 2026–27. Some primary and intermediate schools share an area; confirm an address with the CPS Planning Office.",
+  "expected_school_count": 45,
+  "max_same_level_overlap_m2": 0.05,
+  "rights_access": "Public CPS ArcGIS service; explicit redistribution terms not found. Review before public release.",
+  "layers": [
+    {
+      "level": "Elementary",
+      "source_type": "arcgis",
+      "source_url": "https://services.arcgis.com/LcyMcTk2tV5FXPLX/arcgis/rest/services/ESZones202627/FeatureServer/0",
+      "name_field": "Elem_Name",
+      "expected_count": 21
+    },
+    {
+      "level": "Middle",
+      "source_type": "arcgis",
+      "source_url": "https://services.arcgis.com/LcyMcTk2tV5FXPLX/arcgis/rest/services/MSZones202627/FeatureServer/0",
+      "name_field": "Mid_Name",
+      "expected_count": 10
+    },
+    {
+      "level": "High",
+      "source_type": "arcgis",
+      "source_url": "https://services.arcgis.com/LcyMcTk2tV5FXPLX/arcgis/rest/services/HSZones202627/FeatureServer/0",
+      "name_field": "High_Name",
+      "expected_count": 7
+    }
+  ],
+  "overlap_review_note": "Equal-area review of 38 official CPS 2026-27 polygons found 0.0313 m2 same-level elementary overlap and zero at middle/high. The 0.05 m2 cap accepts only this coordinate sliver and rejects larger change. Level unions differ by at most 11,958.9 m2 across about 910.8 million m2. Keep official source geometry; confirm an address with CPS Planning."
+}

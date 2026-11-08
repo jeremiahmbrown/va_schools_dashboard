@@ -1,5 +1,6 @@
 # Run from the repository root: Rscript tests/check_snapshot.R
 source("app/R/percentiles.R")
+source("app/R/school_identity.R")
 
 stopifnot(isTRUE(all.equal(percentile_scores(c(10, 20, NA, 20), rep("lower_better", 4)),
                            c(100, 100 * 2 / 3, NA_real_, 100 * 2 / 3))))
@@ -21,6 +22,49 @@ stopifnot(all(enrollment_by_year$school_id %in% schools$school_id),
           all(is.finite(enrollment_by_year$enrollment) &
                 enrollment_by_year$enrollment > 0))
 stopifnot(!anyDuplicated(division[c("division_id", "year", "metric_id")]))
+# The 2025-26 Chesapeake K-5 schools have new NCES IDs and no earlier rows.
+chesapeake_new <- c("B.M. Williams Elementary" = "510081003157",
+                   "Crestwood Elementary School" = "510081003158")
+for (name in names(chesapeake_new)) {
+  sid <- chesapeake_new[[name]]
+  record <- schools[schools[["school_id"]] == sid, ]
+  stopifnot(nrow(record) == 1L, identical(record[["school_name"]], name),
+            identical(record[["division_id"]], "5100810"),
+            identical(record[["school_level"]], "Elementary"))
+  years <- enrollment_by_year[enrollment_by_year[["school_id"]] == sid, ]
+  stopifnot(nrow(years) == 1L, identical(years[["year"]], 2026L))
+  metrics <- school[school[["school_id"]] == sid, ]
+  stopifnot(nrow(metrics) > 10L, all(metrics[["year"]] == 2026L),
+            any(metrics[["metric_id"]] == "attendance_chronic_absent_pct"),
+            any(metrics[["metric_id"]] == "test_sol_annual_ela"))
+}
+stopifnot(enrollment_by_year[["enrollment"]][
+  enrollment_by_year[["school_id"]] == chesapeake_new[["B.M. Williams Elementary"]]] == 734L,
+  enrollment_by_year[["enrollment"]][
+  enrollment_by_year[["school_id"]] == chesapeake_new[["Crestwood Elementary School"]]] == 796L)
+# LCPS renamed two schools in July 2025 without changing their NCES IDs.
+# Historical display labels follow the LCPS effective date, not VDOE's
+# retrospectively updated source labels.
+renames <- read.csv("app/data/school_renames.csv",
+                    colClasses = c(school_id = "character"))
+stopifnot(nrow(renames) == 2L,
+          setequal(renames$school_id, c("510225002450", "510225002412")),
+          all(renames$first_current_year == 2026L),
+          !anyDuplicated(renames$school_id))
+for (i in seq_len(nrow(renames))) {
+  sid <- renames$school_id[[i]]
+  record <- schools[schools$school_id == sid, ]
+  stopifnot(nrow(record) == 1L,
+            identical(record$school_name[[1]], renames$current_name[[i]]),
+            identical(record$division_id[[1]], "5102250"),
+            identical(school_name_for_year(sid, 2025L, record$school_name[[1]], renames),
+                      renames$prior_name[[i]]),
+            identical(school_name_for_year(sid, 2026L, record$school_name[[1]], renames),
+                      renames$current_name[[i]]))
+  stopifnot(any(enrollment_by_year$school_id == sid & enrollment_by_year$year == 2026L),
+            any(school$school_id == sid & school$year == 2025L),
+            any(school$school_id == sid & school$year == 2026L))
+}
 stopifnot(all(school$school_id %in% schools$school_id))
 stopifnot(all(school$metric_id %in% defs$metric_id))
 stopifnot(all(is.finite(school$value) | school$suppressed %in% TRUE))
