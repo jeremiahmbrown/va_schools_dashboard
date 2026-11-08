@@ -236,6 +236,8 @@ server <- function(input, output, session) {
       "Williamsburg-James City County: WJCC identifies these as current 2026–27 attendance zones. Board-approved replacement zones begin in August 2027 and are not shown. Confirm an address with WJCC Schools."
     } else if (identical(division_id, "5100810")) {
       "Chesapeake City: CPS GIS attendance layers are labeled 2026–27. Some primary and intermediate schools share areas; Sparrow Road Intermediate serves two published areas. B.M. Williams and Crestwood Elementary link to 2025–26 school records. Confirm an address with CPS Planning."
+    } else if (identical(division_id, "5102640")) {
+      "Newport News: NNPS links the City GIS map for current attendance areas. The services have no stated school-year effective date; some high-school record dates are from 2021. Newsome Park has two differently labeled source areas. Five snapshot schools have no separate named polygon in these layers. Some elementary edges overlap; confirm an address with the NNPS Zone Finder."
     } else if (identical(division_id, "5102250")) {
       "Loudoun County: LCPS GIS attendance layers are labeled 2026–27. Two schools renamed in 2025 keep their NCES IDs; five schools have no separate standard polygon. Confirm an address with the LCPS attendance locator."
     } else if (identical(division_id, "5100120")) {

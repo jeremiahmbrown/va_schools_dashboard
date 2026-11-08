@@ -1,0 +1,88 @@
+{
+  "division_id": "5102640",
+  "source_owner": "City of Newport News GIS, linked by Newport News Public Schools",
+  "official_evidence_url": "https://nn.k12.va.us/schoolboundaries/",
+  "retrieved_utc": "2026-10-27T02:11:49+00:00",
+  "spec_file": "data-raw/zone_import_specs/5102640.json",
+  "layers": [
+    {
+      "level": "Elementary",
+      "source_type": "arcgis",
+      "layer_url": "https://maps.nnva.gov/gis/rest/services/Operational/SchoolZoneElementarySchool/MapServer/0",
+      "url": "https://maps.nnva.gov/gis/rest/services/Operational/SchoolZoneElementarySchool/MapServer/0/query?where=1%3D1&outFields=%2A&outSR=4326&f=geojson",
+      "file": "data-raw/input/zones/5102640/b0760a75db9187eb/00_elementary.geojson",
+      "sha256": "942c597d5fe27d42787a0b138fc5d677380b7b02599b69614761fd44f9149fee",
+      "feature_count": 23,
+      "name_field": "DISTRCTNAME",
+      "object_id_field": "OBJECTID",
+      "school_year_values": [],
+      "school_names": [
+        "An Achievable Dream Academy K-2",
+        "Carver K-5",
+        "Charles K-5",
+        "Discovery STEM Academy K-2",
+        "General Stanford K-5",
+        "Greenwood K-5",
+        "Hidenwood K-5",
+        "Hilton K-5",
+        "Jenkins K-5",
+        "Katherine Johnson K-5",
+        "Kiln Creek K-5",
+        "Knollwood Meadows K-5",
+        "McIntosh K-5",
+        "Newsome Park K-2",
+        "Newsome Park K-5",
+        "Palmer K-5",
+        "Richneck K-5",
+        "Riverside K-5",
+        "Sanford K-5",
+        "Saunders K-5",
+        "Sedgefield K-5",
+        "Stoney Run K-5",
+        "Yates K-5"
+      ],
+      "retrieval_method": "all object IDs then paged GeoJSON by objectIds"
+    },
+    {
+      "level": "Middle",
+      "source_type": "arcgis",
+      "layer_url": "https://maps.nnva.gov/gis/rest/services/Operational/SchoolZoneMiddleSchool/MapServer/0",
+      "url": "https://maps.nnva.gov/gis/rest/services/Operational/SchoolZoneMiddleSchool/MapServer/0/query?where=1%3D1&outFields=%2A&outSR=4326&f=geojson",
+      "file": "data-raw/input/zones/5102640/b0760a75db9187eb/01_middle.geojson",
+      "sha256": "c207a2992a563e0ee07fd16fe10e1aedd5fe1f050a566079b36ceec80e96baa2",
+      "feature_count": 6,
+      "name_field": "NAME",
+      "object_id_field": "OBJECTID",
+      "school_year_values": [],
+      "school_names": [
+        "Crittenden Middle",
+        "Ella Fitzgerald Middle",
+        "Gildersleeve Middle",
+        "Hines Middle",
+        "Huntington Middle",
+        "Passage Middle"
+      ],
+      "retrieval_method": "all object IDs then paged GeoJSON by objectIds"
+    },
+    {
+      "level": "High",
+      "source_type": "arcgis",
+      "layer_url": "https://maps.nnva.gov/gis/rest/services/Operational/SchoolZoneHighSchool/MapServer/0",
+      "url": "https://maps.nnva.gov/gis/rest/services/Operational/SchoolZoneHighSchool/MapServer/0/query?where=1%3D1&outFields=%2A&outSR=4326&f=geojson",
+      "file": "data-raw/input/zones/5102640/b0760a75db9187eb/02_high.geojson",
+      "sha256": "590d03d6c693a11c971aa316e232698d4d204ee70c765fae7a8a102590a6e429",
+      "feature_count": 8,
+      "name_field": "NAME",
+      "object_id_field": "OBJECTID",
+      "school_year_values": [],
+      "school_names": [
+        "Denbigh High",
+        "Heritage High",
+        "Menchville High",
+        "Warwick High",
+        "Woodside High"
+      ],
+      "retrieval_method": "all object IDs then paged GeoJSON by objectIds"
+    }
+  ]
+}

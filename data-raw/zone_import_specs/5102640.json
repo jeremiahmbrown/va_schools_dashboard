@@ -1,0 +1,34 @@
+{
+  "division_id": "5102640",
+  "source_owner": "City of Newport News GIS, linked by Newport News Public Schools",
+  "official_evidence_url": "https://nn.k12.va.us/schoolboundaries/",
+  "source_label": "Newport News current City GIS school zones",
+  "popup_note": "NNPS links the City education map for current areas. The GIS does not state a school-year effective date. Some schools have no separate named polygon. Confirm an address with NNPS Zone Finder.",
+  "expected_school_count": 38,
+  "max_same_level_overlap_m2": 15593,
+  "rights_access": "Three exact public City ArcGIS items; reference-only accuracy disclaimer, no redistribution restriction; ArcGIS public sharing terms apply.",
+  "layers": [
+    {
+      "level": "Elementary",
+      "source_type": "arcgis",
+      "source_url": "https://maps.nnva.gov/gis/rest/services/Operational/SchoolZoneElementarySchool/MapServer/0",
+      "name_field": "DISTRCTNAME",
+      "expected_count": 23
+    },
+    {
+      "level": "Middle",
+      "source_type": "arcgis",
+      "source_url": "https://maps.nnva.gov/gis/rest/services/Operational/SchoolZoneMiddleSchool/MapServer/0",
+      "name_field": "NAME",
+      "expected_count": 6
+    },
+    {
+      "level": "High",
+      "source_type": "arcgis",
+      "source_url": "https://maps.nnva.gov/gis/rest/services/Operational/SchoolZoneHighSchool/MapServer/0",
+      "name_field": "NAME",
+      "expected_count": 8
+    }
+  ],
+  "overlap_review_note": "Equal-area review of 37 City polygons finds 15,592.9008 m2 elementary same-level overlap, 8.2612 m2 middle, and zero high. Largest pairs are Riverside/Sedgefield 7,279.99 m2, Riverside/Hilton 5,743.67 m2, Saunders/Riverside 2,353.42 m2. The 15,593 m2 cap accepts only this measured source geometry. Level unions differ by at most 109,299.4 m2 across about 182.7 million m2. Retain published shapes and confirm assignments with NNPS."
+}

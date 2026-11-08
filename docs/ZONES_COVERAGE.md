@@ -8,7 +8,7 @@ The optional attendance-zone layer has three source groups:
 
 | Source | Divisions | Features | School matches | Date |
 | --- | ---: | ---: | ---: | --- |
-| NCES SABS | 102 active sources | 864 | See statewide total below | 2015–16 survey; older files retained when a division GIS source takes priority |
+| NCES SABS | 101 active sources | 827 | See statewide total below | 2015–16 survey; older files retained when a division GIS source takes priority |
 | Roanoke County public GIS | 1 | 60 level features from 20 assigned county areas | 26 of 26 county schools | Retrieved 2026-10-20; the GIS service does not state a boundary effective date |
 | Roanoke City public GIS | 1 | 24 features: 17 elementary, 5 middle, 2 high | 24 of 24 City schools | Elementary Phase 1 applies to 2026–27; middle and high layer metadata date from 2009 |
 | Neighboring division GIS and named SABS fallback | 4 | 67 features | 55 of 56 schools | Retrieved 2026-10-24; see source details below |
@@ -25,8 +25,17 @@ The optional attendance-zone layer has three source groups:
 | Norfolk NPS-linked Woolpert locator | 1 | 41 features: 27 elementary, 8 middle, 6 high | 37 of 41 snapshot schools | NPS web map labels 2026-27; retrieved 2026-10-26 |
 | Chesapeake CPS locator GIS | 1 | 38 features: 21 elementary, 10 middle, 7 high | 45 of 45 schools | Official 2026-27 locator and service names; retrieved 2026-10-29 |
 | Loudoun LCPS Planning GIS | 1 | 93 features: 59 elementary, 17 middle, 17 high | 93 of 98 schools | Official 2026-27 layer names; retrieved 2026-10-30 |
+| Newport News City GIS linked by NNPS | 1 | 37 features: 23 elementary, 6 middle, 8 high | 33 of 38 schools | Current NNPS map; exact effective year not stated; retrieved 2026-10-26 |
 
-There are 130 divisions and 1,814 schools in the dashboard. Nine divisions have no attendance-zone file. Another nine have only SABS features with an unknown school level; the app offers an explicit “Unclassified (older source)” view for those features. Across all divisions, 20 lack elementary features, 35 lack middle features, and 28 lack high features, including the nine without any file. Across the full snapshot, 1,454 schools have a matched zone and 360 do not. A zone file in a division does **not** mean every school has a matched polygon. The NCES SABS data are an old, incomplete survey; NCES calls the survey experimental and lists only 2013–14 and 2015–16 collections: [NCES SABS](https://nces.ed.gov/programs/edge/SABS).
+There are 130 divisions and 1,814 schools in the dashboard. Nine divisions have no attendance-zone file. Another nine have only SABS features with an unknown school level; the app offers an explicit “Unclassified (older source)” view for those features. Across all divisions, 20 lack elementary features, 35 lack middle features, and 28 lack high features, including the nine without any file. Across the full snapshot, 1,476 schools have a matched zone and 338 do not. A zone file in a division does **not** mean every school has a matched polygon. The NCES SABS data are an old, incomplete survey; NCES calls the survey experimental and lists only 2013–14 and 2015–16 collections: [NCES SABS](https://nces.ed.gov/programs/edge/SABS).
+
+## Newport News public release (2026-11-08)
+
+[NNPS calls its linked City map the current attendance-zone view](https://www.nn.k12.va.us/schoolboundaries/); [NNPS says proposed changes would start no earlier than 2027-28](https://nn.k12.va.us/schoolboundaries/faqround1.html). The exact effective year of the current GIS polygons is not stated. The app keeps that warning and directs address checks to the NNPS Zone Finder.
+
+The City's exact [elementary](https://www.arcgis.com/home/item.html?id=e55b1cb9b4934fb78f3c82a21f63f7aa), [middle](https://www.arcgis.com/home/item.html?id=f2ac567a1c5d480081e4197a541c5744), and [high](https://www.arcgis.com/home/item.html?id=2bc7767e9cb2400aaa76ae2f029a1bc5) ArcGIS items are public. Their service URLs match the staged source. Each item credits the City and gives a reference-only accuracy and liability disclaimer, with no redistribution restriction. [ArcGIS public sharing terms](https://doc.arcgis.com/en/arcgis-online/reference/terms-of-use.htm) apply subject to owner conditions. The saved 23, 6, and 8 object-ID sets matched the live services on 2026-11-08.
+
+The 37 polygons link 33 of 38 snapshot schools. The five without separate named polygons keep their reviewed dispositions. Geometry is valid and nonempty. The City elementary source contains 15,592.9008 m² of same-level overlap, retained with a 15,593 m² reviewed cap and a map warning. Source SHA-256: `ace8b4f3453ca2a34cd4d8bcc42b17c87d845837d371f84d81b89762556b6600`. See [release record](RELEASE_NEWPORT_NEWS_2026-11-08.md).
 
 ## Chesapeake and Loudoun public release (2026-11-08)
 

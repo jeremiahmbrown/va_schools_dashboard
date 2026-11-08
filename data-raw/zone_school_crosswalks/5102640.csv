@@ -1,0 +1,40 @@
+division_id,level,source_name,school_id,school_name,disposition,note
+5102640,Elementary,General Stanford K-5,510264002422,General Stanford Elementary,mapped,City GIS OBJECTID 1; explicit source-name crosswalk.
+5102640,Elementary,Katherine Johnson K-5,510264001061,Katherine Johnson Elementary,mapped,City GIS OBJECTID 2; explicit source-name crosswalk.
+5102640,Elementary,McIntosh K-5,510264001049,George J. McIntosh Elementary ,mapped,City GIS OBJECTID 3; explicit source-name crosswalk.
+5102640,Elementary,Jenkins K-5,510264001077,Willis A. Jenkins Elementary,mapped,City GIS OBJECTID 4; explicit source-name crosswalk.
+5102640,Elementary,Knollwood Meadows K-5,510264001068,Knollwood Meadows Elementary ,mapped,City GIS OBJECTID 5; explicit source-name crosswalk.
+5102640,Elementary,Stoney Run K-5,510264001054,Stoney Run Elementary ,mapped,City GIS OBJECTID 6; explicit source-name crosswalk.
+5102640,Elementary,Palmer K-5,510264001060,L.F. Palmer Elementary ,mapped,City GIS OBJECTID 7; explicit source-name crosswalk.
+5102640,Elementary,Sanford K-5,510264001075,T. Ryland Sanford Elementary,mapped,City GIS OBJECTID 8; explicit source-name crosswalk.
+5102640,Elementary,Charles K-5,510264001040,B.C. Charles Elementary ,mapped,City GIS OBJECTID 9; explicit source-name crosswalk.
+5102640,Elementary,An Achievable Dream Academy K-2,510264002343,Achievable Dream Academy,mapped,City GIS OBJECTID 10; explicit source-name crosswalk.
+5102640,Elementary,Newsome Park K-2,510264001065,Newsome Park Elementary,mapped,City GIS OBJECTID 11; explicit source-name crosswalk. City publishes two differently labeled areas for one snapshot school; retain each source area and grade label.
+5102640,Elementary,Kiln Creek K-5,510264000358,Kiln Creek Elementary,mapped,City GIS OBJECTID 12; explicit source-name crosswalk.
+5102640,Elementary,Saunders K-5,510264001059,Joseph H. Saunders Elementary,mapped,City GIS OBJECTID 13; explicit source-name crosswalk.
+5102640,Elementary,Yates K-5,510264001070,Richard T. Yates Elementary,mapped,City GIS OBJECTID 14; explicit source-name crosswalk.
+5102640,Elementary,Hidenwood K-5,510264001051,Hidenwood Elementary,mapped,City GIS OBJECTID 15; explicit source-name crosswalk.
+5102640,Elementary,Riverside K-5,510264001072,Riverside Elementary,mapped,City GIS OBJECTID 16; explicit source-name crosswalk.
+5102640,Elementary,Sedgefield K-5,510264001074,Sedgefield Elementary,mapped,City GIS OBJECTID 17; explicit source-name crosswalk.
+5102640,Elementary,Hilton K-5,510264001052,Hilton Elementary,mapped,City GIS OBJECTID 18; explicit source-name crosswalk.
+5102640,Elementary,Carver K-5,510264001043,Carver Elementary,mapped,City GIS OBJECTID 19; explicit source-name crosswalk.
+5102640,Elementary,Greenwood K-5,510264002068,Oliver C. Greenwood Elementary,mapped,City GIS OBJECTID 20; explicit source-name crosswalk.
+5102640,Elementary,Discovery STEM Academy K-2,510264001062,Discovery STEM Academy,mapped,City GIS OBJECTID 21; explicit source-name crosswalk.
+5102640,Elementary,Richneck K-5,510264001071,Richneck Elementary,mapped,City GIS OBJECTID 22; explicit source-name crosswalk.
+5102640,Elementary,Newsome Park K-5,510264001065,Newsome Park Elementary,mapped,City GIS OBJECTID 23; explicit source-name crosswalk. City publishes two differently labeled areas for one snapshot school; retain each source area and grade label.
+5102640,Middle,Ella Fitzgerald Middle,510264001056,Ella J. Fitzgerald Middle ,mapped,City GIS OBJECTID 1; explicit source-name crosswalk.
+5102640,Middle,Passage Middle,510264002298,Mary Passage Middle,mapped,City GIS OBJECTID 2; explicit source-name crosswalk.
+5102640,Middle,Crittenden Middle,510264001237,Crittenden Middle,mapped,City GIS OBJECTID 3; explicit source-name crosswalk.
+5102640,Middle,Huntington Middle,510264001055,Huntington Middle,mapped,City GIS OBJECTID 4; explicit source-name crosswalk.
+5102640,Middle,Hines Middle,510264001050,Homer L. Hines Middle,mapped,City GIS OBJECTID 5; explicit source-name crosswalk.
+5102640,Middle,Gildersleeve Middle,510264002208,Ethel M. Gildersleeve Middle,mapped,City GIS OBJECTID 6; explicit source-name crosswalk.
+5102640,High,Woodside High,510264001453,Woodside High,mapped,City GIS OBJECTID 1; explicit source-name crosswalk.
+5102640,High,Denbigh High,510264001047,Denbigh High,mapped,City GIS OBJECTID 2; explicit source-name crosswalk.
+5102640,High,Heritage High,510264001451,Heritage High,mapped,City GIS OBJECTID 3; explicit source-name crosswalk.
+5102640,High,Warwick High,510264001076,Warwick High,mapped,City GIS OBJECTID 4; explicit source-name crosswalk. City publishes multiple source pieces for this high school; retain their FIDs.
+5102640,High,Menchville High,510264001063,Menchville High,mapped,City GIS OBJECTID 5; explicit source-name crosswalk. City publishes multiple source pieces for this high school; retain their FIDs.
+5102640,Elementary,,510264001044,David A. Dutrow Elementary,source_not_available,NNPS lists a magnet program with application admission. City elementary GIS has no named area. A base attendance area is not confirmed; use NNPS Zone Finder for an address.
+5102640,Elementary,,510264001637,Deer Park Elementary,source_not_available,NNPS lists a magnet program with application admission. City elementary GIS has no named area. A base attendance area is not confirmed; use NNPS Zone Finder for an address.
+5102640,Elementary,,510264002857,John Marshall Early Childhood Center,no_neighborhood_zone,NNPS identifies this as a voluntary preschool program and transfers records to the next zoned kindergarten school. No separate standard K-12 attendance polygon in City GIS.
+5102640,Middle,,510264001041,B.T. Washington Middle ,source_not_available,NNPS lists a magnet program with application admission. City middle GIS has no named area. A base attendance area is not confirmed; use NNPS Zone Finder for an address.
+5102640,Combined,,510264002344,Achievable Dream Middle/High ,no_neighborhood_zone,NNPS lists a specialty program; its admissions page says rising grades 3-6 are eligible citywide by application. No separately named City middle or high attendance polygon. Do not infer grades 7-12 admission from that rule.

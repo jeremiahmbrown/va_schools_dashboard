@@ -1,8 +1,8 @@
 # School attendance-zone gap plan - updated 2026-11-08
 
-The original baseline had 641 unmatched schools among 1,810 snapshot schools. Releases for Hanover, Virginia Beach, Henrico, Stafford, Alexandria, Norfolk, WJCC, Chesapeake, and Loudoun have added verified links. The refreshed production dashboard has 1,814 schools: 1,454 matched and 360 unmatched. These are school-to-polygon links, not household assignments.
+The original baseline had 641 unmatched schools among 1,810 snapshot schools. Releases for Hanover, Virginia Beach, Henrico, Stafford, Alexandria, Norfolk, WJCC, Chesapeake, Loudoun, and Newport News have added verified links. The refreshed production dashboard has 1,814 schools: 1,476 matched and 338 unmatched. These are school-to-polygon links, not household assignments.
 
-Of the 360 unmatched schools, 227 have a link in the separate local research checkout. Each requires a release review of school IDs, school year, source rights, geometry, special programs, map labels, and live app behavior. A local link is not a release approval.
+Of the 338 unmatched schools, 205 have a link in the separate local research checkout. Each requires a release review of school IDs, school year, source rights, geometry, special programs, map labels, and live app behavior. A local link is not a release approval.
 
 The other 133 have no verified local link in either the production or research checkout:
 

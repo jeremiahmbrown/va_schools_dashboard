@@ -125,7 +125,7 @@ for (division_id in names(historical_expected)) {
 
 # A level cache must contain exactly the checked source features and must be
 # ignored if the combined source file changes.
-for (division_id in c(names(neighbor_expected), "5103300", "5103330")) {
+for (division_id in c(names(neighbor_expected), "5103300", "5103330", "5102640")) {
   combined_path <- pick_zone_file("app/data", division_id)
   combined <- jsonlite::fromJSON(read_zone_geojson(combined_path), simplifyVector = FALSE)$features
   for (level in c("Elementary", "Middle", "High")) {
@@ -226,5 +226,32 @@ for (sid in c("510225002412", "510225002450")) {
                                   simplifyVector = FALSE)$features
   stopifnot(length(selected) == 1L)
 }
+
+# Newport News City GIS keeps Newsome grade areas and repeated high-school pieces.
+news_path <- pick_zone_file("app/data", "5102640")
+stopifnot(identical(news_path, file.path("app/data", "zones", "division", "5102640.json")))
+news_text <- read_zone_geojson(news_path)
+news <- jsonlite::fromJSON(news_text, simplifyVector = FALSE)$features
+stopifnot(length(news) == 37L)
+news_levels <- vapply(news, function(f) f$properties$level, character(1))
+stopifnot(identical(as.integer(table(factor(news_levels, levels = c("Elementary", "Middle", "High")))), c(23L, 6L, 8L)))
+news_ids <- unique(vapply(news, function(f) f$properties$app_school_id, character(1)))
+stopifnot(length(news_ids) == 33L, all(news_ids %in% schools$school_id[schools$division_id == "5102640"]))
+newsome <- jsonlite::fromJSON(filter_zone_geojson_by_school_id(news_text, "510264001065"), simplifyVector = FALSE)$features
+stopifnot(length(newsome) == 2L,
+          setequal(vapply(newsome, function(f) f$properties$official_school_name, character(1)),
+                   c("Newsome Park K-2", "Newsome Park K-5")))
+for (pair in list(c("Menchville High", 3L), c("Warwick High", 2L))) {
+  sid <- schools$school_id[which(schools$division_id == "5102640" & trimws(schools$school_name) == pair[[1]])]
+  selected <- jsonlite::fromJSON(filter_zone_geojson_by_school_id(news_text, sid), simplifyVector = FALSE)$features
+  stopifnot(length(sid) == 1L, length(selected) == as.integer(pair[[2]]))
+}
+for (name in c("David A. Dutrow Elementary", "Deer Park Elementary", "John Marshall Early Childhood Center",
+               "B.T. Washington Middle", "Achievable Dream Middle/High")) {
+  sid <- schools$school_id[which(schools$division_id == "5102640" & trimws(schools$school_name) == name)]
+  stopifnot(length(sid) == 1L, is.null(filter_zone_geojson_by_school_id(news_text, sid)))
+}
+news_sf <- sf::st_read(news_path, quiet = TRUE)
+stopifnot(all(sf::st_is_valid(news_sf)), !any(sf::st_is_empty(news_sf)))
 
 cat("Division zone level, school match, geometry, and cache checks passed.\n")
