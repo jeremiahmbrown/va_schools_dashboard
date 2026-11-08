@@ -17,4 +17,7 @@ The [manifest](../data-raw/zone_source_manifests/5102640.json), [crosswalk](../d
 - `Rscript --vanilla tests/check_zones.R`: passed.
 - `python3 data-raw/import_zone_source.py 5102640` (dry run): 37 polygons, 33/38 schools, exact hash.
 - `python3 data-raw/audit_zones.py`: 1,476 linked; 338 unmatched; zero invalid IDs or empty geometry.
-- Git and live Shiny release: pending.
+- GitHub master commit `2a2234d54357e35d442a9b8cb927880f2b8c3829` has tree `8e1a13140e4950138df8111d34eaa7c086902f2d`, identical to the checked local tree.
+- Shiny app ID `16676824`, bundle `12795760`: deployed on 2026-11-08 at the existing URL.
+- Live UI: Newsome Park Elementary loaded its 2026 profile and zone outlines. The Filters panel showed the Newport News source-year, overlap, and address-check warning. This is a school-zone display check, not a household-address test.
+- Rollback target: prior bundle `12795723` and Git commit `0fd8d4b599d9c8bcac4b583a7465088e2bc67fbe`.
