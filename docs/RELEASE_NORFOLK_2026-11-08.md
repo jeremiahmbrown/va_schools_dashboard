@@ -10,4 +10,4 @@ Equal-area same-level overlap is 0.1108 m² elementary, 5.2848 m² middle, and 3
 
 Prior production: 1,325 of 1,810 schools matched; 485 unmatched. Checked candidate: 1,354 matched; 456 unmatched; zero invalid school IDs or empty geometry; ten divisions without a file. Python importer, R zone/cache, R snapshot, statewide audit, R parse, bundle-list, and Git diff checks passed. Rollback baseline: GitHub commit ffd5cee5ab5ab91dae728353fa877678f044ddae and shinyapps.io app 16676824 bundle 12794591.
 
-Production deployment and live school selection: pending.
+Published to GitHub master as app-source commit 010b7178c98a0c3d0075ffc367239c9123ee1c42 and deployed to shinyapps.io app 16676824 as bundle 12794627. The live app selected Azalea Gardens Middle with attendance zones on and Middle level selected. Both source pieces rendered; the NPS 2026-27 year and service-name caveat displayed and there was no missing-zone warning. Production has 1,354 of 1,810 schools matched and 456 unmatched. Rollback bundle: 12794591.
