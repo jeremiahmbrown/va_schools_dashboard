@@ -10,4 +10,4 @@ The public locator's underlying service item says “My Use Limitations” witho
 
 Prior production: 1,310 of 1,810 schools matched; 500 unmatched. Checked candidate: 1,325 matched; 485 unmatched; zero invalid school IDs or empty geometry; ten divisions without a file. Python importer, R zone/cache, R snapshot, statewide audit, R parse, and Git diff checks passed. Rollback baseline: GitHub commit a957dd82ecf51129fa63848b1772340b70998396 and shinyapps.io app 16676824 bundle 12791743.
 
-Production deployment and live school selection: pending.
+Published to GitHub master as app-source commit 0bd2f43db665a64b5e56b6511589ce5b23b255c9 and deployed to shinyapps.io app 16676824 as bundle 12794591. The live app selected Jefferson-Houston PK-8 School with attendance zones on. Its elementary polygon rendered; the middle zone level was available. The ACPS 2026-27 source note displayed and there was no missing-zone warning. Production has 1,325 of 1,810 schools matched and 485 unmatched. Rollback bundle: 12791743.
