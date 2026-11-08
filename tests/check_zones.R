@@ -176,4 +176,14 @@ source_only <- Filter(function(f) f$properties$official_school_name %in% c("ES#1
 stopifnot(length(source_only) == 3L,
           all(vapply(source_only, function(f) is.null(f$properties[["app_school_id", exact = TRUE]]), logical(1))))
 
+alex_text <- read_zone_geojson(pick_zone_file("app/data", "5100120"))
+alex_features <- jsonlite::fromJSON(alex_text, simplifyVector = FALSE)$features
+stopifnot(length(alex_features) == 20L,
+          length(unique(vapply(alex_features, function(f) f$properties$app_school_id, character(1)))) == 17L)
+jh <- jsonlite::fromJSON(filter_zone_geojson_by_school_id(alex_text, "510012000044"), simplifyVector = FALSE)$features
+ph <- jsonlite::fromJSON(filter_zone_geojson_by_school_id(alex_text, "510012000052"), simplifyVector = FALSE)$features
+stopifnot(length(jh) == 3L, length(ph) == 2L,
+          setequal(vapply(jh, function(f) f$properties$level, character(1)), c("Elementary", "Middle")),
+          setequal(vapply(ph, function(f) f$properties$level, character(1)), c("Elementary", "Middle")))
+
 cat("Division zone level, school match, geometry, and cache checks passed.\n")

@@ -1,0 +1,13 @@
+# Alexandria 2026-27 attendance-zone release - 2026-11-08
+
+Scope: add the ACPS-linked SchoolSiteLocator division file and level caches for division 5100120, replacing its older SABS display. The app source note names ACPS and the 2026-27 effective date. No school, metric, or other division data change.
+
+[ACPS School Boundaries](https://www.acps.k12.va.us/families/school-boundaries) says the approved 2026-27 boundaries took effect July 1, 2026. Its [Attendance Zone Locator](https://www.schoolsitelocator.com/apps/alexandria/?page=2026/27-Boundaries) selects a 2026-27 web map. The live [MapServer/444](https://www.schoolsitelocator.com/server/rest/services/ssl_AB/MapServer/444) query on 2026-11-08 returned the exact saved object IDs: elementary 147-160 (14), middle 161-165 (5), and high 166 (1). The query requires `STDYAREA = 'BNDRY'` and a school name at the selected level. Other study areas and two unnamed records are excluded.
+
+The [manifest](../data-raw/zone_source_manifests/5100120.json), [import specification](../data-raw/zone_import_specs/5100120.json), [strict crosswalk](../data-raw/zone_school_crosswalks/5100120.csv), and [geometry report](../data-raw/zone_validation_reports/5100120.json) pin the import. Source JSON SHA-256: d8e81128e25b9f1eb86f5e3b0d922fac6dc4803772bc5fb314f7df8eb971dcf5. All 20 polygons are valid and nonempty. All 17 snapshot schools link to a polygon. Jefferson-Houston and Patrick Henry each have elementary and middle areas; Jefferson-Houston has two middle pieces. Each level union covers 39,687,232.359 m²; reported same-level overlap and cross-level gaps are zero. The 0.001 m² cap covers numerical rounding only.
+
+The public locator's underlying service item says “My Use Limitations” without a specific condition. The user stated that this is public data and authorized publication on 2026-11-08. This record does not claim that the service grants a clear redistribution license. The app attributes ACPS and directs users to confirm an address and enrollment with ACPS. The layer lacks a per-feature school-year field and populated edit dates; the year comes from the ACPS page and selected map.
+
+Prior production: 1,310 of 1,810 schools matched; 500 unmatched. Checked candidate: 1,325 matched; 485 unmatched; zero invalid school IDs or empty geometry; ten divisions without a file. Python importer, R zone/cache, R snapshot, statewide audit, R parse, and Git diff checks passed. Rollback baseline: GitHub commit a957dd82ecf51129fa63848b1772340b70998396 and shinyapps.io app 16676824 bundle 12791743.
+
+Production deployment and live school selection: pending.

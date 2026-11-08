@@ -1,0 +1,38 @@
+{
+  "division_id": "5100120",
+  "source_owner": "Alexandria City Public Schools / SchoolSiteLocator",
+  "official_evidence_url": "https://www.acps.k12.va.us/families/school-boundaries",
+  "source_label": "ACPS 2026–27 Attendance Zone Locator",
+  "display_source_url": "https://www.schoolsitelocator.com/apps/alexandria/?page=2026/27-Boundaries",
+  "popup_note": "ACPS says these boundaries take effect July 1, 2026. Confirm an address and enrollment with ACPS.",
+  "expected_school_count": 17,
+  "max_same_level_overlap_m2": 0.001,
+  "overlap_review_note": "The 20 source polygons cover the same 39,687,232.359 m2 at each school level. Reported same-level overlap and cross-level gaps are zero at display precision. A zero cap fails on a tiny floating-point area difference, so 0.001 m2 permits only that numerical artifact.",
+  "rights_access": "Public ACPS-linked locator. User authorized publication 2026-11-08. The underlying service item says My Use Limitations; exact terms remain unclear.",
+  "layers": [
+    {
+      "level": "Elementary",
+      "source_type": "arcgis",
+      "source_url": "https://www.schoolsitelocator.com/server/rest/services/ssl_AB/MapServer/444",
+      "where": "STDYAREA = 'BNDRY' AND ELEM_DESC IS NOT NULL",
+      "name_field": "ELEM_DESC",
+      "expected_count": 14
+    },
+    {
+      "level": "Middle",
+      "source_type": "arcgis",
+      "source_url": "https://www.schoolsitelocator.com/server/rest/services/ssl_AB/MapServer/444",
+      "where": "STDYAREA = 'BNDRY' AND MID_DESC IS NOT NULL",
+      "name_field": "MID_DESC",
+      "expected_count": 5
+    },
+    {
+      "level": "High",
+      "source_type": "arcgis",
+      "source_url": "https://www.schoolsitelocator.com/server/rest/services/ssl_AB/MapServer/444",
+      "where": "STDYAREA = 'BNDRY' AND HIGH_DESC IS NOT NULL",
+      "name_field": "HIGH_DESC",
+      "expected_count": 1
+    }
+  ]
+}

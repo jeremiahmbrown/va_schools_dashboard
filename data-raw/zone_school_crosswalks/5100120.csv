@@ -1,0 +1,20 @@
+division_id,level,source_name,school_id,school_name,disposition,note
+5100120,Elementary,Charles Barrett,510012000038,Charles Barrett Elementary,mapped,ACPS-linked 2026–27 locator source-label match.
+5100120,Elementary,Cora Kelly,510012001826,Cora Kelly School for Math Science and Technology,mapped,ACPS-linked 2026–27 locator source-label match.
+5100120,Elementary,Douglas MacArthur,510012000039,Douglas MacArthur Elementary,mapped,ACPS-linked 2026–27 locator source-label match.
+5100120,Elementary,Ferdinand T. Day,510012003053,Ferdinand T. Day Elementary,mapped,ACPS-linked 2026–27 locator source-label match.
+5100120,Elementary,George Mason,510012000041,George Mason Elementary,mapped,ACPS-linked 2026–27 locator source-label match.
+5100120,Elementary,James K Polk,510012000043,James K. Polk Elementary,mapped,ACPS-linked 2026–27 locator source-label match.
+5100120,Elementary,Jefferson-Houston,510012000044,Jefferson-Houston PK-8 School,mapped,ACPS-linked 2026–27 locator source-label match. The source gives this K–8 school separate elementary and middle boundaries.
+5100120,Elementary,John Adams,510012000045,John Adams Elementary,mapped,ACPS-linked 2026–27 locator source-label match.
+5100120,Elementary,Lyles-Crouch,510012000047,Lyles-Crouch Elementary,mapped,ACPS-linked 2026–27 locator source-label match.
+5100120,Elementary,Mount Vernon,510012000050,Mount Vernon Elementary,mapped,ACPS-linked 2026–27 locator source-label match.
+5100120,Elementary,Naomi L Brooks,510012000048,Naomi L. Brooks Elementary,mapped,ACPS-linked 2026–27 locator source-label match.
+5100120,Elementary,Patrick Henry,510012000052,Patrick Henry K-8 School,mapped,ACPS-linked 2026–27 locator source-label match. The source gives this K–8 school separate elementary and middle boundaries.
+5100120,Elementary,Samuel W Tucker,510012002549,Samuel W. Tucker Elementary,mapped,ACPS-linked 2026–27 locator source-label match.
+5100120,Elementary,William Ramsay,510012000055,William Ramsay Elementary,mapped,ACPS-linked 2026–27 locator source-label match.
+5100120,Middle,Francis C. Hammond MS,510012003016,Francis C. Hammond Middle,mapped,ACPS-linked 2026–27 locator source-label match.
+5100120,Middle,George Washington MS,510012002999,George Washington Middle,mapped,ACPS-linked 2026–27 locator source-label match.
+5100120,Middle,Jefferson-Houston,510012000044,Jefferson-Houston PK-8 School,mapped,ACPS-linked 2026–27 locator source-label match. The source gives this K–8 school separate elementary and middle boundaries. Two source polygons have this same middle-school label.
+5100120,Middle,Patrick Henry,510012000052,Patrick Henry K-8 School,mapped,ACPS-linked 2026–27 locator source-label match. The source gives this K–8 school separate elementary and middle boundaries.
+5100120,High,Alexandria City HS,510012000054,Alexandria City High,mapped,ACPS-linked 2026–27 locator source-label match.

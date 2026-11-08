@@ -1,0 +1,76 @@
+{
+  "division_id": "5100120",
+  "source_owner": "Alexandria City Public Schools / SchoolSiteLocator",
+  "official_evidence_url": "https://www.acps.k12.va.us/families/school-boundaries",
+  "retrieved_utc": "2026-10-27T21:17:59+00:00",
+  "spec_file": "data-raw/zone_import_specs/5100120.json",
+  "layers": [
+    {
+      "level": "Elementary",
+      "source_type": "arcgis",
+      "layer_url": "https://www.schoolsitelocator.com/server/rest/services/ssl_AB/MapServer/444",
+      "url": "https://www.schoolsitelocator.com/server/rest/services/ssl_AB/MapServer/444/query?where=STDYAREA+%3D+%27BNDRY%27+AND+ELEM_DESC+IS+NOT+NULL&outFields=%2A&outSR=4326&f=geojson",
+      "where": "STDYAREA = 'BNDRY' AND ELEM_DESC IS NOT NULL",
+      "file": "data-raw/input/zones/5100120/2837341155d25f66/00_elementary.geojson",
+      "sha256": "acd31291e2c5804b8dacaa4b83c4770756650b0544526c7e78e4647045fd81db",
+      "feature_count": 14,
+      "name_field": "ELEM_DESC",
+      "object_id_field": "OBJECTID",
+      "school_year_values": [],
+      "school_names": [
+        "Charles Barrett",
+        "Cora Kelly",
+        "Douglas MacArthur",
+        "Ferdinand T. Day",
+        "George Mason",
+        "James K Polk",
+        "Jefferson-Houston",
+        "John Adams",
+        "Lyles-Crouch",
+        "Mount Vernon",
+        "Naomi L Brooks",
+        "Patrick Henry",
+        "Samuel W Tucker",
+        "William Ramsay"
+      ],
+      "retrieval_method": "all object IDs then paged GeoJSON by objectIds"
+    },
+    {
+      "level": "Middle",
+      "source_type": "arcgis",
+      "layer_url": "https://www.schoolsitelocator.com/server/rest/services/ssl_AB/MapServer/444",
+      "url": "https://www.schoolsitelocator.com/server/rest/services/ssl_AB/MapServer/444/query?where=STDYAREA+%3D+%27BNDRY%27+AND+MID_DESC+IS+NOT+NULL&outFields=%2A&outSR=4326&f=geojson",
+      "where": "STDYAREA = 'BNDRY' AND MID_DESC IS NOT NULL",
+      "file": "data-raw/input/zones/5100120/2837341155d25f66/01_middle.geojson",
+      "sha256": "25d48ce8f9bbbd53aa04227eafe6109bf2b87b10df979126eb1c81dfe6ef32b1",
+      "feature_count": 5,
+      "name_field": "MID_DESC",
+      "object_id_field": "OBJECTID",
+      "school_year_values": [],
+      "school_names": [
+        "Francis C. Hammond MS",
+        "George Washington MS",
+        "Jefferson-Houston",
+        "Patrick Henry"
+      ],
+      "retrieval_method": "all object IDs then paged GeoJSON by objectIds"
+    },
+    {
+      "level": "High",
+      "source_type": "arcgis",
+      "layer_url": "https://www.schoolsitelocator.com/server/rest/services/ssl_AB/MapServer/444",
+      "url": "https://www.schoolsitelocator.com/server/rest/services/ssl_AB/MapServer/444/query?where=STDYAREA+%3D+%27BNDRY%27+AND+HIGH_DESC+IS+NOT+NULL&outFields=%2A&outSR=4326&f=geojson",
+      "where": "STDYAREA = 'BNDRY' AND HIGH_DESC IS NOT NULL",
+      "file": "data-raw/input/zones/5100120/2837341155d25f66/02_high.geojson",
+      "sha256": "eae743d467b6e95161fafa22b4407bd57451825ffff30934ff1002be15ac2d10",
+      "feature_count": 1,
+      "name_field": "HIGH_DESC",
+      "object_id_field": "OBJECTID",
+      "school_year_values": [],
+      "school_names": [
+        "Alexandria City HS"
+      ],
+      "retrieval_method": "all object IDs then paged GeoJSON by objectIds"
+    }
+  ]
+}
