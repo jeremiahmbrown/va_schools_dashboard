@@ -1,0 +1,34 @@
+{
+  "division_id": "5104020",
+  "source_owner": "WJCC Schools linked current attendance map, hosted in ArcGIS by MGT",
+  "official_evidence_url": "https://wjccschools.org/about-wjcc/wjcc-united/",
+  "source_label": "WJCC Schools current 2026–27 attendance zones",
+  "popup_note": "WJCC labels this map current for 2026–27. Board-approved replacement zones start in August 2027; check an address with WJCC Schools.",
+  "expected_school_count": 16,
+  "max_same_level_overlap_m2": 0.01,
+  "rights_access": "Public WJCC-linked ArcGIS web map and polygon services; source item license and attribution fields empty. Review derived-polygon redistribution before public release.",
+  "overlap_review_note": "Equal-area review of 16 current polygons found 0.0003 m2 middle-school overlap and zero elementary/high-school overlap at report precision. The 0.01 m2 cap permits numeric slivers only. All three level unions differ by less than 0.002 m2.",
+  "layers": [
+    {
+      "level": "Elementary",
+      "source_type": "arcgis",
+      "source_url": "https://services.arcgis.com/obpUicnfIYG1DOsR/arcgis/rest/services/WJCC_Elementary_AA/FeatureServer/0",
+      "name_field": "ELEM_DESC",
+      "expected_count": 9
+    },
+    {
+      "level": "Middle",
+      "source_type": "arcgis",
+      "source_url": "https://services.arcgis.com/obpUicnfIYG1DOsR/arcgis/rest/services/WJCC_Middle/FeatureServer/0",
+      "name_field": "MID_DESC",
+      "expected_count": 4
+    },
+    {
+      "level": "High",
+      "source_type": "arcgis",
+      "source_url": "https://services.arcgis.com/obpUicnfIYG1DOsR/arcgis/rest/services/WJCC_High_AA/FeatureServer/0",
+      "name_field": "HIGH_DESC",
+      "expected_count": 3
+    }
+  ]
+}

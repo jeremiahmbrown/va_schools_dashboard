@@ -1,0 +1,73 @@
+{
+  "division_id": "5104020",
+  "source_owner": "WJCC Schools linked current attendance map, hosted in ArcGIS by MGT",
+  "official_evidence_url": "https://wjccschools.org/about-wjcc/wjcc-united/",
+  "retrieved_utc": "2026-10-28T12:00:47+00:00",
+  "spec_file": "data-raw/zone_import_specs/5104020.json",
+  "layers": [
+    {
+      "level": "Elementary",
+      "source_type": "arcgis",
+      "layer_url": "https://services.arcgis.com/obpUicnfIYG1DOsR/arcgis/rest/services/WJCC_Elementary_AA/FeatureServer/0",
+      "url": "https://services.arcgis.com/obpUicnfIYG1DOsR/arcgis/rest/services/WJCC_Elementary_AA/FeatureServer/0/query?where=1%3D1&outFields=%2A&outSR=4326&f=geojson",
+      "where": "1=1",
+      "file": "data-raw/input/zones/5104020/ef2686d78929dcb8/00_elementary.geojson",
+      "sha256": "0416af9390d9bf7f545423d804e062ebd0e2dc1c1470ce1bb3cd10dce9b95fd3",
+      "feature_count": 9,
+      "name_field": "ELEM_DESC",
+      "object_id_field": "OBJECTID",
+      "school_year_values": [],
+      "school_names": [
+        "Blayton ES",
+        "Clara Byrd Baker ES",
+        "DJ Montague ES",
+        "James River ES",
+        "Laurel Lane ES",
+        "Matoaka ES",
+        "Matthew Whaley ES",
+        "Norge ES",
+        "Stonehouse ES"
+      ],
+      "retrieval_method": "all object IDs then paged GeoJSON by objectIds"
+    },
+    {
+      "level": "Middle",
+      "source_type": "arcgis",
+      "layer_url": "https://services.arcgis.com/obpUicnfIYG1DOsR/arcgis/rest/services/WJCC_Middle/FeatureServer/0",
+      "url": "https://services.arcgis.com/obpUicnfIYG1DOsR/arcgis/rest/services/WJCC_Middle/FeatureServer/0/query?where=1%3D1&outFields=%2A&outSR=4326&f=geojson",
+      "where": "1=1",
+      "file": "data-raw/input/zones/5104020/ef2686d78929dcb8/01_middle.geojson",
+      "sha256": "60fafff1db2d9a611bb276f8d1ac0f7a9ea7fb961801c7e81d37ff02a5e4bcf8",
+      "feature_count": 4,
+      "name_field": "MID_DESC",
+      "object_id_field": "OBJECTID",
+      "school_year_values": [],
+      "school_names": [
+        "Berkeley MS",
+        "Hornsby MS",
+        "James Blair MS",
+        "Toano MS"
+      ],
+      "retrieval_method": "all object IDs then paged GeoJSON by objectIds"
+    },
+    {
+      "level": "High",
+      "source_type": "arcgis",
+      "layer_url": "https://services.arcgis.com/obpUicnfIYG1DOsR/arcgis/rest/services/WJCC_High_AA/FeatureServer/0",
+      "url": "https://services.arcgis.com/obpUicnfIYG1DOsR/arcgis/rest/services/WJCC_High_AA/FeatureServer/0/query?where=1%3D1&outFields=%2A&outSR=4326&f=geojson",
+      "where": "1=1",
+      "file": "data-raw/input/zones/5104020/ef2686d78929dcb8/02_high.geojson",
+      "sha256": "ef7553e9a387eab913e74c6a391e6aec583b7626b7c02e01092ff56e6029d6c1",
+      "feature_count": 3,
+      "name_field": "HIGH_DESC",
+      "object_id_field": "OBJECTID",
+      "school_year_values": [],
+      "school_names": [
+        "Jamestown HS",
+        "Lafayette HS",
+        "Warhill HS"
+      ],
+      "retrieval_method": "all object IDs then paged GeoJSON by objectIds"
+    }
+  ]
+}

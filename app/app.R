@@ -230,6 +230,8 @@ server <- function(input, output, session) {
       "Prince William County: PWCS GIS elementary areas are labeled 2025–26; middle and high areas are labeled current without a separate year. The high layer extends near Quantico beyond elementary and middle coverage. The 2026–27 elementary layer has Woodbridge, absent from this frozen snapshot. Confirm an address with PWCS or the base school liaison."
     } else if (identical(division_id, "5102670")) {
       "Norfolk City: NPS-linked locator labels these elementary, middle, and high boundaries 2026–27. The middle and high service layer names still say 2025–26. Four snapshot schools have no separate standard neighborhood area. Confirm an address with NPS."
+    } else if (identical(division_id, "5104020")) {
+      "Williamsburg-James City County: WJCC identifies these as current 2026–27 attendance zones. Board-approved replacement zones begin in August 2027 and are not shown. Confirm an address with WJCC Schools."
     } else if (identical(division_id, "5100120")) {
       "Alexandria City: ACPS approved these elementary, middle, and high attendance boundaries for 2026–27, effective July 1, 2026. Confirm an address and enrollment with ACPS Attendance Zone Locator."
     } else if (identical(division_id, "5103660")) {

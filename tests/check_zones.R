@@ -176,6 +176,13 @@ source_only <- Filter(function(f) f$properties$official_school_name %in% c("ES#1
 stopifnot(length(source_only) == 3L,
           all(vapply(source_only, function(f) is.null(f$properties[["app_school_id", exact = TRUE]]), logical(1))))
 
+wjcc_text <- read_zone_geojson(pick_zone_file("app/data", "5104020"))
+wjcc_features <- jsonlite::fromJSON(wjcc_text, simplifyVector = FALSE)$features
+stopifnot(length(wjcc_features) == 16L,
+          length(unique(vapply(wjcc_features, function(f) f$properties$app_school_id, character(1)))) == 16L,
+          setequal(vapply(wjcc_features, function(f) f$properties$level, character(1)),
+                   c("Elementary", "Middle", "High")))
+
 alex_text <- read_zone_geojson(pick_zone_file("app/data", "5100120"))
 alex_features <- jsonlite::fromJSON(alex_text, simplifyVector = FALSE)$features
 stopifnot(length(alex_features) == 20L,

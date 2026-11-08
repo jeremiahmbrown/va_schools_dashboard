@@ -21,9 +21,16 @@ The optional attendance-zone layer has three source groups:
 | Henrico HCPS and County GIS | 1 | 67 features: 46 elementary, 12 middle, 9 high | 67 of 68 schools | Official 2026-27 service names; retrieved 2026-10-26 |
 | Stafford SCPS GIS | 1 | 33 features: 19 elementary, 8 middle, 6 high | 30 of 30 snapshot schools; 3 source-only | Official 2026-27 maps; retrieved 2026-10-27 |
 | Alexandria ACPS-linked SchoolSiteLocator | 1 | 20 features: 14 elementary, 5 middle, 1 high | 17 of 17 snapshot schools | ACPS-approved 2026-27; retrieved 2026-10-27 |
+| WJCC-linked current ArcGIS map | 1 | 16 features: 9 elementary, 4 middle, 3 high | 16 of 16 snapshot schools | Current 2026-27; adopted replacement zones start August 2027 |
 | Norfolk NPS-linked Woolpert locator | 1 | 41 features: 27 elementary, 8 middle, 6 high | 37 of 41 snapshot schools | NPS web map labels 2026-27; retrieved 2026-10-26 |
 
-There are 130 divisions and 1,810 schools in the dashboard. Ten divisions have no attendance-zone file. Another nine have only SABS features with an unknown school level; the app offers an explicit “Unclassified (older source)” view for those features. Across all divisions, 21 lack elementary features, 36 lack middle features, and 29 lack high features, including the ten without any file. Across the full snapshot, 1,354 schools have a matched zone and 456 do not. A zone file in a division does **not** mean every school has a matched polygon. The NCES SABS data are an old, incomplete survey; NCES calls the survey experimental and lists only 2013–14 and 2015–16 collections: [NCES SABS](https://nces.ed.gov/programs/edge/SABS).
+There are 130 divisions and 1,810 schools in the dashboard. Nine divisions have no attendance-zone file. Another nine have only SABS features with an unknown school level; the app offers an explicit “Unclassified (older source)” view for those features. Across all divisions, 20 lack elementary features, 35 lack middle features, and 28 lack high features, including the ten without any file. Across the full snapshot, 1,370 schools have a matched zone and 440 do not. A zone file in a division does **not** mean every school has a matched polygon. The NCES SABS data are an old, incomplete survey; NCES calls the survey experimental and lists only 2013–14 and 2015–16 collections: [NCES SABS](https://nces.ed.gov/programs/edge/SABS).
+
+## Williamsburg-James City County public release (2026-11-08)
+
+[WJCC identifies this map as current for 2026-27](https://wjccschools.org/about-wjcc/wjcc-united/). The School Board approved replacement zones for August 2027. This release uses only the current map. The three public ArcGIS Feature Service items and linked web map have no item-specific use limits; [ArcGIS public sharing terms](https://doc.arcgis.com/en/arcgis-online/reference/terms-of-use.htm) permit reproduction and distribution subject to owner constraints. The app attributes WJCC and directs address checks to the division.
+
+The [manifest](../data-raw/zone_source_manifests/5104020.json), [crosswalk](../data-raw/zone_school_crosswalks/5104020.csv), and [geometry report](../data-raw/zone_validation_reports/5104020.json) cover 16 valid, nonempty polygons and all 16 snapshot schools. Live service object IDs matched the saved sets on 2026-11-08. The maximum same-level overlap is 0.0003 m²; all level unions agree within 0.002 m². Source SHA-256: `776bcf9064849075524d91f2156ef743e016e3e70cabda9f13016977bc87f643`. See [release record](RELEASE_WJCC_2026-11-08.md).
 
 ## Alexandria City public release (2026-11-08)
 
@@ -103,7 +110,6 @@ Roanoke County's [comprehensive-plan chapter](https://www.roanokecountyva.gov/Do
 - `5103030` Powhatan County Public Schools
 - `5103600` Southampton County Public Schools
 - `5103810` Tazewell County Public Schools
-- `5104020` Williamsburg-James City County Public Schools
 
 ## Roanoke County repair
 
