@@ -1,0 +1,93 @@
+{
+  "division_id": "5102670",
+  "source_owner": "Norfolk Public Schools boundary locator via Woolpert ArcGIS",
+  "official_evidence_url": "https://www.npsk12.com/p/~board/division-news-norfolk-public-schools-62/post/norfolk-public-schools-boundary-locator-as-part-of-redistricting-plans-phase-i",
+  "retrieved_utc": "2026-10-27T02:02:53+00:00",
+  "spec_file": "data-raw/zone_import_specs/5102670.json",
+  "layers": [
+    {
+      "level": "Elementary",
+      "source_type": "arcgis",
+      "layer_url": "https://services3.arcgis.com/KkgpUIloCxkczPwY/arcgis/rest/services/NorfolkPS_SchoolLocator_WFL1/FeatureServer/52",
+      "url": "https://services3.arcgis.com/KkgpUIloCxkczPwY/arcgis/rest/services/NorfolkPS_SchoolLocator_WFL1/FeatureServer/52/query?where=1%3D1&outFields=%2A&outSR=4326&f=geojson",
+      "file": "data-raw/input/zones/5102670/166d01f258cd60d1/00_elementary.geojson",
+      "sha256": "78c92a60da5e5cbf7cbc909211fa42fdc253c0c1de429563e83dc0b7e4b25521",
+      "feature_count": 27,
+      "name_field": "Bound_ES",
+      "object_id_field": "FID",
+      "school_year_values": [],
+      "school_names": [
+        "Bay View Elementary School",
+        "Calcott  Elementary School",
+        "Camp Allen Elementary School",
+        "Chesterfield Elementary School",
+        "Coleman Place Elementary School",
+        "Crossroads PK-8",
+        "Granby Elementary School",
+        "Ingleside Elementary School",
+        "Jacox Elementary School",
+        "Lake Taylor",
+        "Larchmont Elementary School",
+        "Larrymore Elementary School",
+        "Lindenwood Elementary School",
+        "Little Creek Elementary School",
+        "Monroe Elementary School",
+        "Ocean View Elementary School",
+        "PB Young Elementary School",
+        "Richard Bowling Elementary School",
+        "Sewells Point Elementary School",
+        "Sherwood Forest Elementary School",
+        "Southside STEM Academy at Campostella",
+        "St. Helena Elementary School",
+        "Suburban Park Elementary School",
+        "Tanners Creek Elementary School",
+        "Tarrallton Elementary School",
+        "Taylor Elementary School",
+        "Willard Elementary School"
+      ],
+      "retrieval_method": "all object IDs then paged GeoJSON by objectIds"
+    },
+    {
+      "level": "Middle",
+      "source_type": "arcgis",
+      "layer_url": "https://services3.arcgis.com/KkgpUIloCxkczPwY/arcgis/rest/services/NorfolkPS_SchoolLocator_WFL1/FeatureServer/2",
+      "url": "https://services3.arcgis.com/KkgpUIloCxkczPwY/arcgis/rest/services/NorfolkPS_SchoolLocator_WFL1/FeatureServer/2/query?where=1%3D1&outFields=%2A&outSR=4326&f=geojson",
+      "file": "data-raw/input/zones/5102670/166d01f258cd60d1/01_middle.geojson",
+      "sha256": "8360f1cfadcaadb78644ad9e28f41916df3601f257b604cfb7e18cc8962ca777",
+      "feature_count": 8,
+      "name_field": "Bound_MS",
+      "object_id_field": "FID",
+      "school_year_values": [],
+      "school_names": [
+        "Azalea Gardens Middle School",
+        "Blair Middle School",
+        "Lake Taylor Middle School",
+        "Northside Middle School",
+        "Northview Middle School",
+        "Ruffner Academy",
+        "Southside STEM Academy at Campostella"
+      ],
+      "retrieval_method": "all object IDs then paged GeoJSON by objectIds"
+    },
+    {
+      "level": "High",
+      "source_type": "arcgis",
+      "layer_url": "https://services3.arcgis.com/KkgpUIloCxkczPwY/arcgis/rest/services/NorfolkPS_SchoolLocator_WFL1/FeatureServer/3",
+      "url": "https://services3.arcgis.com/KkgpUIloCxkczPwY/arcgis/rest/services/NorfolkPS_SchoolLocator_WFL1/FeatureServer/3/query?where=1%3D1&outFields=%2A&outSR=4326&f=geojson",
+      "file": "data-raw/input/zones/5102670/166d01f258cd60d1/02_high.geojson",
+      "sha256": "c23aed671006a90844b81b9eab4e9e4aafadcb0c6bd412dea3c3d9a0c9a449d9",
+      "feature_count": 6,
+      "name_field": "SCHNAME",
+      "object_id_field": "FID",
+      "school_year_values": [],
+      "school_names": [
+        "Booker T. Washington High School",
+        "Granby High School",
+        "Lake Taylor High School",
+        "Maury High School",
+        "Norview High School"
+      ],
+      "retrieval_method": "all object IDs then paged GeoJSON by objectIds"
+    }
+  ]
+}

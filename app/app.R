@@ -228,6 +228,8 @@ server <- function(input, output, session) {
       "Fairfax County: FCPS and County GIS standard attendance areas for 2026–27. Ten schools have no separate polygon in these layers. Some high-school edges overlap; confirm an address with the FCPS boundary locator."
     } else if (identical(division_id, "5103130")) {
       "Prince William County: PWCS GIS elementary areas are labeled 2025–26; middle and high areas are labeled current without a separate year. The high layer extends near Quantico beyond elementary and middle coverage. The 2026–27 elementary layer has Woodbridge, absent from this frozen snapshot. Confirm an address with PWCS or the base school liaison."
+    } else if (identical(division_id, "5102670")) {
+      "Norfolk City: NPS-linked locator labels these elementary, middle, and high boundaries 2026–27. The middle and high service layer names still say 2025–26. Four snapshot schools have no separate standard neighborhood area. Confirm an address with NPS."
     } else if (identical(division_id, "5100120")) {
       "Alexandria City: ACPS approved these elementary, middle, and high attendance boundaries for 2026–27, effective July 1, 2026. Confirm an address and enrollment with ACPS Attendance Zone Locator."
     } else if (identical(division_id, "5103660")) {

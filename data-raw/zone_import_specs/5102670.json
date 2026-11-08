@@ -1,0 +1,34 @@
+{
+  "division_id": "5102670",
+  "source_owner": "Norfolk Public Schools boundary locator via Woolpert ArcGIS",
+  "official_evidence_url": "https://www.npsk12.com/p/~board/division-news-norfolk-public-schools-62/post/norfolk-public-schools-boundary-locator-as-part-of-redistricting-plans-phase-i",
+  "source_label": "NPS 2026–27 attendance locator",
+  "popup_note": "NPS links this 2026–27 locator. The middle/high service names still say 2025–26, and some school records reflect earlier years. Confirm an address with NPS.",
+  "expected_school_count": 41,
+  "max_same_level_overlap_m2": 33.2,
+  "rights_access": "Public NPS-linked ArcGIS item with no item-specific use constraints shown. ArcGIS public sharing terms permit reproduction and distribution subject to owner constraints. User authorized release continuation 2026-11-08.",
+  "layers": [
+    {
+      "level": "Elementary",
+      "source_type": "arcgis",
+      "source_url": "https://services3.arcgis.com/KkgpUIloCxkczPwY/arcgis/rest/services/NorfolkPS_SchoolLocator_WFL1/FeatureServer/52",
+      "name_field": "Bound_ES",
+      "expected_count": 27
+    },
+    {
+      "level": "Middle",
+      "source_type": "arcgis",
+      "source_url": "https://services3.arcgis.com/KkgpUIloCxkczPwY/arcgis/rest/services/NorfolkPS_SchoolLocator_WFL1/FeatureServer/2",
+      "name_field": "Bound_MS",
+      "expected_count": 8
+    },
+    {
+      "level": "High",
+      "source_type": "arcgis",
+      "source_url": "https://services3.arcgis.com/KkgpUIloCxkczPwY/arcgis/rest/services/NorfolkPS_SchoolLocator_WFL1/FeatureServer/3",
+      "name_field": "SCHNAME",
+      "expected_count": 6
+    }
+  ],
+  "overlap_review_note": "Equal-area review of 41 NPS locator polygons finds same-level overlap of 0.1108 m2 elementary, 5.2848 m2 middle, and 33.1799 m2 high. Largest pairs are Granby/Norview High 32.9254 m2 and Blair/Northview Middle 5.2787 m2. The 33.2 m2 cap accepts only these observed source-edge slivers; level unions differ by at most 2.36 m2 across about 166 million m2. Retain source geometry and confirm addresses with NPS."
+}

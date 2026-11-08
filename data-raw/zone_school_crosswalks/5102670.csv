@@ -1,0 +1,44 @@
+division_id,level,source_name,school_id,school_name,disposition,note
+5102670,Elementary,Coleman Place Elementary School,510267001089,Coleman Place Elementary,mapped,NPS locator FID 1; explicit source-name crosswalk.
+5102670,Elementary,Ocean View Elementary School,510267001125,Ocean View Elementary,mapped,NPS locator FID 2; explicit source-name crosswalk.
+5102670,Elementary,Calcott  Elementary School,510267001116,Mary Calcott Elementary,mapped,NPS locator FID 3; explicit source-name crosswalk.
+5102670,Elementary,Bay View Elementary School,510267001081,Bay View Elementary,mapped,NPS locator FID 4; explicit source-name crosswalk.
+5102670,Elementary,Little Creek Elementary School,510267001113,Little Creek Elementary,mapped,NPS locator FID 5; explicit source-name crosswalk.
+5102670,Elementary,Tarrallton Elementary School,510267001141,Tarrallton Elementary,mapped,NPS locator FID 6; explicit source-name crosswalk.
+5102670,Elementary,Taylor Elementary School,510267001144,Walter Herron Taylor Elementary,mapped,NPS locator FID 7; explicit source-name crosswalk.
+5102670,Elementary,Larrymore Elementary School,510267001109,Larrymore Elementary,mapped,NPS locator FID 8; explicit source-name crosswalk.
+5102670,Elementary,Camp Allen Elementary School,510267001084,Camp Allen Elementary,mapped,NPS locator FID 9; explicit source-name crosswalk.
+5102670,Elementary,Granby Elementary School,510267001097,Granby Elementary,mapped,NPS locator FID 10; explicit source-name crosswalk.
+5102670,Elementary,Lake Taylor,510267001105,Lake Taylor,mapped,NPS locator FID 11; explicit source-name crosswalk. Source Elementary area for snapshot Combined (K-8) school.
+5102670,Elementary,Sherwood Forest Elementary School,510267001136,Sherwood Forest Elementary,mapped,NPS locator FID 12; explicit source-name crosswalk.
+5102670,Elementary,Willard Elementary School,510267001087,Willard Elementary,mapped,NPS locator FID 13; explicit source-name crosswalk.
+5102670,Elementary,Suburban Park Elementary School,510267001140,Suburban Park Elementary,mapped,NPS locator FID 14; explicit source-name crosswalk.
+5102670,Elementary,Crossroads PK-8,510267001090,Crossroads PreK-8 School,mapped,NPS locator FID 15; explicit source-name crosswalk. Source Elementary area for snapshot Combined (K-8) school.
+5102670,Elementary,Tanners Creek Elementary School,510267002210,Tanners Creek Elementary,mapped,NPS locator FID 16; explicit source-name crosswalk.
+5102670,Elementary,Larchmont Elementary School,510267001108,Larchmont Elementary,mapped,NPS locator FID 17; explicit source-name crosswalk.
+5102670,Elementary,Monroe Elementary School,510267002211,James Monroe Elementary,mapped,NPS locator FID 18; explicit source-name crosswalk.
+5102670,Elementary,Ingleside Elementary School,510267001100,Ingleside Elementary,mapped,NPS locator FID 19; explicit source-name crosswalk.
+5102670,Elementary,St. Helena Elementary School,510267001137,St. Helena Elementary,mapped,NPS locator FID 20; explicit source-name crosswalk.
+5102670,Elementary,Southside STEM Academy at Campostella,510267001085,Southside STEM Academy at Campostella ,mapped,NPS locator FID 21; explicit source-name crosswalk. Source Elementary area for snapshot Combined (K-8) school.
+5102670,Elementary,PB Young Elementary School,510267001147,P.B. Young Sr. Elementary ,mapped,NPS locator FID 22; explicit source-name crosswalk.
+5102670,Elementary,Chesterfield Elementary School,510267001088,Chesterfield Elementary,mapped,NPS locator FID 23; explicit source-name crosswalk.
+5102670,Elementary,Jacox Elementary School,510267001101,Jacox Elementary,mapped,NPS locator FID 24; explicit source-name crosswalk.
+5102670,Elementary,Lindenwood Elementary School,510267001112,Lindenwood Elementary,mapped,NPS locator FID 25; explicit source-name crosswalk.
+5102670,Elementary,Richard Bowling Elementary School,510267001083,Richard Bowling Elementary,mapped,NPS locator FID 26; explicit source-name crosswalk.
+5102670,Elementary,Sewells Point Elementary School,510267001135,Sewells Point Elementary,mapped,NPS locator FID 27; explicit source-name crosswalk.
+5102670,Middle,Blair Middle School,510267001082,Blair Middle,mapped,NPS locator FID 1; explicit source-name crosswalk.
+5102670,Middle,Azalea Gardens Middle School,510267001078,Azalea Gardens Middle,mapped,NPS locator FID 2; explicit source-name crosswalk. Two published source features have the same named school; retain their separate FIDs.
+5102670,Middle,Northside Middle School,510267001120,Northside Middle,mapped,NPS locator FID 3; explicit source-name crosswalk.
+5102670,Middle,Lake Taylor Middle School,510267001105,Lake Taylor,mapped,NPS locator FID 4; explicit source-name crosswalk. Source Middle area for snapshot Combined (K-8) school.
+5102670,Middle,Southside STEM Academy at Campostella,510267001085,Southside STEM Academy at Campostella ,mapped,NPS locator FID 5; explicit source-name crosswalk. Source Middle area for snapshot Combined (K-8) school.
+5102670,Middle,Northview Middle School,510267001123,Norview Middle,mapped,NPS locator FID 6; explicit source-name crosswalk. Source spells Northview; NPS school is Norview Middle.
+5102670,Middle,Ruffner Academy,510267001134,Ruffner School,mapped,NPS locator FID 7; explicit source-name crosswalk. Source Middle area for snapshot Combined (K-8) school.
+5102670,High,Granby High School,510267001098,Granby High,mapped,NPS locator FID 1; explicit source-name crosswalk. Source High area for snapshot Combined school.
+5102670,High,Maury High School,510267001117,Matthew Fontaine Maury High,mapped,NPS locator FID 2; explicit source-name crosswalk. Source High area for snapshot Combined school.
+5102670,High,Lake Taylor High School,510267001104,Lake Taylor High ,mapped,NPS locator FID 3; explicit source-name crosswalk. Source High area for snapshot Combined school.
+5102670,High,Booker T. Washington High School,510267001079,Booker T Washington High,mapped,NPS locator FID 4; explicit source-name crosswalk. Source High area for snapshot Combined school.
+5102670,High,Norview High School,510267001122,Norview High,mapped,NPS locator FID 5; explicit source-name crosswalk. Source High area for snapshot Combined school. Two published source features have the same named school; retain their separate FIDs.
+5102670,Combined (K-8),,510267003018,Academy for Discovery at Lakewood,no_neighborhood_zone,NPS states that this citywide school admits through application and lottery; no separate standard attendance area is in the locator.
+5102670,Combined (K-8),,510267001096,Ghent K-8,no_neighborhood_zone,No separate named attendance polygon in the current NPS locator; do not infer one from another school's area.
+5102670,Elementary,,510267001121,Norview Elementary,no_neighborhood_zone,NPS closed Norview Elementary in June 2026; no 2026–27 neighborhood area is in the approved locator.
+5102670,Elementary,,510267001126,Oceanair Elementary,no_neighborhood_zone,NPS ended Oceanair Elementary service in June 2026 and repurposed it for pre-K; no 2026–27 elementary area is in the locator.

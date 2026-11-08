@@ -8,7 +8,7 @@ The optional attendance-zone layer has three source groups:
 
 | Source | Divisions | Features | School matches | Date |
 | --- | ---: | ---: | ---: | --- |
-| NCES SABS | 105 active sources | 1,042 | 635 distinct schools | 2015–16 survey; older files retained when a division GIS source takes priority |
+| NCES SABS | 104 active sources | 994 | 627 distinct schools | 2015–16 survey; older files retained when a division GIS source takes priority |
 | Roanoke County public GIS | 1 | 60 level features from 20 assigned county areas | 26 of 26 county schools | Retrieved 2026-10-20; the GIS service does not state a boundary effective date |
 | Roanoke City public GIS | 1 | 24 features: 17 elementary, 5 middle, 2 high | 24 of 24 City schools | Elementary Phase 1 applies to 2026–27; middle and high layer metadata date from 2009 |
 | Neighboring division GIS and named SABS fallback | 4 | 67 features | 55 of 56 schools | Retrieved 2026-10-24; see source details below |
@@ -21,8 +21,9 @@ The optional attendance-zone layer has three source groups:
 | Henrico HCPS and County GIS | 1 | 67 features: 46 elementary, 12 middle, 9 high | 67 of 68 schools | Official 2026-27 service names; retrieved 2026-10-26 |
 | Stafford SCPS GIS | 1 | 33 features: 19 elementary, 8 middle, 6 high | 30 of 30 snapshot schools; 3 source-only | Official 2026-27 maps; retrieved 2026-10-27 |
 | Alexandria ACPS-linked SchoolSiteLocator | 1 | 20 features: 14 elementary, 5 middle, 1 high | 17 of 17 snapshot schools | ACPS-approved 2026-27; retrieved 2026-10-27 |
+| Norfolk NPS-linked Woolpert locator | 1 | 41 features: 27 elementary, 8 middle, 6 high | 37 of 41 snapshot schools | NPS web map labels 2026-27; retrieved 2026-10-26 |
 
-There are 130 divisions and 1,810 schools in the dashboard. Ten divisions have no attendance-zone file. Another nine have only SABS features with an unknown school level; the app offers an explicit “Unclassified (older source)” view for those features. Across all divisions, 21 lack elementary features, 36 lack middle features, and 29 lack high features, including the ten without any file. Across the full snapshot, 1,325 schools have a matched zone and 485 do not. A zone file in a division does **not** mean every school has a matched polygon. The NCES SABS data are an old, incomplete survey; NCES calls the survey experimental and lists only 2013–14 and 2015–16 collections: [NCES SABS](https://nces.ed.gov/programs/edge/SABS).
+There are 130 divisions and 1,810 schools in the dashboard. Ten divisions have no attendance-zone file. Another nine have only SABS features with an unknown school level; the app offers an explicit “Unclassified (older source)” view for those features. Across all divisions, 21 lack elementary features, 36 lack middle features, and 29 lack high features, including the ten without any file. Across the full snapshot, 1,354 schools have a matched zone and 456 do not. A zone file in a division does **not** mean every school has a matched polygon. The NCES SABS data are an old, incomplete survey; NCES calls the survey experimental and lists only 2013–14 and 2015–16 collections: [NCES SABS](https://nces.ed.gov/programs/edge/SABS).
 
 ## Alexandria City public release (2026-11-08)
 

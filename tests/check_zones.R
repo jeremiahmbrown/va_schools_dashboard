@@ -186,4 +186,15 @@ stopifnot(length(jh) == 3L, length(ph) == 2L,
           setequal(vapply(jh, function(f) f$properties$level, character(1)), c("Elementary", "Middle")),
           setequal(vapply(ph, function(f) f$properties$level, character(1)), c("Elementary", "Middle")))
 
+norfolk_text <- read_zone_geojson(pick_zone_file("app/data", "5102670"))
+norfolk_features <- jsonlite::fromJSON(norfolk_text, simplifyVector = FALSE)$features
+stopifnot(length(norfolk_features) == 41L,
+          length(unique(vapply(norfolk_features, function(f) f$properties$app_school_id, character(1)))) == 37L)
+lake_taylor <- jsonlite::fromJSON(filter_zone_geojson_by_school_id(norfolk_text, "510267001105"), simplifyVector = FALSE)$features
+azalea <- jsonlite::fromJSON(filter_zone_geojson_by_school_id(norfolk_text, "510267001078"), simplifyVector = FALSE)$features
+norview_high <- jsonlite::fromJSON(filter_zone_geojson_by_school_id(norfolk_text, "510267001122"), simplifyVector = FALSE)$features
+stopifnot(length(lake_taylor) == 2L,
+          setequal(vapply(lake_taylor, function(f) f$properties$level, character(1)), c("Elementary", "Middle")),
+          length(azalea) == 2L, length(norview_high) == 2L)
+
 cat("Division zone level, school match, geometry, and cache checks passed.\n")
