@@ -1,0 +1,35 @@
+{
+  "division_id": "5100600",
+  "source_owner": "Campbell County GIS",
+  "official_evidence_url": "https://www.ccpsva.org/parentsfamilies/kindergarten-enrollment",
+  "display_source_url": "https://www.ccpsva.org/parentsfamilies/kindergarten-enrollment",
+  "source_label": "Campbell County GIS attendance areas linked through the CCPS 2026-27 locator; GIS effective year unstated",
+  "popup_note": "CCPS links a County locator for 2026-27; its mirrored GIS areas match the source IDs, school fields, and extents, but no effective-year field is stored. Yellow Branch has separate Brookville and Rustburg secondary assignments. Combined schools appear at both secondary levels. Confirm an address with CCPS.",
+  "expected_school_count": 13,
+  "max_same_level_overlap_m2": 0.04,
+  "rights_access": "Exact County ArcGIS item 49e1c0b096914b01a0a9f5931b1a50e1 is public, credits County GIS, and has an accuracy disclaimer without a reuse restriction. ArcGIS public sharing terms permit reproduction and distribution subject to owner terms.",
+  "layers": [
+    {
+      "level": "Elementary",
+      "source_type": "arcgis",
+      "source_url": "https://gis.co.campbell.va.us/arcgis/rest/services/Public_Data/School_Jurisdictions/MapServer/10",
+      "name_field": "ELEMENTARY",
+      "expected_count": 9
+    },
+    {
+      "level": "Middle",
+      "source_type": "arcgis",
+      "source_url": "https://gis.co.campbell.va.us/arcgis/rest/services/Public_Data/School_Jurisdictions/MapServer/10",
+      "name_field": "MIDDLE",
+      "expected_count": 9
+    },
+    {
+      "level": "High",
+      "source_type": "arcgis",
+      "source_url": "https://gis.co.campbell.va.us/arcgis/rest/services/Public_Data/School_Jurisdictions/MapServer/10",
+      "name_field": "HIGH",
+      "expected_count": 9
+    }
+  ],
+  "overlap_review_note": "Equal-area review of the nine County jurisdiction areas repeated at each level finds 0.0321 m2 same-level overlap at each level over 1.3137 billion m2; the 0.04 m2 cap retains only source-edge slivers. The three level unions agree."
+}

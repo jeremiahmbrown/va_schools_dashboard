@@ -8,7 +8,7 @@ The optional attendance-zone layer has three source groups:
 
 | Source | Divisions | Features | School matches | Date |
 | --- | ---: | ---: | ---: | --- |
-| NCES SABS | 101 active sources | 827 | See statewide total below | 2015–16 survey; older files retained when a division GIS source takes priority |
+| NCES SABS | 99 active sources | 805 | See statewide total below | 2015–16 survey; older files retained when a division GIS source takes priority |
 | Roanoke County public GIS | 1 | 60 level features from 20 assigned county areas | 26 of 26 county schools | Retrieved 2026-10-20; the GIS service does not state a boundary effective date |
 | Roanoke City public GIS | 1 | 24 features: 17 elementary, 5 middle, 2 high | 24 of 24 City schools | Elementary Phase 1 applies to 2026–27; middle and high layer metadata date from 2009 |
 | Neighboring division GIS and named SABS fallback | 4 | 67 features | 55 of 56 schools | Retrieved 2026-10-24; see source details below |
@@ -26,8 +26,10 @@ The optional attendance-zone layer has three source groups:
 | Chesapeake CPS locator GIS | 1 | 38 features: 21 elementary, 10 middle, 7 high | 45 of 45 schools | Official 2026-27 locator and service names; retrieved 2026-10-29 |
 | Loudoun LCPS Planning GIS | 1 | 93 features: 59 elementary, 17 middle, 17 high | 93 of 98 schools | Official 2026-27 layer names; retrieved 2026-10-30 |
 | Newport News City GIS linked by NNPS | 1 | 37 features: 23 elementary, 6 middle, 8 high | 33 of 38 schools | Current NNPS map; exact effective year not stated; retrieved 2026-10-26 |
+| Charlottesville City open GIS and historical SABS high | 1 | 7 features: 6 elementary, 1 high | 7 of 9 schools | Division-linked current elementary map, GIS year unstated; high SABS 2015–16 |
+| Campbell County GIS linked by CCPS locator | 1 | 27 features: 9 at each level | 13 of 13 schools | CCPS 2026–27 locator; GIS effective-year field absent |
 
-There are 130 divisions and 1,814 schools in the dashboard. Nine divisions have no attendance-zone file. Another nine have only SABS features with an unknown school level; the app offers an explicit “Unclassified (older source)” view for those features. Across all divisions, 20 lack elementary features, 35 lack middle features, and 28 lack high features, including the nine without any file. Across the full snapshot, 1,476 schools have a matched zone and 338 do not. A zone file in a division does **not** mean every school has a matched polygon. The NCES SABS data are an old, incomplete survey; NCES calls the survey experimental and lists only 2013–14 and 2015–16 collections: [NCES SABS](https://nces.ed.gov/programs/edge/SABS).
+There are 130 divisions and 1,817 schools in the dashboard. Nine divisions have no attendance-zone file. Another nine have only SABS features with an unknown school level; the app offers an explicit “Unclassified (older source)” view for those features. Across all divisions, 20 lack elementary features, 36 lack middle features, and 28 lack high features, including the nine without any file. Across the full snapshot, 1,489 schools have a matched zone and 328 do not. A zone file in a division does **not** mean every school has a matched polygon. The NCES SABS data are an old, incomplete survey; NCES calls the survey experimental and lists only 2013–14 and 2015–16 collections: [NCES SABS](https://nces.ed.gov/programs/edge/SABS).
 
 ## Newport News public release (2026-11-08)
 
@@ -142,6 +144,14 @@ The old SABS file had 24 features but linked only 5 of 24 dashboard schools. The
 
 `data-raw/build_roanoke_city_zones.py` gets 17 elementary, 5 middle, and 2 high features. All 24 official labels map to the 24 dashboard school IDs. It uses explicit aliases for the dashboard's older names for Lucy Addison, James Breckinridge, and Roanoke Academy. One source middle polygon had a repeated vertex; GDAL `ogr2ogr -makevalid` repaired it. The saved file has 24 valid polygons. The build checks the record counts and school assignments before atomic replacement. The three levels remain separate so their areas can overlap on the map. A same-level check found a roughly **35,380 m² overlap between Preston Park and Round Hill elementary polygons** in the published Phase 1 layer, plus three small overlaps under 500 m². The app shows the source areas and warns users; it does not guess which school serves an address in the overlap. Confirm affected addresses with Roanoke City Public Schools.
 
+## Campbell County public release (2026-11-09)
+
+[CCPS 2026–27 kindergarten enrollment](https://www.ccpsva.org/parentsfamilies/kindergarten-enrollment) links the County [Find My School District locator](https://experience.arcgis.com/experience/573ba852453f4d299e4f7e105302a1b4). Its public web map uses County elementary and secondary attendance layers. The checked [County School Attendance Areas item](https://www.arcgis.com/home/item.html?id=49e1c0b096914b01a0a9f5931b1a50e1) has nine polygon areas, each with elementary, middle, and high assignment fields. On 2026-11-09, all nine object IDs, school-field values, and per-ID extents matched both locator layers. The locator query does not return full geometry, so exact polygon equality is not established by this comparison. The source has no effective-year field; the app explains the 2026–27 locator link and this limit.
+
+The source assigns Yellow Branch elementary to two areas: object ID 316 has Brookville middle/high, and object ID 323 has Rustburg middle/high. The app retains both assignments. Altavista and William Campbell combined schools have areas at middle and high levels. The 27 valid, nonempty display polygons link all 13 snapshot schools. Same-level overlap is 0.0321 m² at each level, under the reviewed 0.04 m² cap. The three level unions agree.
+
+The exact County item is public, attributes Campbell County GIS, and gives an accuracy disclaimer without a use restriction. [ArcGIS public sharing terms](https://doc.arcgis.com/en/arcgis-online/reference/terms-of-use.htm) permit reproduction and distribution of public items subject to owner conditions. Confirm any address with CCPS. See the [release record](RELEASE_CAMPBELL_2026-11-09.md), [locator comparison script](../data-raw/check_campbell_locator.py), [manifest](../data-raw/zone_source_manifests/5100600.json), [crosswalk](../data-raw/zone_school_crosswalks/5100600.csv), and [geometry report](../data-raw/zone_validation_reports/5100600.json).
+
 ## Charlottesville City public release (2026-11-09)
 
 [Charlottesville City Schools links the City GIS elementary map as its current zone source](https://charlottesvilleschools.org/zoning). The [City Open Data policy](https://widget.charlottesville.org/gis/opendata/OpenDataPolicy.pdf) permits free distribution of portal data with attribution. The exact GIS layer has no school-year effective field. City Schools says later rezoning phases begin in 2027 and 2029; this release uses the current linked map, not the future plans.
@@ -193,6 +203,6 @@ See [statewide zone estimate](STATEWIDE_ZONES_EFFORT_2026-10-20.md) for measured
 
 ## Next public source checks
 
-A [Campbell County attendance-area ArcGIS item](https://www.arcgis.com/home/item.html?id=2c81d22c0d294587ae31f00e89a44b8c) advertises elementary, middle, and high areas. It remains a source candidate. Confirm effective dates, completeness, school IDs, and access before adding it.
+Campbell County is released; see its source and locator comparison above. Continue the next open division review with school-year, reuse, identity, and geometry checks.
 
 The division choropleth is a separate geography. It uses 135 [Census 2024 unified district polygons](https://www2.census.gov/geo/tiger/TIGER2024/UNSD/) and one [elementary district polygon](https://www2.census.gov/geo/tiger/TIGER2024/ELSD/) for Lexington City Public Schools (`5102220`), for 136 polygons total and direct IDs for all 130 dashboard divisions. The Lexington elementary polygon covers grades KG–12 in the Census file. The source Rockbridge County polygon has an interior hole at Lexington City; the app now preserves interior holes instead of filling them. Two Rockbridge schools have NCES points inside Lexington City, so the app uses direct division IDs for district labels and values rather than assigning those schools to Lexington by point location. This change does not add any school attendance zones. Bead `va_schools_dashboard-nlf` tracks the separate zone work.

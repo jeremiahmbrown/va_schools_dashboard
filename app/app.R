@@ -238,6 +238,8 @@ server <- function(input, output, session) {
       "Chesapeake City: CPS GIS attendance layers are labeled 2026–27. Some primary and intermediate schools share areas; Sparrow Road Intermediate serves two published areas. B.M. Williams and Crestwood Elementary link to 2025–26 school records. Confirm an address with CPS Planning."
     } else if (identical(division_id, "5102640")) {
       "Newport News: NNPS links the City GIS map for current attendance areas. The services have no stated school-year effective date; some high-school record dates are from 2021. Newsome Park has two differently labeled source areas. Five snapshot schools have no separate named polygon in these layers. Some elementary edges overlap; confirm an address with the NNPS Zone Finder."
+    } else if (identical(division_id, "5100600")) {
+      "Campbell County: CCPS links a County school locator for 2026–27. The saved GIS areas match its nine object IDs, school fields, and extents, but the GIS has no effective-year field. Yellow Branch has separate Brookville and Rustburg secondary assignments. Combined schools have areas at both secondary levels. Confirm an address with CCPS."
     } else if (identical(division_id, "5100780")) {
       "Charlottesville City: the division links City GIS for current elementary zones, but the GIS has no school-year effective field. Six elementary schools have polygons, including Sunrise and Tall Oaks under their 2025 names. The high-school area is historical NCES SABS 2015–16; no current middle-school area is shown. Small elementary overlaps remain. Rezoning is phased from 2027; confirm an address with Charlottesville City Schools."
     } else if (identical(division_id, "5102250")) {

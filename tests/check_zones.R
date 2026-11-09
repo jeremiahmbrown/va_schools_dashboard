@@ -254,6 +254,25 @@ for (name in c("David A. Dutrow Elementary", "Deer Park Elementary", "John Marsh
 news_sf <- sf::st_read(news_path, quiet = TRUE)
 stopifnot(all(sf::st_is_valid(news_sf)), !any(sf::st_is_empty(news_sf)))
 
+# Campbell County 2026-27 locator has 27 level areas for all 13 schools.
+campbell_path <- pick_zone_file("app/data", "5100600")
+campbell <- read_zone_geojson(campbell_path)
+campbell_features <- jsonlite::fromJSON(campbell, simplifyVector = FALSE)$features
+campbell_schools <- subset(schools, division_id == "5100600")
+stopifnot(length(campbell_features) == 27L, nrow(campbell_schools) == 13L)
+levels <- vapply(campbell_features, function(f) f$properties$level, character(1))
+stopifnot(identical(as.integer(table(factor(levels, levels = c("Elementary", "Middle", "High")))),
+                    c(9L, 9L, 9L)))
+stopifnot(setequal(vapply(campbell_features, function(f) f$properties$app_school_id, character(1)),
+                   campbell_schools$school_id))
+stopifnot(length(jsonlite::fromJSON(filter_zone_geojson_by_school_id(
+  campbell, "510060000234"), simplifyVector = FALSE)$features) == 2L)
+altavista <- jsonlite::fromJSON(filter_zone_geojson_by_school_id(
+  campbell, "510060000220"), simplifyVector = FALSE)$features
+stopifnot(setequal(vapply(altavista, function(f) f$properties$level, character(1)), c("Middle", "High")))
+
+stopifnot(all(vapply(campbell_features, function(f) grepl("CCPS links", f$properties$popup, fixed = TRUE), logical(1))))
+
 # Charlottesville has six linked City elementary areas and one historical high area.
 cv_path <- pick_zone_file("app/data", "5100780")
 cv_text <- read_zone_geojson(cv_path)

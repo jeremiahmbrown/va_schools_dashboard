@@ -1,0 +1,16 @@
+division_id,level,source_name,school_id,school_name,disposition,note
+5100600,Elementary,Altavista,510060000219,Altavista Elementary,mapped,County jurisdiction GIS; effective school year not stated.
+5100600,Elementary,Brookneal,510060002834,Brookneal Elementary,mapped,County jurisdiction GIS; effective school year not stated. 2 source pieces share this school.
+5100600,Elementary,Concord,510060000226,Concord Elementary,mapped,County jurisdiction GIS; effective school year not stated.
+5100600,Elementary,Leesville Road,510060000230,Leesville Road Elementary,mapped,County jurisdiction GIS; effective school year not stated.
+5100600,Elementary,Rustburg,510060002528,Rustburg Elementary,mapped,County jurisdiction GIS; effective school year not stated.
+5100600,Elementary,Tomahawk,510060000232,Tomahawk Elementary,mapped,County jurisdiction GIS; effective school year not stated.
+5100600,Elementary,Yellow Branch,510060000234,Yellow Branch Elementary,mapped,County jurisdiction GIS; effective school year not stated. 2 source pieces share this school.
+5100600,Middle,Altavista,510060000220,Altavista High,mapped,County jurisdiction GIS; effective school year not stated. Source Middle area for snapshot Combined school. Combined school serves both secondary levels.
+5100600,Middle,Brookville,510060000224,Brookville Middle,mapped,County jurisdiction GIS; effective school year not stated. 3 source pieces share this school.
+5100600,Middle,Rustburg,510060002771,Rustburg Middle,mapped,County jurisdiction GIS; effective school year not stated. 3 source pieces share this school.
+5100600,Middle,William Campbell,510060000233,William Campbell High,mapped,County jurisdiction GIS; effective school year not stated. Source Middle area for snapshot Combined school. Combined school serves both secondary levels. 2 source pieces share this school.
+5100600,High,Altavista,510060000220,Altavista High,mapped,County jurisdiction GIS; effective school year not stated. Source High area for snapshot Combined school. Combined school serves both secondary levels.
+5100600,High,Brookville,510060000223,Brookville High,mapped,County jurisdiction GIS; effective school year not stated. Source High area for snapshot Combined school. 3 source pieces share this school.
+5100600,High,Rustburg,510060000231,Rustburg High,mapped,County jurisdiction GIS; effective school year not stated. Source High area for snapshot Combined school. 3 source pieces share this school.
+5100600,High,William Campbell,510060000233,William Campbell High,mapped,County jurisdiction GIS; effective school year not stated. Source High area for snapshot Combined school. Combined school serves both secondary levels. 2 source pieces share this school.

@@ -1,0 +1,72 @@
+{
+  "division_id": "5100600",
+  "source_owner": "Campbell County GIS",
+  "official_evidence_url": "https://www.ccpsva.org/parentsfamilies/kindergarten-enrollment",
+  "retrieved_utc": "2026-11-09T15:20:46+00:00",
+  "spec_file": "data-raw/zone_import_specs/5100600.json",
+  "layers": [
+    {
+      "level": "Elementary",
+      "source_type": "arcgis",
+      "layer_url": "https://gis.co.campbell.va.us/arcgis/rest/services/Public_Data/School_Jurisdictions/MapServer/10",
+      "url": "https://gis.co.campbell.va.us/arcgis/rest/services/Public_Data/School_Jurisdictions/MapServer/10/query?where=1%3D1&outFields=%2A&outSR=4326&f=geojson",
+      "where": "1=1",
+      "file": "data-raw/input/zones/5100600/908a43d4202a5702/00_elementary.geojson",
+      "sha256": "0d4ba22d191d6b4dede37006e672734143fd06f0eeaaa0a2b8635e8e5195363e",
+      "feature_count": 9,
+      "name_field": "ELEMENTARY",
+      "object_id_field": "OBJECTID",
+      "school_year_values": [],
+      "school_names": [
+        "Altavista",
+        "Brookneal",
+        "Concord",
+        "Leesville Road",
+        "Rustburg",
+        "Tomahawk",
+        "Yellow Branch"
+      ],
+      "retrieval_method": "all object IDs then paged GeoJSON by objectIds"
+    },
+    {
+      "level": "Middle",
+      "source_type": "arcgis",
+      "layer_url": "https://gis.co.campbell.va.us/arcgis/rest/services/Public_Data/School_Jurisdictions/MapServer/10",
+      "url": "https://gis.co.campbell.va.us/arcgis/rest/services/Public_Data/School_Jurisdictions/MapServer/10/query?where=1%3D1&outFields=%2A&outSR=4326&f=geojson",
+      "where": "1=1",
+      "file": "data-raw/input/zones/5100600/908a43d4202a5702/01_middle.geojson",
+      "sha256": "0d4ba22d191d6b4dede37006e672734143fd06f0eeaaa0a2b8635e8e5195363e",
+      "feature_count": 9,
+      "name_field": "MIDDLE",
+      "object_id_field": "OBJECTID",
+      "school_year_values": [],
+      "school_names": [
+        "Altavista",
+        "Brookville",
+        "Rustburg",
+        "William Campbell"
+      ],
+      "retrieval_method": "all object IDs then paged GeoJSON by objectIds"
+    },
+    {
+      "level": "High",
+      "source_type": "arcgis",
+      "layer_url": "https://gis.co.campbell.va.us/arcgis/rest/services/Public_Data/School_Jurisdictions/MapServer/10",
+      "url": "https://gis.co.campbell.va.us/arcgis/rest/services/Public_Data/School_Jurisdictions/MapServer/10/query?where=1%3D1&outFields=%2A&outSR=4326&f=geojson",
+      "where": "1=1",
+      "file": "data-raw/input/zones/5100600/908a43d4202a5702/02_high.geojson",
+      "sha256": "0d4ba22d191d6b4dede37006e672734143fd06f0eeaaa0a2b8635e8e5195363e",
+      "feature_count": 9,
+      "name_field": "HIGH",
+      "object_id_field": "OBJECTID",
+      "school_year_values": [],
+      "school_names": [
+        "Altavista",
+        "Brookville",
+        "Rustburg",
+        "William Campbell"
+      ],
+      "retrieval_method": "all object IDs then paged GeoJSON by objectIds"
+    }
+  ]
+}
