@@ -21,5 +21,7 @@ All 27 saved polygons are valid and nonempty. Same-level overlap is 0.0321 m² a
 - `python3 data-raw/import_zone_source.py 5100600` dry run: 27 features, 13/13 schools, candidate SHA-256 `1f970d3585c74e2270357f492be4f3bddc6e666e14f4255c93f65bc3bd9549d8`.
 - `Rscript --vanilla tests/check_zones.R`: passed.
 - `python3 data-raw/audit_zones.py`: 1,489 linked; 328 unmatched; zero invalid IDs or empty geometry.
-- GitHub commit, Shiny bundle, and live UI: pending.
+- GitHub master commit `27fd121dab149343ee04d5960c1971c4247125be` has tree `0ece31d955d2822ba29bc64945dcf3f5bbcd9716`, identical to the checked local tree.
+- Shiny app ID `16676824`, bundle `12798891`: deployed to the existing URL on 2026-11-09.
+- Live UI: Yellow Branch loaded a 2026 school profile and two rendered elementary outlines. The division Middle view rendered nine outlines. The Filters panel showed the locator-year, split-assignment, and address-check warning. This is a school-zone display check, not a household-address test.
 - Rollback target: prior bundle `12798821` and commit `3c8a88791c702593c0ecb7e4cba9c7594f062429`.
