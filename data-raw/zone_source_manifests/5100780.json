@@ -1,0 +1,31 @@
+{
+  "division_id": "5100780",
+  "source_owner": "City of Charlottesville GIS / Charlottesville City Schools",
+  "official_evidence_url": "https://charlottesvilleschools.org/zoning",
+  "retrieved_utc": "2026-11-09T14:47:52+00:00",
+  "spec_file": "data-raw/zone_import_specs/5100780.json",
+  "layers": [
+    {
+      "level": "Elementary",
+      "source_type": "arcgis",
+      "layer_url": "https://gisweb.charlottesville.org/arcgis/rest/services/OpenData_1/MapServer/16",
+      "url": "https://gisweb.charlottesville.org/arcgis/rest/services/OpenData_1/MapServer/16/query?where=1%3D1&outFields=%2A&outSR=4326&f=geojson",
+      "where": "1=1",
+      "file": "data-raw/input/zones/5100780/1cb9932a7f8f1c6e/00_elementary.geojson",
+      "sha256": "196114846b5859475add167b3639fbc95210e31d00c266f971a2a45cbd11e3a7",
+      "feature_count": 6,
+      "name_field": "ZONE",
+      "object_id_field": "OBJECTID",
+      "school_year_values": [],
+      "school_names": [
+        "Greenbrier",
+        "Jackson-Via",
+        "Summit",
+        "Sunrise",
+        "Tall Oaks",
+        "Trailblazer"
+      ],
+      "retrieval_method": "all object IDs then paged GeoJSON by objectIds"
+    }
+  ]
+}

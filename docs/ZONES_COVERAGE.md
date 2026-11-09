@@ -1,6 +1,6 @@
 # Attendance-zone coverage and checks
 
-Audit dates: 2026-10-20, 2026-10-24, 2026-10-25, 2026-10-28, 2026-11-02, 2026-11-07, and 2026-11-08. Beads: `va_schools_dashboard-e9i` and `va_schools_dashboard-nlf`.
+Audit dates: 2026-10-20, 2026-10-24, 2026-10-25, 2026-10-28, 2026-11-02, 2026-11-07, 2026-11-08, and 2026-11-09. Beads: `va_schools_dashboard-e9i` and `va_schools_dashboard-nlf`.
 
 ## Source and coverage
 
@@ -141,6 +141,14 @@ The app now shows one attendance-zone level at a time in a division view, or an 
 The old SABS file had 24 features but linked only 5 of 24 dashboard schools. The [City public locator](https://experience.arcgis.com/experience/ffab6c404bdc47188ac89c09a6bbd9ea/) uses a [newer map](https://roanokeva.maps.arcgis.com/home/item.html?id=c5ca5ed07e524fba9826a24c33b1e856) with a separate [Phase 1 elementary layer](https://services.arcgis.com/KII0S5XRkpE66Ngk/arcgis/rest/services/Elementary_Schools_Phase_1/FeatureServer/0). [Roanoke City Public Schools](https://www.rcps.info/about-rcps/attendancezones) says the approved changes took effect in 2026–27. The build uses that layer for elementary zones and the City's public [middle](https://gis03.roanokeva.gov/arcgis/rest/services/Public/Schools_Middle/FeatureServer/1) and [high](https://gis03.roanokeva.gov/arcgis/rest/services/Public/Schools_High/FeatureServer/1) layers for the other levels. Those two layers still carry 2009 publication metadata; their current boundary effective dates are not stated. The City locator uses them, but an address must still be confirmed with the division.
 
 `data-raw/build_roanoke_city_zones.py` gets 17 elementary, 5 middle, and 2 high features. All 24 official labels map to the 24 dashboard school IDs. It uses explicit aliases for the dashboard's older names for Lucy Addison, James Breckinridge, and Roanoke Academy. One source middle polygon had a repeated vertex; GDAL `ogr2ogr -makevalid` repaired it. The saved file has 24 valid polygons. The build checks the record counts and school assignments before atomic replacement. The three levels remain separate so their areas can overlap on the map. A same-level check found a roughly **35,380 m² overlap between Preston Park and Round Hill elementary polygons** in the published Phase 1 layer, plus three small overlaps under 500 m². The app shows the source areas and warns users; it does not guess which school serves an address in the overlap. Confirm affected addresses with Roanoke City Public Schools.
+
+## Charlottesville City release candidate (2026-11-09)
+
+[Charlottesville City Schools links the City GIS elementary map as its current zone source](https://charlottesvilleschools.org/zoning). The [City Open Data policy](https://widget.charlottesville.org/gis/opendata/OpenDataPolicy.pdf) permits free distribution of portal data with attribution. The exact GIS layer has no school-year effective field. City Schools says later rezoning phases begin in 2027 and 2029; this release uses the current linked map, not the future plans.
+
+The [City elementary layer](https://gisweb.charlottesville.org/arcgis/rest/services/OpenData_1/MapServer/16) has six object IDs and six valid, nonempty polygons. The live ID set and staged file agree on 2026-11-09; source SHA-256 is `196114846b5859475add167b3639fbc95210e31d00c266f971a2a45cbd11e3a7`. All six elementary schools link to snapshot IDs. The 2025 names Sunrise and Tall Oaks retain the NCES IDs of Burnley-Moran and Johnson; Charlottesville Middle retains the Buford ID. Older metrics show the older names. Elementary same-level overlap is 64.0272 m²; source geometry remains in place, with an address-check warning.
+
+The seventh polygon is a **historical NCES SABS 2015–16 high-school area**. It does not establish a current high-school boundary. Charlottesville Middle has no polygon in the City elementary layer; City Schools says middle attendance is citywide. Walker Upper Elementary has no current neighborhood area and was reconfigured after the snapshot year. The combined map links 7 of 9 snapshot schools, with those two schools unlinked. See the [release record](RELEASE_CHARLOTTESVILLE_2026-11-09.md), [manifest](../data-raw/zone_source_manifests/5100780.json), [crosswalk](../data-raw/zone_school_crosswalks/5100780.csv), and [geometry report](../data-raw/zone_validation_reports/5100780.json).
 
 ## Rebuild and verify
 

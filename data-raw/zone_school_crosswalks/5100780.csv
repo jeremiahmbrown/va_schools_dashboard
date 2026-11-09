@@ -1,0 +1,10 @@
+division_id,level,source_name,school_id,school_name,disposition,note
+5100780,Elementary,Greenbrier,510078000275,Greenbrier Elementary,mapped,City GIS label matches frozen school.
+5100780,Elementary,Jackson-Via,510078000276,Jackson-Via Elementary,mapped,City GIS label matches frozen school.
+5100780,Elementary,Summit,510078002110,Summit Elementary,mapped,City GIS label matches frozen school.
+5100780,Elementary,Trailblazer,510078002143,Trailblazer Elementary,mapped,City GIS label matches frozen school.
+5100780,Elementary,Sunrise,510078000272,Sunrise Elementary,mapped,2025 rename of Burnley-Moran; same NCES school ID and campus.
+5100780,Elementary,Tall Oaks,510078000266,Tall Oaks Elementary,mapped,2025 rename of Johnson; same NCES school ID and campus.
+5100780,High,,510078000273,Charlottesville High,source_not_available,City layer covers elementary areas only; historical high polygon retained separately.
+5100780,Combined (K-8),,510078000279,Walker Upper Elementary,source_not_available,No corresponding area in city elementary source; school configuration has changed.
+5100780,Middle,,510078000271,Charlottesville Middle,source_not_available,Elementary City layer has no middle polygon; division says middle assignment is citywide.

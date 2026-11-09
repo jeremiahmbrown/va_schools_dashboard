@@ -42,13 +42,13 @@ stopifnot(enrollment_by_year[["enrollment"]][
   enrollment_by_year[["school_id"]] == chesapeake_new[["B.M. Williams Elementary"]]] == 734L,
   enrollment_by_year[["enrollment"]][
   enrollment_by_year[["school_id"]] == chesapeake_new[["Crestwood Elementary School"]]] == 796L)
-# LCPS renamed two schools in July 2025 without changing their NCES IDs.
-# Historical display labels follow the LCPS effective date, not VDOE's
-# retrospectively updated source labels.
+# LCPS and Charlottesville renamed schools in 2025 without changing NCES IDs.
+# Historical labels follow the effective date, not retrospective source labels.
 renames <- read.csv("app/data/school_renames.csv",
                     colClasses = c(school_id = "character"))
-stopifnot(nrow(renames) == 2L,
-          setequal(renames$school_id, c("510225002450", "510225002412")),
+stopifnot(nrow(renames) == 5L,
+          setequal(renames$school_id, c("510225002450", "510225002412",
+                                        "510078000266", "510078000271", "510078000272")),
           all(renames$first_current_year == 2026L),
           !anyDuplicated(renames$school_id))
 for (i in seq_len(nrow(renames))) {
@@ -56,7 +56,7 @@ for (i in seq_len(nrow(renames))) {
   record <- schools[schools$school_id == sid, ]
   stopifnot(nrow(record) == 1L,
             identical(record$school_name[[1]], renames$current_name[[i]]),
-            identical(record$division_id[[1]], "5102250"),
+            identical(record$division_id[[1]], substr(sid, 1, 7)),
             identical(school_name_for_year(sid, 2025L, record$school_name[[1]], renames),
                       renames$prior_name[[i]]),
             identical(school_name_for_year(sid, 2026L, record$school_name[[1]], renames),
@@ -64,6 +64,16 @@ for (i in seq_len(nrow(renames))) {
   stopifnot(any(enrollment_by_year$school_id == sid & enrollment_by_year$year == 2026L),
             any(school$school_id == sid & school$year == 2025L),
             any(school$school_id == sid & school$year == 2026L))
+}
+# The three Charlottesville records retain their stable IDs and 2026 values.
+cv_current <- c("510078000266" = "Tall Oaks Elementary",
+                "510078000271" = "Charlottesville Middle",
+                "510078000272" = "Sunrise Elementary")
+for (sid in names(cv_current)) {
+  stopifnot(identical(schools$school_name[schools$school_id == sid],
+                      unname(cv_current[[sid]])),
+            any(school$school_id == sid & school$year == 2026L),
+            any(enrollment_by_year$school_id == sid & enrollment_by_year$year == 2026L))
 }
 stopifnot(all(school$school_id %in% schools$school_id))
 stopifnot(all(school$metric_id %in% defs$metric_id))

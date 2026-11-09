@@ -975,6 +975,56 @@ school_renames_out <- loudoun_renames %>%
   dplyr::transmute(school_id, prior_name, current_name,
                    first_current_year = as.integer(substr(effective_date, 1L, 4L)) + 1L)
 
+# Three Charlottesville schools changed names for 2025-26. The 2024-25
+# EDGE geocodes retain their prior names; NCES 2025-26 directory confirms the
+# same IDs and campuses. Join the current VDOE names without creating new IDs.
+charlottesville_rename_path <- file.path(
+  "data-raw", "charlottesville_school_rename_evidence.csv")
+charlottesville_renames <- read.csv(
+  charlottesville_rename_path, stringsAsFactors = FALSE,
+  colClasses = "character")
+required_charlottesville <- c(
+  "school_id", "prior_name", "current_name", "first_current_year",
+  "division_id", "division_source_url", "nces_source_url")
+if (!identical(names(charlottesville_renames), required_charlottesville) ||
+    nrow(charlottesville_renames) != 3L ||
+    !setequal(charlottesville_renames$school_id,
+              c("510078000266", "510078000271", "510078000272")) ||
+    anyDuplicated(charlottesville_renames$school_id) ||
+    anyDuplicated(charlottesville_renames$current_name) ||
+    any(charlottesville_renames$division_id != "5100780") ||
+    any(charlottesville_renames$first_current_year != "2026") ||
+    any(!startsWith(charlottesville_renames$division_source_url,
+                    "https://charlottesvilleschools.org/")) ||
+    any(!startsWith(charlottesville_renames$nces_source_url,
+                    "https://nces.ed.gov/ccd/schoolsearch/school_detail.asp?ID="))) {
+  stop("Reviewed Charlottesville rename evidence changed")
+}
+for (i in seq_len(nrow(charlottesville_renames))) {
+  entry <- charlottesville_renames[i, ]
+  prior <- nces_va[nces_va$school_id == entry$school_id, ]
+  if (nrow(prior) != 1L ||
+      prior$division_id != entry$division_id ||
+      prior$nces_school_name != entry$prior_name ||
+      any(nces_va$division_id == entry$division_id &
+          nces_va$nces_school_name == entry$current_name) ||
+      !is.finite(prior$lat) || !is.finite(prior$lon) ||
+      !any(enroll_keep$division_name == "Charlottesville City Public Schools" &
+           enroll_keep$school_name == entry$current_name &
+           enroll_keep$year == 2026L)) {
+    stop("Charlottesville identity or 2025-26 enrollment source changed: ",
+         entry$current_name)
+  }
+  current <- prior
+  current$nces_school_name <- entry$current_name
+  nces_va <- dplyr::bind_rows(nces_va, current)
+}
+school_renames_out <- dplyr::bind_rows(
+  school_renames_out,
+  charlottesville_renames %>%
+    dplyr::transmute(school_id, prior_name, current_name,
+                     first_current_year = as.integer(first_current_year)))
+
 # Build VDOE school list from core_join and match to NCES by normalized division+school names.
 vdoe_schools <- core_join %>%
   distinct(division_name, school_name) %>%
@@ -1849,7 +1899,7 @@ snapshot_meta <- list(
   snapshot_date = as.character(Sys.Date()),
   year_min = min(years_keep),
   year_max = max(years_keep),
-  transform_version = 13,
+  transform_version = 14,
   annual_sol_match = list(source_schools = annual_sol$source_schools,
                           matched_schools = annual_sol$matched_schools,
                           unmatched_schools = nrow(annual_sol$unmatched)),

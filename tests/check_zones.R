@@ -254,4 +254,20 @@ for (name in c("David A. Dutrow Elementary", "Deer Park Elementary", "John Marsh
 news_sf <- sf::st_read(news_path, quiet = TRUE)
 stopifnot(all(sf::st_is_valid(news_sf)), !any(sf::st_is_empty(news_sf)))
 
+# Charlottesville has six linked City elementary areas and one historical high area.
+cv_path <- pick_zone_file("app/data", "5100780")
+cv_text <- read_zone_geojson(cv_path)
+cv <- jsonlite::fromJSON(cv_text, simplifyVector = FALSE)$features
+stopifnot(length(cv) == 7L)
+cv_elem <- Filter(function(f) identical(f$properties$level, "Elementary"), cv)
+cv_high <- Filter(function(f) identical(f$properties$level, "High"), cv)
+stopifnot(length(cv_elem) == 6L, length(cv_high) == 1L,
+  !is.null(pick_zone_level_cache("app/data", "5100780", "Elementary", cv_path)),
+  !is.null(pick_zone_level_cache("app/data", "5100780", "High", cv_path)),
+  grepl("2015–16", cv_high[[1]]$properties$popup, fixed = TRUE),
+  all(vapply(cv_elem, function(f) grepl("rezoning is phased from 2027", f$properties$popup, fixed = TRUE), logical(1))))
+stopifnot(all(vapply(cv_elem, function(f) !is.null(f$properties$app_school_id), logical(1))),
+          length(jsonlite::fromJSON(read_zone_geojson(pick_zone_level_cache("app/data", "5100780", "Middle", cv_path)), simplifyVector = FALSE)$features) == 0L)
+for (f in cv) if (!is.null(f$properties$app_school_id)) stopifnot(!is.null(filter_zone_geojson_by_school_id(cv_text, f$properties$app_school_id)))
+
 cat("Division zone level, school match, geometry, and cache checks passed.\n")

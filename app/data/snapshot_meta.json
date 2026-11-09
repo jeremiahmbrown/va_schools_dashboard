@@ -1,12 +1,12 @@
 {
-  "snapshot_date": "2026-10-30",
+  "snapshot_date": "2026-11-09",
   "year_min": 2022,
   "year_max": 2026,
-  "transform_version": 13,
+  "transform_version": 14,
   "annual_sol_match": {
     "source_schools": 1821,
-    "matched_schools": 1781,
-    "unmatched_schools": 43
+    "matched_schools": 1784,
+    "unmatched_schools": 40
   },
   "annual_sol_2022_match": {
     "source_schools": 1800,
@@ -38,7 +38,7 @@
     {
       "year": 2026,
       "source_schools": 1864,
-      "matched_schools": 1814
+      "matched_schools": 1817
     }
   ],
   "sbar_match": [
@@ -65,13 +65,13 @@
     {
       "year": 2026,
       "source_schools": 1799,
-      "matched_schools": 1780
+      "matched_schools": 1783
     }
   ],
   "sbar_missing_enrollment_school_years": 41,
   "nces_match": {
     "total": 1828,
-    "matched": 1814,
+    "matched": 1817,
     "unmatched": [
       {
         "division_name": "Albemarle County Public Schools",
@@ -80,18 +80,6 @@
       {
         "division_name": "Amelia County Public Schools",
         "school_name": "Amelia County High School"
-      },
-      {
-        "division_name": "Charlottesville City Public Schools",
-        "school_name": "Charlottesville Middle"
-      },
-      {
-        "division_name": "Charlottesville City Public Schools",
-        "school_name": "Sunrise Elementary"
-      },
-      {
-        "division_name": "Charlottesville City Public Schools",
-        "school_name": "Tall Oaks Elementary"
       },
       {
         "division_name": "Danville City Public Schools",
