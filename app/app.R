@@ -48,6 +48,7 @@ source(file.path(app_dir, "R", "map_helpers.R"))
 source(file.path(app_dir, "R", "detail_viz.R"))
 source(file.path(app_dir, "R", "percentiles.R"))
 source(file.path(app_dir, "R", "zones.R"))
+source(file.path(app_dir, "R", "dashboard_state.R"))
 source(file.path(app_dir, "R", "dashboard_details.R"))
 source(file.path(app_dir, "R", "dashboard_panel_server.R"))
 source(file.path(app_dir, "R", "metric_availability.R"))
@@ -206,6 +207,14 @@ server <- function(input, output, session) {
   selected_division_id <- reactiveVal(NULL)
   search_ready <- reactiveVal(FALSE)
   zones_warned_key <- reactiveVal(NULL)
+  zones_state <- reactiveVal(list(phase = "off", key = "off"))
+
+  output$zone_status <- renderUI({
+    state <- zones_state()
+    message <- zone_overlay_status(state$phase, state$mode, state$level)
+    if (is.null(message)) return(NULL)
+    tags$p(class = "zone-status", role = "status", message)
+  })
 
   output$zone_source_note <- renderUI({
     division_id <- selected_division_id()
@@ -757,7 +766,7 @@ server <- function(input, output, session) {
       if (nrow(school_row) == 1 && nzchar(school_row$division_id[[1]])) {
         selected_division_id(school_row$division_id[[1]])
       }
-      if (nrow(school_row) == 1 && is.finite(school_row$lat[[1]]) && is.finite(school_row$lon[[1]])) {
+      if (has_leaflet && nrow(school_row) == 1 && is.finite(school_row$lat[[1]]) && is.finite(school_row$lon[[1]])) {
         leafletProxy("map") %>%
           flyTo(lng = school_row$lon[[1]], lat = school_row$lat[[1]], zoom = 12)
       }
@@ -775,7 +784,7 @@ server <- function(input, output, session) {
         pull(polygon_division_id)
 
       div_sp <- divisions_sp[divisions_sp@data$division_id %in% polygon_ids, ]
-      if (length(div_sp) >= 1) {
+      if (has_leaflet && length(div_sp) >= 1) {
         bb <- sp::bbox(div_sp)
         leafletProxy("map") %>%
           fitBounds(lng1 = bb[1, 1], lat1 = bb[2, 1], lng2 = bb[1, 2], lat2 = bb[2, 2])
@@ -797,7 +806,7 @@ server <- function(input, output, session) {
       selected_school_id(NULL)
 
       div_sp <- divisions_sp[divisions_sp@data$division_id == polygon_id, ]
-      if (length(div_sp) == 1) {
+      if (has_leaflet && length(div_sp) == 1) {
         bb <- sp::bbox(div_sp)
         leafletProxy("map") %>%
           fitBounds(lng1 = bb[1, 1], lat1 = bb[2, 1], lng2 = bb[1, 2], lat2 = bb[2, 2])
@@ -926,7 +935,6 @@ server <- function(input, output, session) {
     # Optional attendance zone overlay (renders for the selected division; if a
     # specific school is selected, we filter to that school's zone only).
     zones_zoom_debounced <- reactive(input$map_zoom) %>% debounce(250)
-    zones_render_key <- reactiveVal("off")
     zones_pending_token <- reactiveVal(0L)
     zones_pending <- reactiveVal(NULL)
     zones_debug <- isTRUE(getOption("va_zones_debug")) || Sys.getenv("VA_ZONES_DEBUG") == "1"
@@ -950,40 +958,20 @@ server <- function(input, output, session) {
           if (nrow(div_row) == 1) division_id <- div_row$division_id[[1]]
         }
 
-        # Decide what should be shown. We deliberately do NOT re-add zones on every zoom
-        # tick/animation; only when state changes (enabled/disabled, division changes,
-        # or crossing the zoom threshold).
-        desired_key <- "off"
-        zone_mode <- "division"
-        if (enabled) {
-          if (is.null(division_id) || !nzchar(division_id)) {
-            desired_key <- "enabled::noselection"
-          } else if (!is.finite(zoom) || zoom < 9) {
-            desired_key <- paste0("enabled::zoomlow::", division_id)
-          } else {
-            data_dir <- file.path(app_dir, "data")
-            zone_path <- pick_zone_file(data_dir, division_id, mode = "division")
-            if (is.null(zone_path) || !file.exists(zone_path)) {
-              desired_key <- paste0("enabled::missing::", division_id)
-            } else {
-              if (!is.null(school_id) && nzchar(school_id)) zone_mode <- "school"
-              if (identical(zone_mode, "school")) {
-                desired_key <- paste0("enabled::show_school::", division_id, "::", school_id)
-              } else {
-                desired_key <- paste0("enabled::show_division::", division_id, "::", zone_level)
-              }
-            }
-          }
-        }
-
-        previous_key <- zones_render_key()
+        # The key changes only when the overlay content must change.
+        target <- zone_overlay_target(enabled, division_id, school_id, zone_level,
+                                      zoom, file.path(app_dir, "data"))
+        desired_key <- target$key
+        previous_key <- zones_state()$key
         if (identical(previous_key, desired_key)) {
           return()
         }
         same_division_level_change <-
           startsWith(previous_key, paste0("enabled::show_division::", division_id, "::")) &&
           startsWith(desired_key, paste0("enabled::show_division::", division_id, "::"))
-        zones_render_key(desired_key)
+        target$phase <- if (identical(target$phase, "ready")) "loading" else target$phase
+        target$level <- zone_level
+        zones_state(target)
         if (zones_debug) message("zones observer: desired_key=", desired_key, " zoom=", if (is.finite(zoom)) zoom else "NA")
 
         # Always clear when the state changes (avoids stacking layers).
@@ -991,9 +979,9 @@ server <- function(input, output, session) {
         zones_pending(NULL)
 
         if (!enabled) return()
-        if (startsWith(desired_key, "enabled::noselection")) return()
+        if (identical(target$phase, "no_selection")) return()
 
-        if (startsWith(desired_key, "enabled::zoomlow::")) {
+        if (identical(target$phase, "zoom_low")) {
           key <- paste0("zoneszoom::", division_id)
           if (!identical(zones_warned_key(), key)) {
             zones_warned_key(key)
@@ -1002,7 +990,7 @@ server <- function(input, output, session) {
           return()
         }
 
-        if (startsWith(desired_key, "enabled::missing::")) {
+        if (identical(target$phase, "missing_division")) {
           key <- paste0("nozones::", division_id)
           if (!identical(zones_warned_key(), key)) {
             zones_warned_key(key)
@@ -1015,20 +1003,18 @@ server <- function(input, output, session) {
           return()
         }
 
-        # enabled::show_*::<division_id>[::<school_id>]
         token <- zones_pending_token() + 1L
         zones_pending_token(token)
-        zone_path <- pick_zone_file(file.path(app_dir, "data"), division_id, mode = "division")
 
         # Delay rendering slightly so we don't compete with fitBounds/flyTo zoom animations.
         zones_pending(list(
           token = token,
           desired_key = desired_key,
           division_id = division_id,
-          zone_mode = zone_mode,
-          school_id = if (identical(zone_mode, "school")) school_id else NULL,
+          zone_mode = target$mode,
+          school_id = if (identical(target$mode, "school")) school_id else NULL,
           zone_level = zone_level,
-          zone_path = zone_path,
+          zone_path = target$path,
           delay_s = if (same_division_level_change) 0 else 0.6,
           scheduled_at = Sys.time()
         ))
@@ -1048,9 +1034,14 @@ server <- function(input, output, session) {
 
       # Confirm state didn't change while waiting.
       if (!identical(zones_pending_token(), pend$token)) return()
-      if (!identical(zones_render_key(), pend$desired_key)) return()
+      if (!identical(zones_state()$key, pend$desired_key)) return()
       if (!isTRUE(input$zones_enabled)) return()
-      if (is.null(pend$zone_path) || !file.exists(pend$zone_path)) return()
+      if (is.null(pend$zone_path) || !file.exists(pend$zone_path)) {
+        zones_state(list(phase = "error", key = pend$desired_key,
+                         mode = pend$zone_mode, level = pend$zone_level))
+        zones_pending(NULL)
+        return()
+      }
 
       level_cache_path <- if (identical(pend$zone_mode, "division")) {
         pick_zone_level_cache(file.path(app_dir, "data"), pend$division_id,
@@ -1058,6 +1049,8 @@ server <- function(input, output, session) {
       } else NULL
       zones_geojson <- read_zone_geojson(if (is.null(level_cache_path)) pend$zone_path else level_cache_path)
       if (is.null(zones_geojson) || !nzchar(zones_geojson)) {
+        zones_state(list(phase = "error", key = pend$desired_key,
+                         mode = pend$zone_mode, level = pend$zone_level))
         zones_pending(NULL)
         return()
       }
@@ -1076,6 +1069,8 @@ server <- function(input, output, session) {
               duration = 6
             )
           }
+          zones_state(list(phase = "missing_school", key = pend$desired_key,
+                           mode = pend$zone_mode, level = pend$zone_level))
           zones_pending(NULL)
           return()
         }
@@ -1092,6 +1087,8 @@ server <- function(input, output, session) {
               type = "warning", duration = 6
             )
           }
+          zones_state(list(phase = "missing_level", key = pend$desired_key,
+                           mode = pend$zone_mode, level = pend$zone_level))
           zones_pending(NULL)
           return()
         }
@@ -1099,7 +1096,7 @@ server <- function(input, output, session) {
       }
 
       t0 <- proc.time()[[3]]
-      tryCatch({
+      rendered <- tryCatch({
         leafletProxy("map") %>%
           removeGeoJSON("zones") %>%
           addGeoJSON(
@@ -1108,10 +1105,13 @@ server <- function(input, output, session) {
             group = "zones",
             options = pathOptions(pane = "zonePolygonPane")
           )
+        TRUE
       }, error = function(e) {
         if (zones_debug) message("zones observer: addGeoJSON error: ", conditionMessage(e))
-        NULL
+        FALSE
       })
+      zones_state(list(phase = if (rendered) "shown" else "error", key = pend$desired_key,
+                       mode = pend$zone_mode, level = pend$zone_level))
       if (zones_debug) {
         dt <- proc.time()[[3]] - t0
         message("zones observer: rendered zones for division ", pend$division_id, " in ", sprintf("%.3fs", dt))

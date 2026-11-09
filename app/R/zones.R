@@ -27,7 +27,9 @@ suppressPackageStartupMessages({
 
 read_zone_geojson <- function(path) {
   if (is.null(path) || !file.exists(path)) return(NULL)
-  paste(readLines(path, warn = FALSE), collapse = "\n")
+  text <- paste(readLines(path, warn = FALSE, encoding = "UTF-8"), collapse = "\n")
+  Encoding(text) <- "UTF-8"
+  text
 }
 
 zone_source_md5 <- function(path) {

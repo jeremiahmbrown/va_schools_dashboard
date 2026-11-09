@@ -81,6 +81,7 @@ dashboard_ui <- function(map_widget, available_years, default_year, schools, sna
               condition = "input.zones_enabled == true",
               selectInput("zone_level", "Zone level", choices = c("Elementary", "Middle", "High", "Unclassified (older source)" = "Unknown"), selected = "Elementary", selectize = FALSE),
               tags$p(class = "help-note", "Select a division for all its zones, or a school for one zone. Confirm an address with the division."),
+              uiOutput("zone_status"),
               uiOutput("zone_selection_action"),
               uiOutput("zone_source_note")
             ),

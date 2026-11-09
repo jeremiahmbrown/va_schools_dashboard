@@ -50,3 +50,8 @@ Non-goals (unless explicitly requested): student-level data, any PII, predictive
 ## Testing (Lightweight)
 - Add `testthat` tests for metric computations and suppression handling.
 - Add a small fixture dataset (a few schools, 2 years) for fast tests.
+
+## Interaction State
+- Read `docs/APP_STATE.md` before changing selection, measure and year controls, map layers, attendance zones, or mobile panels.
+- Keep attendance-zone decisions in `app/R/dashboard_state.R`; keep map drawing and Shiny observers in `app/app.R`.
+- Run `Rscript --vanilla tests/check_dashboard_state.R` after changing the zone state contract.

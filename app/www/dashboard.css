@@ -43,6 +43,7 @@ body { background: var(--canvas); color: var(--ink); font-family: "Segoe UI", In
 .filter-content hr { margin: 17px 0; border-color: var(--line); }
 .filter-content .form-group { margin-bottom: 13px; }
 .filter-content .help-note, .filter-help { color: var(--muted); font-size: 12px; line-height: 1.45; }
+.zone-status { margin: 8px 0; padding: 8px 10px; border-left: 3px solid var(--teal); background: var(--soft); color: var(--ink); font-size: 12px; line-height: 1.4; }
 .filter-help summary { color: var(--teal-dark); font-weight: 700; cursor: pointer; }
 .filter-content .checkbox, .filter-content .radio { margin-top: 5px; }
 .availability-bar { min-height: 32px; display: flex; align-items: center; padding-bottom: 7px; color: var(--muted); font-size: 12px; }
