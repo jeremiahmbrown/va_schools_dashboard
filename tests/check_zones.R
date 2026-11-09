@@ -141,7 +141,9 @@ for (division_id in c(names(neighbor_expected), "5103300", "5103330", "5102640")
   unlink(changed_source)
   crlf_source <- tempfile(fileext = ".json")
   source_bytes <- readBin(combined_path, what = "raw", n = file.info(combined_path)$size)
-  writeBin(charToRaw(gsub("\n", "\r\n", rawToChar(source_bytes), fixed = TRUE)), crlf_source)
+  # Normalize first: some source blobs already have Windows line endings.
+  source_text <- gsub("\r\n", "\n", rawToChar(source_bytes), fixed = TRUE)
+  writeBin(charToRaw(gsub("\n", "\r\n", source_text, fixed = TRUE)), crlf_source)
   stopifnot(!is.null(pick_zone_level_cache("app/data", division_id, "Elementary", crlf_source)))
   unlink(crlf_source)
 }
