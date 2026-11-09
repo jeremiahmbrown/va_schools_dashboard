@@ -142,7 +142,7 @@ The old SABS file had 24 features but linked only 5 of 24 dashboard schools. The
 
 `data-raw/build_roanoke_city_zones.py` gets 17 elementary, 5 middle, and 2 high features. All 24 official labels map to the 24 dashboard school IDs. It uses explicit aliases for the dashboard's older names for Lucy Addison, James Breckinridge, and Roanoke Academy. One source middle polygon had a repeated vertex; GDAL `ogr2ogr -makevalid` repaired it. The saved file has 24 valid polygons. The build checks the record counts and school assignments before atomic replacement. The three levels remain separate so their areas can overlap on the map. A same-level check found a roughly **35,380 m² overlap between Preston Park and Round Hill elementary polygons** in the published Phase 1 layer, plus three small overlaps under 500 m². The app shows the source areas and warns users; it does not guess which school serves an address in the overlap. Confirm affected addresses with Roanoke City Public Schools.
 
-## Charlottesville City release candidate (2026-11-09)
+## Charlottesville City public release (2026-11-09)
 
 [Charlottesville City Schools links the City GIS elementary map as its current zone source](https://charlottesvilleschools.org/zoning). The [City Open Data policy](https://widget.charlottesville.org/gis/opendata/OpenDataPolicy.pdf) permits free distribution of portal data with attribution. The exact GIS layer has no school-year effective field. City Schools says later rezoning phases begin in 2027 and 2029; this release uses the current linked map, not the future plans.
 

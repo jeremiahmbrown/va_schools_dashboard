@@ -18,5 +18,7 @@ The [elementary layer](https://gisweb.charlottesville.org/arcgis/rest/services/O
 - `python3 tests/check_zone_importer.py`: passed.
 - `python3 data-raw/audit_zones.py`: 1,482 of 1,817 linked, 335 unmatched, zero invalid IDs or empty geometry.
 - Snapshot comparison against the pre-release tree: three school rows added and no existing school row changed or removed. New school metric and enrollment rows are additions; changed division aggregates are confined to Charlottesville.
-- GitHub commit, deployment bundle, and live UI checks: pending.
+- GitHub master commit `e22e05804d8c96a85de0bee6254888a406d9c1b3` has tree `669e6656789509d53df48c5fcc5e96ad1de7a0e6`, identical to the checked local tree.
+- Shiny app ID `16676824`, bundle `12798821`: deployed at the existing URL on 2026-11-09.
+- Live UI: the page shows snapshot date 2026-11-09 and 1,817 schools. Sunrise shows a 2026 profile and one rendered zone outline. Tall Oaks shows a 2026 profile and one rendered zone outline. The Filters panel shows the current City elementary source, unstated GIS year, historical high polygon, missing middle polygon, small overlaps, and address-check warning. Switching Tall Oaks to data year 2025 shows Johnson Elementary and its 2025 metric. This checks the school display and zone selection, not a household address.
 - Rollback target: prior bundle `12795760` and Git commit `d898c302f42a744e5885810f84b4987262728bad`.
